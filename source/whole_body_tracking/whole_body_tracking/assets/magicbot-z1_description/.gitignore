@@ -1,0 +1,54 @@
+# ROS build files
+build/
+devel/
+install/
+logs/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Log files
+*.log
+export.log
+
+# Compiled files
+*.o
+*.a
+*.lib
+*.dll
+*.exe
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
