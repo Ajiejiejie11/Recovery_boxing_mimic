@@ -1,0 +1,47 @@
+{
+  "paths": [
+    {
+      "_path": "include/uuid/uuid.h",
+      "path_type": "hardlink",
+      "sha256": "0f29b583df138cd9a123aa03498c8a049b71a1afcc0ff90a6dbaac44514385a4",
+      "size_in_bytes": 4331
+    },
+    {
+      "_path": "lib/libuuid.a",
+      "path_type": "hardlink",
+      "file_mode": "binary",
+      "prefix_placeholder": "/home/conda/feedstock_root/build_artifacts/bld/rattler-build_libuuid_1781625522/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh",
+      "sha256": "3fb0d2675aa4a8e08dae21c7f433c85952ffdac3bdd1f87b462aa053bbc28b33",
+      "size_in_bytes": 59460
+    },
+    {
+      "_path": "lib/libuuid.so",
+      "path_type": "softlink",
+      "sha256": "60ab8bc3b66f73666ff858c540871e7baa55e04addc5402cca2d531e9e3a170f",
+      "size_in_bytes": 16
+    },
+    {
+      "_path": "lib/libuuid.so.1",
+      "path_type": "softlink",
+      "sha256": "60ab8bc3b66f73666ff858c540871e7baa55e04addc5402cca2d531e9e3a170f",
+      "size_in_bytes": 16
+    },
+    {
+      "_path": "lib/libuuid.so.1.3.0",
+      "path_type": "hardlink",
+      "file_mode": "binary",
+      "prefix_placeholder": "/home/conda/feedstock_root/build_artifacts/bld/rattler-build_libuuid_1781625522/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh",
+      "sha256": "60ab8bc3b66f73666ff858c540871e7baa55e04addc5402cca2d531e9e3a170f",
+      "size_in_bytes": 40720
+    },
+    {
+      "_path": "lib/pkgconfig/uuid.pc",
+      "path_type": "hardlink",
+      "file_mode": "text",
+      "prefix_placeholder": "/home/conda/feedstock_root/build_artifacts/bld/rattler-build_libuuid_1781625522/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh",
+      "sha256": "fe11cd514dab4e9d61ebe95291f1b4e5697557aa96970fe60e09bbedc06a35be",
+      "size_in_bytes": 1223
+    }
+  ],
+  "paths_version": 1
+}

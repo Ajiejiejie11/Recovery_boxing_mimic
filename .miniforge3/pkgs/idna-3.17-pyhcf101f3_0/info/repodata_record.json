@@ -1,0 +1,21 @@
+{
+    "build": "pyhcf101f3_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python >=3.10",
+        "python"
+    ],
+    "fn": "idna-3.17-pyhcf101f3_0.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "md5": "c75e517ebd7a5c5272fe111e8b162228",
+    "name": "idna",
+    "noarch": "python",
+    "sha256": "f9fe1f9e539c544405ccb7ba632d4ba79edf243c05554d76ace073158a80b691",
+    "size": 56858,
+    "subdir": "noarch",
+    "timestamp": 1779999227630,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/idna-3.17-pyhcf101f3_0.conda",
+    "version": "3.17"
+}

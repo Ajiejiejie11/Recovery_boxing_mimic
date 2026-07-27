@@ -1,0 +1,68 @@
+{
+    "arch": "x86_64",
+    "build": "h171cf75_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "libstdcxx >=14",
+        "libgcc >=14",
+        "__glibc >=2.17,<3.0.a0"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/cpp-expected-1.3.1-h171cf75_0",
+    "files": [
+        "include/tl/expected.hpp",
+        "share/cmake/tl-expected/tl-expected-config-version.cmake",
+        "share/cmake/tl-expected/tl-expected-config.cmake",
+        "share/cmake/tl-expected/tl-expected-targets.cmake"
+    ],
+    "fn": "cpp-expected-1.3.1-h171cf75_0.conda",
+    "license": "CC0-1.0",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/cpp-expected-1.3.1-h171cf75_0",
+        "type": 1
+    },
+    "md5": "d17488e343e4c5c0bd0db18b3934d517",
+    "name": "cpp-expected",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/cpp-expected-1.3.1-h171cf75_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "include/tl/expected.hpp",
+                "path_type": "hardlink",
+                "sha256": "0788f7d544a2fdec1dd7a794e1e9863ad4cc6a8817982b6fd93fd98724b9fa19",
+                "sha256_in_prefix": "0788f7d544a2fdec1dd7a794e1e9863ad4cc6a8817982b6fd93fd98724b9fa19",
+                "size_in_bytes": 94709
+            },
+            {
+                "_path": "share/cmake/tl-expected/tl-expected-config-version.cmake",
+                "path_type": "hardlink",
+                "sha256": "4b4b9bceb39058fd9079ddf7f4978185fe9e193733c29e439d8c4c1e2c5e84b8",
+                "sha256_in_prefix": "4b4b9bceb39058fd9079ddf7f4978185fe9e193733c29e439d8c4c1e2c5e84b8",
+                "size_in_bytes": 2303
+            },
+            {
+                "_path": "share/cmake/tl-expected/tl-expected-config.cmake",
+                "path_type": "hardlink",
+                "sha256": "e81d5d1be789466fbf2bebff6818ac0879ccf13ef5f4e4566f91f1cfd47e0f08",
+                "sha256_in_prefix": "e81d5d1be789466fbf2bebff6818ac0879ccf13ef5f4e4566f91f1cfd47e0f08",
+                "size_in_bytes": 949
+            },
+            {
+                "_path": "share/cmake/tl-expected/tl-expected-targets.cmake",
+                "path_type": "hardlink",
+                "sha256": "2afa846f30f0cef3c24a76d3c020d4f61ded3d1f9863b9125942c078a4b52e39",
+                "sha256_in_prefix": "2afa846f30f0cef3c24a76d3c020d4f61ded3d1f9863b9125942c078a4b52e39",
+                "size_in_bytes": 4141
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "cpp-expected==1.3.1=h171cf75_0",
+    "sha256": "0d9405d9f2de5d4b15d746609d87807aac10e269072d6408b769159762ed113d",
+    "size": 24283,
+    "subdir": "linux-64",
+    "timestamp": 1756734785482,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/cpp-expected-1.3.1-h171cf75_0.conda",
+    "version": "1.3.1"
+}

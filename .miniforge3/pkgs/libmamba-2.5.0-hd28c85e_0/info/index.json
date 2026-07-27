@@ -1,0 +1,29 @@
+{
+  "arch": "x86_64",
+  "build": "hd28c85e_0",
+  "build_number": 0,
+  "depends": [
+    "cpp-expected >=1.3.1,<1.3.2.0a0",
+    "__glibc >=2.17,<3.0.a0",
+    "libstdcxx >=14",
+    "libgcc >=14",
+    "zstd >=1.5.7,<1.6.0a0",
+    "reproc >=14.2,<15.0a0",
+    "spdlog >=1.17.0,<1.18.0a0",
+    "libarchive >=3.8.5,<3.9.0a0",
+    "openssl >=3.5.4,<4.0a0",
+    "nlohmann_json-abi ==3.12.0",
+    "fmt >=12.1.0,<12.2.0a0",
+    "simdjson >=4.2.4,<4.3.0a0",
+    "libsolv >=0.7.35,<0.8.0a0",
+    "reproc-cpp >=14.2,<15.0a0",
+    "libcurl >=8.18.0,<9.0a0",
+    "yaml-cpp >=0.8.0,<0.9.0a0"
+  ],
+  "license": "BSD-3-Clause",
+  "name": "libmamba",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1767884157869,
+  "version": "2.5.0"
+}

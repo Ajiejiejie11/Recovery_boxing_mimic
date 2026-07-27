@@ -1,0 +1,21 @@
+{
+    "build": "pyh8f84b5b_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python >=3.10",
+        "__unix",
+        "python"
+    ],
+    "fn": "tqdm-4.67.3-pyh8f84b5b_0.conda",
+    "license": "MPL-2.0 and MIT",
+    "md5": "e5ce43272193b38c2e9037446c1d9206",
+    "name": "tqdm",
+    "noarch": "python",
+    "sha256": "9ef8e47cf00e4d6dcc114eb32a1504cc18206300572ef14d76634ba29dfe1eb6",
+    "size": 94132,
+    "subdir": "noarch",
+    "timestamp": 1770153424136,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.3-pyh8f84b5b_0.conda",
+    "version": "4.67.3"
+}

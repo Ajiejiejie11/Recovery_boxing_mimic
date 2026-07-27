@@ -1,0 +1,19 @@
+{
+  "arch": "x86_64",
+  "build": "py313h7037e92_1",
+  "build_number": 1,
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14",
+    "libstdcxx >=14",
+    "python >=3.13,<3.14.0a0",
+    "python_abi 3.13.* *_cp313"
+  ],
+  "license": "Apache-2.0",
+  "license_family": "Apache",
+  "name": "msgpack-python",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1762504205590,
+  "version": "1.1.2"
+}

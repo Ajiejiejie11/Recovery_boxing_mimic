@@ -1,0 +1,21 @@
+{
+    "build": "pyhcf101f3_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python >=3.10",
+        "python"
+    ],
+    "fn": "pycparser-3.0-pyhcf101f3_0.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "md5": "9c5491066224083c41b6d5635ed7107b",
+    "name": "pycparser",
+    "noarch": "python",
+    "sha256": "e27e0473fc6723311a0bd48b89b616fa1b996a2f7a2b555338cbbcfb9c640568",
+    "size": 55886,
+    "subdir": "noarch",
+    "timestamp": 1779293633166,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/pycparser-3.0-pyhcf101f3_0.conda",
+    "version": "3.0"
+}

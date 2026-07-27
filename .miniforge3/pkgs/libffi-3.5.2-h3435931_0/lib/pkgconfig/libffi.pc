@@ -1,0 +1,11 @@
+prefix=/home/conda/feedstock_root/build_artifacts/libffi_1769455919407/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+toolexeclibdir=${libdir}
+includedir=/home/conda/feedstock_root/build_artifacts/libffi_1769455919407/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac/include
+
+Name: libffi
+Description: Library supporting Foreign Function Interfaces
+Version: 3.5.2
+Libs: -L${toolexeclibdir} -lffi
+Cflags: -I${includedir}

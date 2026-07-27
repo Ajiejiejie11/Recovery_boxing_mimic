@@ -1,0 +1,58 @@
+schema_version: 1
+
+context:
+  version: "2.42.2"
+
+package:
+  name: libuuid
+  version: ${{ version }}
+
+source:
+  # use github mirror to make it easier for bot to scrape for new versions
+  url: https://github.com/util-linux/util-linux/archive/refs/tags/v${{ version }}.tar.gz
+  sha256: a451596f794739216da2e98398e31958ecf455f2372d99a12194a468e852e834
+  patches:
+    - darwin_libtoolize.patch
+
+build:
+  number: 0
+  skip: win
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ stdlib('c') }}
+    - if: unix
+      then:
+        - python 3.12.*
+        - autoconf
+        - automake
+        - bison
+        - flex
+        - gettext-tools
+        - libiconv
+        - libtool
+        - gnuconfig
+        - make
+
+  run_exports:
+    - ${{ pin_subpackage('libuuid') }}
+
+tests:
+  - package_contents:
+      files:
+        - if: unix
+          then: lib/libuuid.a
+      lib:
+        - uuid
+
+about:
+  license: BSD-3-Clause
+  license_file: COPYING
+  summary: Portable uuid C library.
+  homepage: http://sourceforge.net/projects/libuuid/
+
+extra:
+  recipe-maintainers:
+    - hmaarrfk
+    - ocefpaf

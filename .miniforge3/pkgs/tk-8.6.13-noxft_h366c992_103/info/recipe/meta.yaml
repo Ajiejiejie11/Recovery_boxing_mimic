@@ -1,0 +1,110 @@
+# This file created by conda-build 25.11.1
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Mon Jan 26 20:36:43 2026
+# ------------------------------------------------
+
+package:
+  name: tk
+  version: 8.6.13
+source:
+  - url: https://downloads.sourceforge.net/tcl/tcl8.6.13-src.tar.gz
+    folder: tcl8.6.13
+    sha256: 43a1fae7412f61ff11de2cfd05d28cfc3a73762f354a417c62370a54e2caf066
+  - url: https://downloads.sourceforge.net/tcl/tk8.6.13-src.tar.gz
+    folder: tk8.6.13
+    sha256: 2e65fa069a23365440a3c56c556b8673b5e32a283800d8d9b257e3f584ce0675
+build:
+  number: '103'
+  string: noxft_h366c992_103
+  track_features: null
+  detect_binary_files_with_prefix: true
+  run_exports:
+    - tk >=8.6.13,<8.7.0a0
+  ignore_run_exports_from:
+    - xorg-libx11
+requirements:
+  build:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - binutils_impl_linux-64 2.45 default_hfdba357_105
+    - binutils_linux-64 2.45 default_h4852527_105
+    - gcc_impl_linux-64 14.3.0 he8b2097_16
+    - gcc_linux-64 14.3.0 h298d278_17
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.45 default_hbd61a6d_105
+    - libgcc 15.2.0 he0feb66_16
+    - libgcc-devel_linux-64 14.3.0 hf649bbc_116
+    - libgomp 15.2.0 he0feb66_16
+    - libsanitizer 14.3.0 h8f1669f_16
+    - libstdcxx 15.2.0 h934c35e_16
+    - libstdcxx-devel_linux-64 14.3.0 h9f08a49_116
+    - libzlib 1.3.1 hb9d3cd8_2
+    - make 4.4.1 hb9d3cd8_2
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025c hc9c84f9_1
+    - zstd 1.5.7 hb78ec9c_6
+  host:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - libgcc 15.2.0 he0feb66_16
+    - libgomp 15.2.0 he0feb66_16
+    - libxcb 1.17.0 h8a09558_0
+    - libzlib 1.3.1 hb9d3cd8_2
+    - pthread-stubs 0.4 hb9d3cd8_1002
+    - xorg-libx11 1.8.12 h4f16b4b_0
+    - xorg-libxau 1.0.12 hb03c661_1
+    - xorg-libxdmcp 1.1.5 hb03c661_1
+    - xorg-xorgproto 2025.1 hb03c661_0
+    - zlib 1.3.1 hb9d3cd8_2
+  run_constrained:
+    - xorg-libx11 >=1.8.12,<2.0a0
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - libgcc >=14
+    - libzlib >=1.3.1,<2.0a0
+test:
+  files:
+    - hello.tcl
+  commands:
+    - test -f "${PREFIX}/bin/tclsh"
+    - test -f "${PREFIX}/bin/wish"
+    - test -f "${PREFIX}/bin/tclsh8.6"
+    - test -f "${PREFIX}/bin/wish8.6"
+    - test -f "${PREFIX}/include/tcl.h"
+    - test -f "${PREFIX}/include/tclDecls.h"
+    - test -f "${PREFIX}/include/tclPlatDecls.h"
+    - test -f "${PREFIX}/include/tclPlatDecls.h"
+    - test -f "${PREFIX}/include/tclTomMathDecls.h"
+    - test -f "${PREFIX}/include/tclTomMath.h"
+    - test -f "${PREFIX}/include/tk.h"
+    - test -f "${PREFIX}/include/tkDecls.h"
+    - test -f "${PREFIX}/include/tkPlatDecls.h"
+    - test -f "${PREFIX}/lib/libtcl8.6.so"
+    - test -f "${PREFIX}/lib/libtclstub8.6.a"
+    - test -f "${PREFIX}/lib/libtk8.6.so"
+    - test -f "${PREFIX}/lib/libtkstub8.6.a"
+    - tclsh hello.tcl
+    - tclsh8.6 hello.tcl
+    - wish hello.tcl
+    - wish8.6 hello.tcl
+about:
+  home: http://www.tcl.tk/
+  license: TCL
+  license_family: BSD
+  license_file: tcl8.6.13/license.terms
+  summary: A dynamic programming language with GUI support.  Bundles Tcl and Tk.
+  dev_url: https://github.com/tcltk/tk
+extra:
+  recipe-maintainers:
+    - isuruf
+    - jakirkham
+    - matthiasdiener
+    - msarahan
+    - ocefpaf
+    - pelson
+    - xhochy
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20260126.7.1
+  remote_url: https://github.com/conda-forge/tk-feedstock
+  sha: 09300f4f31123f1ca695cc8e5d6dba5fb99982c8

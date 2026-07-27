@@ -1,0 +1,16 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "description": "Empty package which enforces ABI compatibility for nlohmann_json.\nThis package ensures all linked shared libraries use the exact same\nversion of nlohmann_json to prevent runtime errors.",
+  "dev_url": "http://github.com/nlohmann/json",
+  "doc_url": "http://nlohmann.github.io/json/",
+  "extra": {
+    "flow_run_id": "azure_20250918.1.1",
+    "remote_url": "https://github.com/conda-forge/nlohmann_json-feedstock",
+    "sha": "ca78a986cfd2240a598bbac6d2af53d3cbae478a"
+  },
+  "home": "http://github.com/nlohmann/json",
+  "license": "MIT",
+  "summary": "JSON for Modern C++"
+}

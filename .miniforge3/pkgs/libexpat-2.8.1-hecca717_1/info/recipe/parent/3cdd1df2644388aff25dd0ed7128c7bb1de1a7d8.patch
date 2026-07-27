@@ -1,0 +1,25 @@
+From 3cdd1df2644388aff25dd0ed7128c7bb1de1a7d8 Mon Sep 17 00:00:00 2001
+From: Christoph Reiter <reiter.christoph@gmail.com>
+Date: Wed, 10 Jun 2026 21:27:51 +0200
+Subject: [PATCH] cmake|windows: add missing export for new
+ XML_SetHashSalt16Bytes
+
+A new XML_SetHashSalt16Bytes symbol was added in #1183, but it
+wasn't added to the def file, so the export is missing when building
+libexpat on Windows with cmake.
+
+Add the new symbol to the .def template.
+---
+ expat/lib/libexpat.def.cmake | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/expat/lib/libexpat.def.cmake b/expat/lib/libexpat.def.cmake
+index 9b9e22cba6..948135a568 100644
+--- a/expat/lib/libexpat.def.cmake
++++ b/expat/lib/libexpat.def.cmake
+@@ -83,3 +83,5 @@ EXPORTS
+ ; added with version 2.7.2
+ @_EXPAT_COMMENT_DTD_OR_GE@ XML_SetAllocTrackerMaximumAmplification @72
+ @_EXPAT_COMMENT_DTD_OR_GE@ XML_SetAllocTrackerActivationThreshold @73
++; added with version 2.8.0
++  XML_SetHashSalt16Bytes @74

@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+schema_version: 1
+
+context:
+  name: truststore
+  version: "0.10.4"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/truststore-${{ version }}.tar.gz
+  sha256: 9d91bd436463ad5e4ee4aba766628dd6cd7010cf3e2461756b3303710eebc301
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - flit-core >=3.11,<4
+    - pip
+  run:
+    - python >=${{ python_min }},<4
+
+tests:
+  - python:
+      imports:
+        - truststore
+      python_version: "${{ python_min }}.*"
+      pip_check: true
+
+about:
+  homepage: https://github.com/sethmlarson/truststore
+  summary: Verify certificates using native system trust stores
+  repository: https://github.com/sethmlarson/truststore
+  documentation: https://truststore.readthedocs.io/en/latest/
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - wolfv

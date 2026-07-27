@@ -1,0 +1,54 @@
+# This file created by conda-build 26.1.0
+# ------------------------------------------------
+
+package:
+  name: _openmp_mutex
+  version: 4.5
+source:
+  - url:
+      - https://mirrors.ocf.berkeley.edu/gnu/gcc/gcc-13.4.0/gcc-13.4.0.tar.gz
+    sha256: bf0baf3e570c9c74c17c8201f0196c6924b4bd98c90e69d6b2ac0cd823f33bbc
+    patches:
+      - patches/0001-allow-commands-in-main-specfile.patch
+      - patches/0004-Hardcode-HAVE_ALIGNED_ALLOC-1-in-libstdc-v3-configur.patch
+  - url: https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz
+    sha256: 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
+    folder: zlib2
+build:
+  string: 20_gnu
+  number: 20
+  run_exports:
+    strong:
+      - _openmp_mutex >=4.5
+requirements:
+  host:
+    - kernel-headers_linux-64 3.10.0 he581ecd_18
+    - libgomp 13.4.0 he0feb66_17
+    - sysroot_linux-64 2.17 hb09d241_18
+    - tzdata 2025c hc9c84f9_1
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - libgomp >=7.5.0
+  run_constrained:
+    - openmp_impl <0.0a0
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libgomp.so.1
+    - test `readlink ${PREFIX}/lib/libgomp.so.1` == "libgomp.so.1.0.0"
+about:
+  summary: OpenMP Implementation Mutex
+  license: BSD-3-Clause
+  license_file: LICENSE
+  home: https://github.com/conda-forge/ctng-compilers-feedstock
+extra:
+  feedstock-name: ctng-compilers-feedstock
+  recipe-maintainers:
+    - beckermr
+    - isuruf
+    - timsnyder
+    - xhochy
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20260212.3.1
+  remote_url: https://github.com/conda-forge/ctng-compilers-feedstock
+  sha: 14a57afe05d9db64add1754ce28198e5e8d4d7b6

@@ -1,0 +1,76 @@
+# This file created by conda-build 25.5.0
+# ------------------------------------------------
+
+package:
+  name: libiconv
+  version: '1.18'
+source:
+  url: http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.18.tar.gz
+  sha256: 3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8
+  patches:
+    - glibc.patch
+build:
+  run_exports:
+    - libiconv >=1.18,<2.0a0
+  number: 2
+  string: h3b78370_2
+requirements:
+  build:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - binutils_impl_linux-64 2.44 h4bf12b8_1
+    - binutils_linux-64 2.44 h4852527_1
+    - gcc_impl_linux-64 14.3.0 hd9e9e21_4
+    - gcc_linux-64 14.3.0 h1382650_11
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.44 h1423503_1
+    - libgcc 15.1.0 h767d61c_4
+    - libgcc-devel_linux-64 14.3.0 h85bb3a7_104
+    - libgomp 15.1.0 h767d61c_4
+    - libltdl 2.4.3a h5888daf_0
+    - libsanitizer 14.3.0 hd08acf3_4
+    - libstdcxx 15.1.0 h8f9b012_4
+    - libtool 2.5.4 h5888daf_0
+    - make 4.4.1 hb9d3cd8_2
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025b h78e105d_0
+  host:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - libgcc 15.1.0 h767d61c_4
+    - libgomp 15.1.0 h767d61c_4
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - libgcc >=14
+test:
+  requires:
+    - jq
+  commands:
+    - test ! -f ${PREFIX}/bin/iconv
+    - test_man_files=$(jq '.files[] | select( . | startswith("share/man"))' $CONDA_PREFIX/conda-meta/libiconv-1.18-${PKG_BUILD_STRING}.json)
+    - if [[ ${test_man_files} ]]; then echo "found GPL licensed files being packaged
+      ${test_man_files}"; exit 1; fi
+    - test_doc_files=$(jq '.files[] | select( . | startswith("share/doc"))' $CONDA_PREFIX/conda-meta/libiconv-1.18-${PKG_BUILD_STRING}.json)
+    - if [[ ${test_doc_files} ]]; then echo "found GPL licensed files being packaged
+      ${test_doc_files}"; exit 1; fi
+    - test -f $CONDA_PREFIX/lib/libiconv${SHLIB_EXT}
+    - test -f $CONDA_PREFIX/lib/libcharset${SHLIB_EXT}
+about:
+  home: https://www.gnu.org/software/libiconv/
+  license: LGPL-2.1-only
+  license_file: COPYING.LIB
+  summary: Provides iconv for systems which don't have one (or that cannot convert
+    from/to Unicode.)
+extra:
+  feedstock-name: libiconv
+  recipe-maintainers:
+    - jakirkham
+    - jhamman
+    - mbargull
+    - ocefpaf
+    - scopatz
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20250811.2.1
+  remote_url: https://github.com/conda-forge/libiconv-feedstock
+  sha: f623922e8d0191427a4ba56059cb48671d692411

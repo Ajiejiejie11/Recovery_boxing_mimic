@@ -1,0 +1,24 @@
+{
+    "arch": "x86_64",
+    "build": "h12fcf84_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "libstdcxx >=14",
+        "libgcc >=14",
+        "__glibc >=2.17,<3.0.a0",
+        "libmamba >=2.5.0,<2.6.0a0"
+    ],
+    "fn": "libmamba-spdlog-2.5.0-h12fcf84_0.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "md5": "c866cdca3b16b5c7a0fd9916d5d64577",
+    "name": "libmamba-spdlog",
+    "platform": "linux",
+    "sha256": "75deca8004690aed0985845f734927e48aa49a683ee09b3d9ff4e22ace9e4a8e",
+    "size": 20396,
+    "subdir": "linux-64",
+    "timestamp": 1767884157870,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libmamba-spdlog-2.5.0-h12fcf84_0.conda",
+    "version": "2.5.0"
+}

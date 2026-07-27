@@ -1,0 +1,23 @@
+{
+    "arch": "x86_64",
+    "build": "h853b02a_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14",
+        "ncurses >=6.5,<7.0a0"
+    ],
+    "fn": "readline-8.3-h853b02a_0.conda",
+    "license": "GPL-3.0-only",
+    "license_family": "GPL",
+    "md5": "d7d95fc8287ea7bf33e0e7116d2b95ec",
+    "name": "readline",
+    "platform": "linux",
+    "sha256": "12ffde5a6f958e285aa22c191ca01bbd3d6e710aa852e00618fa6ddc59149002",
+    "size": 345073,
+    "subdir": "linux-64",
+    "timestamp": 1765813471974,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/readline-8.3-h853b02a_0.conda",
+    "version": "8.3"
+}

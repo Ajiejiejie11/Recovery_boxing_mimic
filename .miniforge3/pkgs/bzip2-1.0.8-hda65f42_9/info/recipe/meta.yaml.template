@@ -1,0 +1,75 @@
+{% set version = "1.0.8" %}
+
+package:
+  name: bzip2
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/bzip2/bzip2/-/archive/bzip2-{{ version }}/bzip2-bzip2-{{ version }}.tar.gz
+  sha256: db106b740252669664fd8f3a1c69fe7f689d5cd4b132f82ba82b9afba27627df
+  patches:
+    - patches/0001-cross.patch
+    - patches/0002-Windows-Make-library-name-lowercase.patch
+    - patches/0003-Windows-Add-dyn-lib-build-rename-libbz2_static.patch
+
+build:
+  number: 9
+  run_exports:
+    - {{ pin_subpackage('bzip2') }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - make  # [unix]
+
+test:
+  commands:
+    - bzip2 --help  # [unix]
+    {% set bzip2_executables = [
+      "bunzip2",
+      "bzcat",
+      "bzcmp",
+      "bzdiff",
+      "bzegrep",
+      "bzfgrep",
+      "bzgrep",
+      "bzip2recover",
+      "bzip2",
+      "bzless",
+      "bzmore"
+    ] %}
+    {% for executable in bzip2_executables %}
+    - test -f ${PREFIX}/bin/{{ executable }}  # [unix]
+    {% endfor %}
+    - test -f ${PREFIX}/include/bzlib.h  # [unix]
+    - test -f ${PREFIX}/lib/libbz2.a  # [unix]
+    - test -f ${PREFIX}/lib/libbz2.so  # [linux]
+    - test -f ${PREFIX}/lib/libbz2.dylib  # [osx]
+    - if not exist %LIBRARY_INC%\\bzlib.h exit 1  # [win]
+    - if not exist %LIBRARY_LIB%\\bzip2.lib exit 1  # [win]
+    - if not exist %LIBRARY_LIB%\\libbz2.lib exit 1  # [win]
+    - if not exist %LIBRARY_BIN%\\libbz2.dll exit 1  # [win]
+    - if not exist %LIBRARY_LIB%\\bzip2_static.lib exit 1  # [win]
+    - if not exist %LIBRARY_LIB%\\libbz2_static.lib exit 1  # [win]
+
+about:
+  home: https://gitlab.com/bzip2/bzip2
+  license_family: BSD
+  license_file: LICENSE
+  license: bzip2-1.0.6
+  summary: high-quality data compressor
+  description: |
+    Bzip2 is a freely available high-quality data compressor. It typically
+    compresses files to within 10% to 15% of the best available techniques,
+    whilst being around twice as fast at compression and six times faster
+    at decompression.
+  dev_url: https://gitlab.com/bzip2/bzip2
+
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - pelson
+    - msarahan
+    - isuruf
+    - mbargull

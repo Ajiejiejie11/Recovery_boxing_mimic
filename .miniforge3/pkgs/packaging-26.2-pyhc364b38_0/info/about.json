@@ -1,0 +1,21 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "dev_url": "https://github.com/pypa/packaging",
+  "doc_url": "https://packaging.pypa.io/",
+  "extra": {
+    "flow_run_id": "github_24926136136",
+    "recipe-maintainers": [
+      "jakirkham",
+      "nicoddemus",
+      "matthewfeickert",
+      "ofek"
+    ],
+    "remote_url": "https://github.com/conda-forge/packaging-feedstock",
+    "sha": "2420a1d384453835d0a66b63ece44fea83da4b57"
+  },
+  "home": "https://github.com/pypa/packaging",
+  "license": "Apache-2.0",
+  "summary": "Core utilities for Python packages"
+}

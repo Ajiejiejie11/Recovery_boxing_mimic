@@ -1,0 +1,41 @@
+diff --git a/libmpdec++/Makefile.vc b/libmpdec++/Makefile.vc
+index 5985c33..68b03b1 100644
+--- a/libmpdec++/Makefile.vc
++++ b/libmpdec++/Makefile.vc
+@@ -5,13 +5,13 @@
+ 
+ SRCDIR = ..\libmpdec
+ 
+-LIBSTATIC = libmpdec-4.0.0.lib
+-LIBIMPORT = libmpdec-4.0.0.dll.lib
+-LIBSHARED = libmpdec-4.0.0.dll
++LIBSTATIC = libmpdec-4.lib
++LIBIMPORT = libmpdec-4.dll.lib
++LIBSHARED = libmpdec-4.dll
+ 
+-LIBSTATIC_CXX = libmpdec++-4.0.0.lib
+-LIBIMPORT_CXX = libmpdec++-4.0.0.dll.lib
+-LIBSHARED_CXX = libmpdec++-4.0.0.dll
++LIBSTATIC_CXX = libmpdec++-4.lib
++LIBIMPORT_CXX = libmpdec++-4.dll.lib
++LIBSHARED_CXX = libmpdec++-4.dll
+ 
+ !if "$(DEBUG)" == "1"
+ OPT = /MTd /Od /Zi /EHsc
+diff --git a/libmpdec/Makefile.vc b/libmpdec/Makefile.vc
+index 7f72a4b..8f7e618 100644
+--- a/libmpdec/Makefile.vc
++++ b/libmpdec/Makefile.vc
+@@ -3,9 +3,9 @@
+ #                 Visual C (nmake) Makefile for libmpdec
+ # ======================================================================
+ 
+-LIBSTATIC = libmpdec-4.0.0.lib
+-LIBIMPORT = libmpdec-4.0.0.dll.lib
+-LIBSHARED = libmpdec-4.0.0.dll
++LIBSTATIC = libmpdec-4.lib
++LIBIMPORT = libmpdec-4.dll.lib
++LIBSHARED = libmpdec-4.dll
+ 
+ MPD_HEADER = mpdecimal32vc.h
+ MPD_PREC = 9

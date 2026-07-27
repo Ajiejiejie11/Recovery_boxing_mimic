@@ -1,0 +1,127 @@
+{
+  "paths": [
+    {
+      "_path": "python-scripts/idna",
+      "path_type": "hardlink",
+      "file_mode": "text",
+      "prefix_placeholder": "/home/conda/feedstock_root/build_artifacts/bld/rattler-build_idna_1779999227/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold",
+      "sha256": "d8ce6cc3c684e0f0990f8ee116f26e1be56551f2879b9cca6aec4748842d3754",
+      "size_in_bytes": 438
+    },
+    {
+      "_path": "site-packages/idna/__init__.py",
+      "path_type": "hardlink",
+      "sha256": "30fa8d0cb65b5ea19a35d5f1005862a853ca1105e3bb68cd42109ecbafb97893",
+      "size_in_bytes": 868
+    },
+    {
+      "_path": "site-packages/idna/__main__.py",
+      "path_type": "hardlink",
+      "sha256": "e0930aeba5a3e2e2d94ca6c5fac4f72c0c4eb2be9bba283becf98e909091471c",
+      "size_in_bytes": 83
+    },
+    {
+      "_path": "site-packages/idna/cli.py",
+      "path_type": "hardlink",
+      "sha256": "b30a892cc35cf14ceceb42b388da5b5a71eeaa51b75914302526e8e27f310c0a",
+      "size_in_bytes": 4139
+    },
+    {
+      "_path": "site-packages/idna/codec.py",
+      "path_type": "hardlink",
+      "sha256": "2516e8f9fee91242dd59e887f3d67bd94478541621bca0c5ad005e357eac4431",
+      "size_in_bytes": 5040
+    },
+    {
+      "_path": "site-packages/idna/compat.py",
+      "path_type": "hardlink",
+      "sha256": "01ea40dfd71e447c647c73f8d7e16f296e4a8be7f83df519f7445432508d766a",
+      "size_in_bytes": 1353
+    },
+    {
+      "_path": "site-packages/idna/core.py",
+      "path_type": "hardlink",
+      "sha256": "b46525a332f4f83e1f2983de6437151ab8621f5aeff98a2a558295964fd5de19",
+      "size_in_bytes": 23992
+    },
+    {
+      "_path": "site-packages/idna/idnadata.py",
+      "path_type": "hardlink",
+      "sha256": "01ffa6a3c5819a48402ba4f25ca3901fcf0e5f49903432ad74bed45ad429a699",
+      "size_in_bytes": 44862
+    },
+    {
+      "_path": "site-packages/idna/intranges.py",
+      "path_type": "hardlink",
+      "sha256": "838f6c70b4a4a89b4084b98e3836bb8551eb8928e66fad2d893b04a287097412",
+      "size_in_bytes": 1851
+    },
+    {
+      "_path": "site-packages/idna/package_data.py",
+      "path_type": "hardlink",
+      "sha256": "9b04cf78fa2a7f71cd049eaf3bc9474e2bcf4881771369563b606337405fd09f",
+      "size_in_bytes": 21
+    },
+    {
+      "_path": "site-packages/idna/py.typed",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "site-packages/idna/uts46data.py",
+      "path_type": "hardlink",
+      "sha256": "8ee8cdcf942a58c7097fe5d82efe17d6306f6f9165234b7af9ed6620bb206cf9",
+      "size_in_bytes": 234325
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/INSTALLER",
+      "path_type": "hardlink",
+      "sha256": "bc33022edcb7639ff53355b4e91dade50a0bbf0299efeb6171d1ec0ba5029cfc",
+      "size_in_bytes": 6
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/METADATA",
+      "path_type": "hardlink",
+      "sha256": "765c20c73cbd88c30d1a79b4d23899f9a7fca52222f8b6c721f4dfd92f746af2",
+      "size_in_bytes": 6369
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/RECORD",
+      "path_type": "hardlink",
+      "sha256": "4737bc1b932b3ac9ed1cbbe536fc379f0fae9dc82a3711d72fca86036680a963",
+      "size_in_bytes": 1961
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/REQUESTED",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/WHEEL",
+      "path_type": "hardlink",
+      "sha256": "1b68144734c4b66791f27add5d425f3620775585718a03d0f9b110ba3a4d88db",
+      "size_in_bytes": 82
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/direct_url.json",
+      "path_type": "hardlink",
+      "sha256": "abbb6fb3df20ae8d82142c4062528e8d2e2f46facd8826d5954bc11cfe01d688",
+      "size_in_bytes": 115
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/entry_points.txt",
+      "path_type": "hardlink",
+      "sha256": "ec7de718e1daa778e72c4e5eeeaed8c2bf55abc6b107b5888f9f82ff8376be1c",
+      "size_in_bytes": 38
+    },
+    {
+      "_path": "site-packages/idna-3.17.dist-info/licenses/LICENSE.md",
+      "path_type": "hardlink",
+      "sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+      "size_in_bytes": 1541
+    }
+  ],
+  "paths_version": 1
+}

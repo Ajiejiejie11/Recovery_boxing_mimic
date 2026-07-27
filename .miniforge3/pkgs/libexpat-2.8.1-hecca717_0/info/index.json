@@ -1,0 +1,19 @@
+{
+  "arch": "x86_64",
+  "build": "hecca717_0",
+  "build_number": 0,
+  "constrains": [
+    "expat 2.8.1.*"
+  ],
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14"
+  ],
+  "license": "MIT",
+  "license_family": "MIT",
+  "name": "libexpat",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1779278686680,
+  "version": "2.8.1"
+}

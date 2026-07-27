@@ -1,0 +1,11 @@
+{
+  "channel_targets": "conda-forge main",
+  "libgomp_ver": "1.0.0",
+  "openmp_ver": "4.5",
+  "cross_target_stdlib_version": "2.17",
+  "cross_target_platform": "linux-64",
+  "cross_target_stdlib": "sysroot",
+  "target_platform": "linux-64",
+  "TARGET": "x86_64-conda-linux-gnu",
+  "__glibc": "__glibc >=2.17,<3.0.a0"
+}

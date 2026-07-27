@@ -1,0 +1,9 @@
+wget
+m4
+patch
+rsync
+sed
+findutils
+make
+file
+strace

@@ -1,0 +1,62 @@
+schema_version: 1
+
+context:
+  name: requests
+  version: "2.34.2"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/requests-${{ version }}.tar.gz
+  sha256: f288924cae4e29463698d6d60bc6a4da69c89185ad1e0bcc4104f584e960b9ed
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python >=${{ python_min }}
+    - certifi >=2023.5.7
+    - charset-normalizer >=2,<4
+    - idna >=2.5,<4
+    - urllib3 >=1.26,<3
+  run_constraints:
+    # requests >=2.33.0 has a run time constraint in its __init__.py: chardet >=3.0.2,<8
+    # https://github.com/psf/requests/blob/v2.33.1/src/requests/__init__.py#L79
+    # https://github.com/psf/requests/blob/111d2b77790bf49943c0dfa09b365371c24aec7e/src/requests/__init__.py#L79
+    - chardet >=3.0.2,<8
+
+tests:
+  - python:
+      python_version: ${{ python_min }}.*
+      imports:
+        - requests
+      pip_check: true
+
+about:
+  homepage: http://python-requests.org
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Requests is an elegant and simple HTTP library for Python, built with ♥.
+  repository: https://github.com/psf/requests
+
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - kalefranz
+    - mcg1969
+    - mingwandroid
+    - msarahan
+    - pelson
+    - sigmavirus24
+    - ocefpaf
+    - carlodri

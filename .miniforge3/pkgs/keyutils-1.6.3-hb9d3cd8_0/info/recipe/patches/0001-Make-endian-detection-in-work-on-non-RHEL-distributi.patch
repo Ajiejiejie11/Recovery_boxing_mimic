@@ -1,0 +1,27 @@
+From b90a8133c2e7ed6041028741168ac2d20d5294f3 Mon Sep 17 00:00:00 2001
+From: Chris Burr <christopher.burr@cern.ch>
+Date: Mon, 28 Feb 2022 14:55:22 +0100
+Subject: [PATCH 1/2] Make endian detection in work on non-RHEL distributions
+
+---
+ tests/toolbox.inc.sh | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/tests/toolbox.inc.sh b/tests/toolbox.inc.sh
+index 609a6c7..03260d2 100644
+--- a/tests/toolbox.inc.sh
++++ b/tests/toolbox.inc.sh
+@@ -12,11 +12,10 @@
+ 
+ echo === $OUTPUTFILE ===
+ 
+-endian=`file -L /proc/$$/exe`
+-if expr "$endian" : '.* MSB \+\(pie executable\|executable\|shared object\).*' >&/dev/null
++if lscpu | grep 'Big Endian' >&/dev/null
+ then
+     endian=BE
+-elif expr "$endian" : '.* LSB \+\(pie executable\|executable\|shared object\).*' >&/dev/null
++elif lscpu | grep 'Little Endian' >&/dev/null
+ then
+     endian=LE
+ else

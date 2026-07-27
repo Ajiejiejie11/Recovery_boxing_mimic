@@ -1,0 +1,21 @@
+{
+    "build": "pyhf9edf01_1",
+    "build_number": 1,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python >=3.9",
+        "python"
+    ],
+    "fn": "pluggy-1.6.0-pyhf9edf01_1.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "d7585b6550ad04c8c5e21097ada2888e",
+    "name": "pluggy",
+    "noarch": "python",
+    "sha256": "e14aafa63efa0528ca99ba568eaf506eb55a0371d12e6250aaaa61718d2eb62e",
+    "size": 25877,
+    "subdir": "noarch",
+    "timestamp": 1764896838868,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/pluggy-1.6.0-pyhf9edf01_1.conda",
+    "version": "1.6.0"
+}

@@ -1,0 +1,165 @@
+{% set version = "3.8.7" %}
+
+package:
+  name: libarchive-split
+  version: {{ version }}
+
+source:
+  url: https://github.com/libarchive/libarchive/archive/v{{ version }}.tar.gz
+  sha256: bc942030fe7cb30e04eed31bd5f63c38cdfd712315b303e91b64e58f05db2346
+  patches:
+    - patches/0001-Add-lib-to-CMAKE_FIND_LIBRARY_PREFIXES-for-lzma.patch
+
+{% set build = 1 %}
+{% if license_family == 'gpl' %}
+    {% set build = build + 100 %}
+{% endif %}
+
+build:
+  number: {{ build }}
+  string: {{ license_family }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}
+
+outputs:
+  - name: libarchive
+    script: build_libarchive.sh  # [unix]
+    script: build_libarchive.bat  # [win]
+
+    build:
+      string: {{ license_family }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}
+      run_exports:
+        # https://abi-laboratory.pro/index.php?view=timeline&l=libarchive
+        - {{ pin_subpackage('libarchive', max_pin='x.x') }}
+
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ stdlib('c') }}
+        - autoconf    # [unix]
+        - automake    # [unix]
+        - libtool     # [unix]
+        - pkg-config  # [unix]
+        - cmake <4    # [win]
+        - make        # [unix]
+        - ninja       # [win]
+        - m2-patch    # [win]
+      host:
+        - bzip2
+        - libiconv    # [osx]
+        - lz4-c
+        - liblzma-devel
+    {% if license_family == 'gpl' %}
+        - lzo
+    {% endif %}
+        - openssl
+        - libxml2-devel
+        - zlib
+        - zstd
+    {% if license_family != 'gpl' %}
+      run_constrained:
+        # isuruf/xhochy/hmaarrfk - 2025/03
+        # We wish to communicate to the end user that if
+        # libarchive and lzo are co-installed, then libarchive
+        # can take advantage of it
+        # If there is a good reason to remove this constraint, lets discuss!
+        - lzo <0.0a0
+    {% endif %}
+    test:
+      requires:
+        - {{ compiler('c') }}
+        - cmake
+        - ninja
+      files:
+        - test/*
+      commands:
+        # Verify pkg-config file is in place.
+        - test -f "${PREFIX}/lib/pkgconfig/libarchive.pc"  # [unix]
+
+        # Verify headers are in place.
+        - test -f "${PREFIX}/include/archive.h"                # [unix]
+        - if not exist %LIBRARY_INC%\archive.h (exit 1)        # [win]
+        - test -f "${PREFIX}/include/archive_entry.h"          # [unix]
+        - if not exist %LIBRARY_INC%\archive_entry.h (exit 1)  # [win]
+
+        # Verify libraries are in place.
+        - test -f "${PREFIX}/lib/libarchive.a"                # [unix]
+        - test -f "${PREFIX}/lib/libarchive${SHLIB_EXT}"      # [unix]
+        - if not exist %LIBRARY_LIB%\archive.lib (exit 1)     # [win]
+        - if not exist %LIBRARY_BIN%\archive.dll (exit 1)     # [win]
+
+        # Check for commands
+        - bsdcat --version
+        - bsdcpio --version
+        - bsdtar --version
+        - bsdtar -tf test/hello_world.xar
+
+        # Basic compile+link test against libarchive.
+        - cmake -G Ninja -S test/ -B build/ -D LIB_NAME="libarchive{{ SHLIB_EXT }}" ${CMAKE_ARGS}  # [unix]
+        - cmake -G Ninja -S test/ -B build/ -D LIB_NAME="archive" %CMAKE_ARGS%                     # [win]
+        - cmake --build build/
+        - cmake --build build --target test
+
+
+  - name: libarchive-minimal-static
+    script: build_minimal.sh   # [unix]
+    script: build_minimal.bat  # [win]
+    build:
+      string: {{ license_family }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}
+      {% if license_family == 'gpl' %}
+      skip: true
+      {% endif %}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ stdlib("c") }}
+        - autoconf    # [unix]
+        - automake    # [unix]
+        - libtool     # [unix]
+        - pkg-config  # [unix]
+        - make        # [unix]
+        - cmake >=3.24  # [win]
+        - ninja         # [win]
+      host:
+        - libiconv    # [osx]
+        - bzip2
+        - zlib
+        - zstd-static
+
+    test:
+      requires:
+        - {{ compiler('c') }}
+        - cmake
+        - ninja
+      files:
+        - test/*
+      commands:
+        # Verify pkg-config file is in place.
+        - test -f "${PREFIX}/lib/pkgconfig/libarchive.pc"  # [unix]
+
+        # Verify headers are in place.
+        - test -f "${PREFIX}/include/archive.h"                # [unix]
+        - if not exist %LIBRARY_INC%\archive.h (exit 1)        # [win]
+        - test -f "${PREFIX}/include/archive_entry.h"          # [unix]
+        - if not exist %LIBRARY_INC%\archive_entry.h (exit 1)  # [win]
+
+        # Verify libraries are in place.
+        - test -f "${PREFIX}/lib/libarchive.a"                    # [unix]
+        - if not exist %LIBRARY_LIB%\archive_static.lib (exit 1)  # [win]
+
+        # Basic compile+link test against static libarchive.
+        - cmake -G Ninja -S test/ -B build/ -D LIB_NAME="libarchive.a" ${CMAKE_ARGS}   # [unix]
+        - cmake -G Ninja -S test/ -B build/ -D LIB_NAME="archive_static" %CMAKE_ARGS%  # [win]
+        - cmake --build build/
+        - cmake --build build --target test
+
+about:
+  home: http://www.libarchive.org/
+  summary: Multi-format archive and compression library
+  license: BSD-2-Clause
+  license_file: COPYING
+  license_family: BSD
+
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - ocefpaf
+    - jjerphan

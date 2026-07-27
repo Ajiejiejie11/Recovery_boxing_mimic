@@ -1,0 +1,22 @@
+{
+  "name": "libffi",
+  "version": "3.7.0",
+  "build": "h3435931_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/conda-forge/linux-64",
+  "subdir": "linux-64",
+  "fn": "libffi-3.7.0-h3435931_0.conda",
+  "md5": "0abe40a9880086ca4d2e5daf09dceff9",
+  "url": "https://conda.anaconda.org/conda-forge/linux-64/libffi-3.7.0-h3435931_0.conda",
+  "sha256": "ac38603008bf1e99b8ed379b1a656a67a70e2841f2b6a069c630cdf6316012d2",
+  "arch": "x86_64",
+  "platform": "linux",
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14"
+  ],
+  "constrains": [],
+  "license": "MIT",
+  "timestamp": 1783520858222,
+  "size": 67576
+}

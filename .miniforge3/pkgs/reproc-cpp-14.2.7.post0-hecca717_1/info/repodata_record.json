@@ -1,0 +1,24 @@
+{
+    "arch": "x86_64",
+    "build": "hecca717_1",
+    "build_number": 1,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14",
+        "libstdcxx >=14",
+        "reproc 14.2.7.post0 hb03c661_1"
+    ],
+    "fn": "reproc-cpp-14.2.7.post0-hecca717_1.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "a0ef2594b3ab25a933ee8e7a1ac1e21b",
+    "name": "reproc-cpp",
+    "platform": "linux",
+    "sha256": "f29ba41cc71a01f1dd7eeba573b1535f0feec72e9ab6b4a390b4e71230d61ade",
+    "size": 27069,
+    "subdir": "linux-64",
+    "timestamp": 1779092443763,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/reproc-cpp-14.2.7.post0-hecca717_1.conda",
+    "version": "14.2.7.post0"
+}

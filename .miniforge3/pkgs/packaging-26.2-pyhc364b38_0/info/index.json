@@ -1,0 +1,14 @@
+{
+  "build": "pyhc364b38_0",
+  "build_number": 0,
+  "depends": [
+    "python >=3.8",
+    "python"
+  ],
+  "license": "Apache-2.0",
+  "name": "packaging",
+  "noarch": "python",
+  "subdir": "noarch",
+  "timestamp": 1777103621679,
+  "version": "26.2"
+}

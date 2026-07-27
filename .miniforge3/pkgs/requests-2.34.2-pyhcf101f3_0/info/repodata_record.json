@@ -1,0 +1,28 @@
+{
+    "build": "pyhcf101f3_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "chardet >=3.0.2,<8"
+    ],
+    "depends": [
+        "python >=3.10",
+        "certifi >=2023.5.7",
+        "charset-normalizer >=2,<4",
+        "idna >=2.5,<4",
+        "urllib3 >=1.26,<3",
+        "python"
+    ],
+    "fn": "requests-2.34.2-pyhcf101f3_0.conda",
+    "license": "Apache-2.0",
+    "license_family": "APACHE",
+    "md5": "4a85203c1d80c1059086ae860836ffb9",
+    "name": "requests",
+    "noarch": "python",
+    "sha256": "1715246b19c9f85ee022933b4845f2fc14ac9184981b7b7d9b728bec8e9588da",
+    "size": 68709,
+    "subdir": "noarch",
+    "timestamp": 1778851103479,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/requests-2.34.2-pyhcf101f3_0.conda",
+    "version": "2.34.2"
+}

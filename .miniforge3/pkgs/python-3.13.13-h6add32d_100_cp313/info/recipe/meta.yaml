@@ -1,0 +1,224 @@
+# This file created by conda-build 26.3.0
+# ------------------------------------------------
+
+package:
+  name: python
+  version: 3.13.13
+source:
+  - url: https://www.python.org/ftp/python/3.13.13/Python-3.13.13.tar.xz
+    sha256: 2ab91ff401783ccca64f75d10c882e957bdfd60e2bf5a72f8421793729b78a71
+    patches:
+      - patches/0001-Win32-Change-FD_SETSIZE-from-512-to-2048.patch
+      - patches/0002-Win32-Do-not-download-externals.patch
+      - patches/0003-Fix-find_library-so-that-it-looks-in-sys.prefix-lib-.patch
+      - patches/0004-Disable-registry-lookup-unless-CONDA_PY_ALLOW_REG_PA.patch
+      - patches/0005-Unvendor-openssl.patch
+      - patches/0006-Unvendor-sqlite3.patch
+      - patches/0007-Add-CondaEcosystemModifyDllSearchPath.patch
+      - patches/0008-Doing-d1trimfile.patch
+      - patches/0009-cross-compile-darwin.patch
+      - patches/0010-Fix-TZPATH-on-windows.patch
+      - patches/0011-Make-dyld-search-work-with-SYSTEM_VERSION_COMPAT-1.patch
+      - patches/0012-Unvendor-bzip2.patch
+      - patches/0013-Unvendor-libffi.patch
+      - patches/0014-Unvendor-tcltk.patch
+      - patches/0015-unvendor-xz.patch
+      - patches/0016-unvendor-zlib.patch
+      - patches/0017-Do-not-pass-g-to-GCC-when-not-Py_DEBUG.patch
+      - patches/0018-Unvendor-expat.patch
+      - patches/0019-Remove-unused-readelf.patch
+      - patches/0020-Don-t-checksharedmods-if-cross-compiling.patch
+      - patches/0021-Override-configure-LIBFFI.patch
+      - patches/0022-Unvendor-libmpdec.patch
+      - patches/0023-Brand-conda-forge.patch
+      - patches/0024-Do-not-define-pid_t-as-it-might-conflict-with-the-ac.patch
+      - patches/0025-Search-LLVM_ROOT-for-llvm-binaries.patch
+build:
+  number: 100
+  activate_in_script: true
+  no_link: null
+  ignore_run_exports_from:
+    - gxx_linux-64 14.*
+    - xorg-libx11
+    - xorg-xorgproto
+  detect_binary_files_with_prefix: true
+  skip_compile_pyc: null
+  string: h6add32d_100_cp313
+  python_site_packages_path: lib/python3.13/site-packages
+  run_exports:
+    noarch:
+      - python
+    weak:
+      - python_abi 3.13.* *_cp313
+  track_features: null
+  script_env:
+    - PY_FREETHREADING=no
+    - PY_INTERP_DEBUG=no
+requirements:
+  build:
+    - _openmp_mutex 4.5 20_gnu
+    - binutils_impl_linux-64 2.45.1 default_hfdba357_102
+    - binutils_linux-64 2.45.1 default_h4852527_102
+    - clang-18 18.1.8 default_h99862b1_18
+    - gcc_impl_linux-64 14.3.0 hbdf3cc3_18
+    - gcc_linux-64 14.3.0 h298d278_23
+    - gxx_impl_linux-64 14.3.0 h2185e75_18
+    - gxx_linux-64 14.3.0 h91b0f8e_23
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.45.1 default_hbd61a6d_102
+    - libclang-cpp18.1 18.1.8 default_h99862b1_18
+    - libgcc 15.2.0 he0feb66_18
+    - libgcc-devel_linux-64 14.3.0 hf649bbc_118
+    - libgcc-ng 15.2.0 h69a702a_18
+    - libgomp 15.2.0 he0feb66_18
+    - libiconv 1.18 h3b78370_2
+    - libllvm18 18.1.8 default_h99862b1_12
+    - libltdl 2.4.3a h5888daf_0
+    - liblzma 5.8.2 hb03c661_0
+    - libsanitizer 14.3.0 h8f1669f_18
+    - libstdcxx 15.2.0 h934c35e_18
+    - libstdcxx-devel_linux-64 14.3.0 h9f08a49_118
+    - libtool 2.5.4 h5888daf_0
+    - libxml2 2.15.2 h031cc0b_0
+    - libxml2-16 2.15.2 hf2a90c1_0
+    - libzlib 1.3.2 h25fd6f3_2
+    - llvm-tools-18 18.1.8 default_h99862b1_12
+    - make 4.4.1 hb9d3cd8_2
+    - pkg-config 0.29.2 h4bc722e_1009
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025c hc9c84f9_1
+    - zstd 1.5.7 hb78ec9c_6
+  host:
+    - _openmp_mutex 4.5 20_gnu
+    - bzip2 1.0.8 hda65f42_9
+    - ca-certificates 2026.2.25 hbd8a1cb_0
+    - expat 2.7.5 hecca717_0
+    - icu 78.3 h33c6efd_0
+    - ld_impl_linux-64 2.45.1 default_hbd61a6d_102
+    - libexpat 2.7.5 hecca717_0
+    - libffi 3.5.2 h3435931_0
+    - libgcc 15.2.0 he0feb66_18
+    - libgomp 15.2.0 he0feb66_18
+    - liblzma 5.8.2 hb03c661_0
+    - liblzma-devel 5.8.2 hb03c661_0
+    - libmpdec 4.0.0 hb03c661_1
+    - libmpdec-devel 4.0.0 ha770c72_1
+    - libsqlite 3.52.0 hf4e2dac_0
+    - libstdcxx 15.2.0 h934c35e_18
+    - libuuid 2.42 h5347b49_0
+    - libxcb 1.17.0 h8a09558_0
+    - libzlib 1.3.2 h25fd6f3_2
+    - ncurses 6.5 h2d0b736_3
+    - openssl 3.5.6 h35e630c_0
+    - pthread-stubs 0.4 hb9d3cd8_1002
+    - readline 8.3 h853b02a_0
+    - tk 8.6.13 noxft_h366c992_103
+    - xorg-libx11 1.8.13 he1eb515_0
+    - xorg-libxau 1.0.12 hb03c661_1
+    - xorg-libxdmcp 1.1.5 hb03c661_1
+    - xorg-xorgproto 2025.1 hb03c661_0
+    - zlib 1.3.2 h25fd6f3_2
+    - zstd 1.5.7 hb78ec9c_6
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - bzip2 >=1.0.8,<2.0a0
+    - ld_impl_linux-64 >=2.36.1
+    - libexpat >=2.7.5,<3.0a0
+    - libffi >=3.5.2,<3.6.0a0
+    - libgcc >=14
+    - liblzma >=5.8.2,<6.0a0
+    - libmpdec >=4.0.0,<5.0a0
+    - libsqlite >=3.52.0,<4.0a0
+    - libuuid >=2.42,<3.0a0
+    - libzlib >=1.3.2,<2.0a0
+    - ncurses >=6.5,<7.0a0
+    - openssl >=3.5.6,<4.0a0
+    - python_abi 3.13.* *_cp313
+    - readline >=8.3,<9.0a0
+    - tk >=8.6.13,<8.7.0a0
+    - tzdata
+test:
+  downstreams:
+    - cython
+    - setuptools
+  requires:
+    - cmake
+    - gcc_linux-64 14.*
+    - gxx_linux-64 14.*
+    - ninja
+    - ripgrep
+    - sysroot_linux-64 2.17.*
+    - xorg-libx11
+  files:
+    - run_test.py
+    - tests/cmake/*
+    - tests/cython/*
+    - tests/prefix-replacement/*
+  commands:
+    - python -V
+    - python3 -V
+    - pydoc -h
+    - python3-config --help
+    - python -c "from zoneinfo import ZoneInfo; from datetime import datetime; dt
+      = datetime(2020, 10, 31, 12, tzinfo=ZoneInfo('America/Los_Angeles')); print(dt.tzname())"
+    - python -m venv test-venv
+    - test-venv/bin/python -c "import ctypes"
+    - python -c "import sysconfig; print(sysconfig.get_config_var('CC'))"
+    - _CONDA_PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata_x86_64_conda_linux_gnu python
+      -c "import sysconfig; print(sysconfig.get_config_var('CC'))"
+    - for f in ${CONDA_PREFIX}/lib/python*/_sysconfig*.py; do echo "Checking $f:";
+      if [[ `rg @[^@]*@ $f` ]]; then echo "FAILED ON $f"; cat $f; exit 1; fi; done
+    - test ! -f ${PREFIX}/lib/libpython${PKG_VERSION%.*}.a
+    - test ! -f ${PREFIX}/lib/libpython${PKG_VERSION%.*}.nolto.a
+    - pushd tests
+    - pushd prefix-replacement
+    - bash build-and-test.sh
+    - popd
+    - pushd cmake
+    - cmake -GNinja -DPY_VER=3.13.13 --debug-find --trace --debug-output --debug-trycompile
+      .
+    - popd
+    - popd
+    - python run_test.py
+    - python3.1 --version
+    - python -c "from ctypes import CFUNCTYPE; CFUNCTYPE(None)(id)"
+    - TERM=xterm >/dev/null python -c "import curses; scr = curses.initscr(); curses.unget_wch('x');
+      assert 'x' ==  scr.get_wch()"
+about:
+  home: https://www.python.org/
+  license: Python-2.0
+  license_file: LICENSE
+  summary: General purpose programming language
+  description: "Python is a widely used high-level, general-purpose, interpreted,\
+    \ dynamic\nprogramming language. Its design philosophy emphasizes code\nreadability,\
+    \ and its syntax allows programmers to express concepts in\nfewer lines of code\
+    \ than would be possible in languages such as C++ or\nJava. The language provides\
+    \ constructs intended to enable clear programs\non both a small and large scale.\n\
+    \nWe provide some meta packages for convenience.\nTo get a CPython flavour, use:\n\
+    \n    conda install cpython\n\nTo get the freethreading build (i.e. without the\
+    \ Global Interpreter Lock - GIL):\n\n    conda install python-freethreading\n\n\
+    To get the default build (i.e. with the GIL):\n\n    conda install python-gil\n\
+    \nTo enable the use of the experimental JIT compiler in CPython:\n\n    conda\
+    \ install python-jit\n\nor set the environment variable PYTHON_JIT=1. Note that\
+    \ the JIT support\nis available for x86_64 builds only.\n"
+  doc_url: https://www.python.org/doc/versions/
+  doc_source_url: https://github.com/python/pythondotorg/blob/master/docs/source/index.rst
+  dev_url: https://docs.python.org/devguide/
+extra:
+  feedstock-name: python
+  recipe-maintainers:
+    - chrisburr
+    - isuruf
+    - jakirkham
+    - katietz
+    - mbargull
+    - msarahan
+    - ocefpaf
+    - pelson
+    - scopatz
+    - xhochy
+  final: true
+  copy_test_source_files: true
+  flow_run_id: github_24113206104
+  remote_url: https://github.com/conda-forge/python-feedstock
+  sha: f27d887df11cfbb2072658aa7747c48c53a66efa

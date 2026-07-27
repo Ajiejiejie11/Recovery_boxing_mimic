@@ -1,0 +1,24 @@
+{
+    "arch": "x86_64",
+    "build": "py313h18e8e13_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python",
+        "libgcc >=14",
+        "__glibc >=2.17,<3.0.a0",
+        "python_abi 3.13.* *_cp313",
+        "zstd >=1.5.7,<1.6.0a0"
+    ],
+    "fn": "backports.zstd-1.5.0-py313h18e8e13_0.conda",
+    "license": "BSD-3-Clause AND MIT AND EPL-2.0",
+    "md5": "0de0c2c1f2677ea074bdda91de5a4c01",
+    "name": "backports.zstd",
+    "platform": "linux",
+    "sha256": "310e114a783b249517d1dd6e74b3f339af30e947bc93446ae4e4e9c86fff7478",
+    "size": 242514,
+    "subdir": "linux-64",
+    "timestamp": 1778594045042,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/backports.zstd-1.5.0-py313h18e8e13_0.conda",
+    "version": "1.5.0"
+}

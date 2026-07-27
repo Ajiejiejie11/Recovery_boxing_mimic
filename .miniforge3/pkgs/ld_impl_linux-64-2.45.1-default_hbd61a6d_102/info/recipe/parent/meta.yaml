@@ -1,0 +1,179 @@
+{% set name = "binutils" %}
+{% set version = "2.45.1" %}
+{% set build_num = 2 %}
+{% if bootstrap in ("true", "True", true) %}
+{% set build_str_prefix = "bootstrap" %}
+{% else %}
+{% set build_num = build_num + 100 %}
+{% set build_str_prefix = "default" %}
+{% endif %}
+
+package:
+  name: binutils_split
+  version: {{ version }}
+
+source:
+  - url:
+      - https://ftp.gnu.org/gnu/binutils/binutils-{{ version }}.tar.bz2
+      - https://mirrors.ocf.berkeley.edu/gnu/binutils/binutils-{{ version }}.tar.bz2
+    sha256: 860daddec9085cb4011279136fc8ad29eb533e9446d7524af7f517dd18f00224
+    patches:
+      - patches/0001-fallback-sysroot.diff
+
+build:
+  number: {{ build_num }}
+  skip: true  # [(win64 and cross_target_platform != "win-64") or cross_target_platform in ("osx-64", "osx-arm64")]
+  detect_binary_files_with_prefix: false
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+    - texinfo
+    - flex                    # [osx]
+    - pkg-config
+  host:
+    - zstd  # [not bootstrap]
+  run:
+
+outputs:
+  - name: ld_impl_{{ cross_target_platform }}
+    script: install_ld.sh
+    build:
+      skip: true  # [cross_target_platform in ("osx-arm64", "osx-64")]
+      merge_build_host: false
+      # ld binaries have host prefix search paths embeded in them
+      detect_binary_files_with_prefix: true
+      ignore_run_exports_from:   # [linux]
+        - {{ compiler('cxx') }}   # [linux]
+      ignore_run_exports:   # [win]
+        - libwinpthread           # [win]
+      string: {{ build_str_prefix }}_h{{ PKG_HASH }}_{{ build_num }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
+        - pkg-config
+      host:
+        - zstd  # [not bootstrap]
+      run:
+      run_constrained:
+        - binutils_impl_{{ cross_target_platform }} {{ version }}
+    test:
+      commands:
+        - {{ triplet }}-ld --help
+        - echo "{{ ctng_vendor }}"
+
+  - name: binutils_impl_{{ cross_target_platform }}
+    script: install_binutils.sh
+    build:
+      merge_build_host: false
+      detect_binary_files_with_prefix: false
+      ignore_run_exports:
+        - __glibc
+      ignore_run_exports_from:   # [linux]
+        - {{ compiler('cxx') }}   # [linux]
+      ignore_run_exports:   # [win]
+        - libwinpthread           # [win]
+      string: {{ build_str_prefix }}_h{{ PKG_HASH }}_{{ build_num }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
+        - pkg-config
+      host:
+        - ld_impl_{{ cross_target_platform }} {{ version }}  # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - zstd  # [not bootstrap]
+      run:
+        - {{ pin_subpackage("ld_impl_" ~ cross_target_platform, exact=True) }}  # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - sysroot_{{ cross_target_platform }}  # [cross_target_platform not in ("win-64", "osx-arm64", "osx-64")]
+        - m2w64-sysroot_{{ cross_target_platform }} >=12.0.0.r0  # [cross_target_platform == "win-64"]
+    test:
+      downstreams:
+        #- gfortran_impl_{{ cross_target_platform }}  # [cross_target_platform != "win-64"]
+        - gcc_impl_{{ cross_target_platform }}       # [cross_target_platform != "win-64"]
+      commands:
+        - {{ triplet }}-addr2line --help
+        - {{ triplet }}-ar --help
+        - {{ triplet }}-as --help                   # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - {{ triplet }}-c++filt --help
+        - {{ triplet }}-elfedit --help
+        - {{ triplet }}-gprof --help                # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - {{ triplet }}-ld --help                   # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        # Look here to check that search path prefixes have been replaced
+        - {{ triplet }}-ld --verbose | grep SEARCH  # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - {{ triplet }}-ld.bfd --help               # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - {{ triplet }}-nm --help
+        - {{ triplet }}-objcopy --help
+        - {{ triplet }}-objdump --help
+        - {{ triplet }}-ranlib --help
+        - {{ triplet }}-readelf --help
+        - {{ triplet }}-size --help
+        - {{ triplet }}-strings --help
+        - {{ triplet }}-strip --help
+
+  - name: binutils_{{ cross_target_platform }}
+    script: install_activation.sh
+    build:
+      merge_build_host: false
+      detect_binary_files_with_prefix: false
+      string: {{ build_str_prefix }}_h{{ PKG_HASH }}_{{ build_num }}
+    requirements:
+      run:
+        - {{ pin_subpackage("binutils_impl_" ~ cross_target_platform, exact=True) }}
+    test:
+      commands:
+        - $LD --help  # [cross_target_platform not in ("win-64", "osx-arm64", "osx-64")]
+        - $AR --help
+
+  - name: binutils
+    script: install_binutils_symlinks.sh
+    build:
+      merge_build_host: false
+      detect_binary_files_with_prefix: false
+      skip: true  # [cross_target_platform != target_platform]
+      string: {{ build_str_prefix }}_h{{ PKG_HASH }}_{{ build_num }}
+    requirements:
+      build:
+      host:
+        - binutils_impl_{{ cross_target_platform }}
+      run:
+        - {{ pin_subpackage("binutils_impl_" ~ cross_target_platform, max_pin="x.x.x") }}
+    test:
+      commands:
+        - $PREFIX/bin/addr2line --help
+        - $PREFIX/bin/ar --help
+        - $PREFIX/bin/as --help       # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - $PREFIX/bin/c++filt --help
+        - $PREFIX/bin/elfedit --help
+        - $PREFIX/bin/gprof --help    # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - $PREFIX/bin/ld --help       # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - $PREFIX/bin/ld.bfd --help   # [cross_target_platform not in ("osx-arm64", "osx-64")]
+        - $PREFIX/bin/nm --help
+        - $PREFIX/bin/objcopy --help
+        - $PREFIX/bin/objdump --help
+        - $PREFIX/bin/ranlib --help
+        - $PREFIX/bin/readelf --help
+        - $PREFIX/bin/size --help
+        - $PREFIX/bin/strings --help
+        - $PREFIX/bin/strip --help
+
+about:
+  home: https://www.gnu.org/software/binutils/
+  license: GPL-3.0-only
+  license_file:
+    - COPYING
+    - COPYING.LIB
+    - COPYING3
+    - COPYING3.LIB
+  summary: |
+    A set of programming tools for creating and managing binary programs, object files,
+    libraries, profile data, and assembly source code.
+
+extra:
+  recipe-maintainers:
+    - frol
+    - isuruf
+    - jjhelmus
+    - beckermr

@@ -1,0 +1,9 @@
+libdir=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_libsolv_1780057179/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh/lib
+includedir=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_libsolv_1780057179/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh/include
+
+Name: libsolvext
+Description: Library for reading repositories
+Version: 0.7.39
+Requires: libsolv
+Libs: -L${libdir} -lsolvext
+Cflags: -I${includedir}

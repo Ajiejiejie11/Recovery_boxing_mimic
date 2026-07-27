@@ -1,0 +1,107 @@
+{
+  "paths": [
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/INSTALLER",
+      "path_type": "hardlink",
+      "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+      "size_in_bytes": 5
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/METADATA",
+      "path_type": "hardlink",
+      "sha256": "856c42ca5c61ed8b440a0e8b10b3ffcc9557397a500ee223c10d9ff9945bf80b",
+      "size_in_bytes": 8091
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/RECORD",
+      "path_type": "hardlink",
+      "sha256": "29940047243ae920b4bfcfc820e7557963359503cd880f048fc8321fc4e5a2ad",
+      "size_in_bytes": 1275
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/REQUESTED",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/WHEEL",
+      "path_type": "hardlink",
+      "sha256": "79d4bb8191d168cf31fb7337c680244b1c9e2df663580848babd622ec5e404ba",
+      "size_in_bytes": 104
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/direct_url.json",
+      "path_type": "hardlink",
+      "sha256": "957d7871ef8ea4158831a0d84f253bc29d31410cb3ff610152c6277555439cad",
+      "size_in_bytes": 110
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/licenses/COPYING",
+      "path_type": "hardlink",
+      "sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427",
+      "size_in_bytes": 614
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack-1.1.2.dist-info/top_level.txt",
+      "path_type": "hardlink",
+      "sha256": "dadca4498d695dd880db16130d1ea33f0d2a239646c518a1ca17f84b9859c979",
+      "size_in_bytes": 8
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/__init__.py",
+      "path_type": "hardlink",
+      "sha256": "440f2072a2b5ed8a64c419cdc172556b5a1ad8bca058381f1759c0d4d3f0de6a",
+      "size_in_bytes": 1109
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/__pycache__/__init__.cpython-313.pyc",
+      "path_type": "hardlink",
+      "sha256": "717a00e0ef8d85cd1b000def9267a13a17636b03a8e80dc4d3412bc150d76a63",
+      "size_in_bytes": 1669
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/__pycache__/exceptions.cpython-313.pyc",
+      "path_type": "hardlink",
+      "sha256": "991751d123b1bbc68dc29c6da12c56761c27d09bacbb7f16700dcd85c4587be4",
+      "size_in_bytes": 2118
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/__pycache__/ext.cpython-313.pyc",
+      "path_type": "hardlink",
+      "sha256": "513d3c64dd57ddea4e8ac93042d56d4eac5036aa0fe00481d54b2db1ef381939",
+      "size_in_bytes": 8047
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/__pycache__/fallback.cpython-313.pyc",
+      "path_type": "hardlink",
+      "sha256": "a0125c4ada306c555e5ede278d06edf54522348ab656ba459c8c42bacf991529",
+      "size_in_bytes": 42022
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/_cmsgpack.cpython-313-x86_64-linux-gnu.so",
+      "path_type": "hardlink",
+      "sha256": "8132f52c11b1abff1a54b96c8b7424f86e45c8db3153e9e59d28fefce0cd8916",
+      "size_in_bytes": 209496
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/exceptions.py",
+      "path_type": "hardlink",
+      "sha256": "7424d67a2f1da64accb100dc8d093be004e5f47b08047d326edf3338f36a3187",
+      "size_in_bytes": 1081
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/ext.py",
+      "path_type": "hardlink",
+      "sha256": "92d789bf4de7f6d633779a28df1628a554e8e2f45a031a27050409857a21659a",
+      "size_in_bytes": 5726
+    },
+    {
+      "_path": "lib/python3.13/site-packages/msgpack/fallback.py",
+      "path_type": "hardlink",
+      "sha256": "d20d4fce9d2fb66044989e70f45decffe24c55444ff114b81b571ce5345a02c2",
+      "size_in_bytes": 32390
+    }
+  ],
+  "paths_version": 1
+}

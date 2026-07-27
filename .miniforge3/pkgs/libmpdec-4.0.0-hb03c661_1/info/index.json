@@ -1,0 +1,15 @@
+{
+  "arch": "x86_64",
+  "build": "hb03c661_1",
+  "build_number": 1,
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14"
+  ],
+  "license": "BSD-2-Clause",
+  "name": "libmpdec",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1769482286018,
+  "version": "4.0.0"
+}

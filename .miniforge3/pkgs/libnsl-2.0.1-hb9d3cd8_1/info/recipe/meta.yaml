@@ -1,0 +1,66 @@
+# This file created by conda-build 25.5.0
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Wed Jun 18 19:11:43 2025
+# ------------------------------------------------
+
+package:
+  name: libnsl
+  version: 2.0.1
+source:
+  url: https://github.com/thkukuk/libnsl/archive/v2.0.1.tar.gz
+  sha256: 59048b53be8d3904bf939313debf13956a881b0de79da40f7719a77bcd1e9c53
+build:
+  number: '1'
+  run_exports:
+    - libnsl >=2.0.1,<2.1.0a0
+  string: hb9d3cd8_1
+requirements:
+  build:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - binutils_impl_linux-64 2.43 h4bf12b8_5
+    - binutils_linux-64 2.43 h4852527_5
+    - gcc_impl_linux-64 13.3.0 h1e990d8_2
+    - gcc_linux-64 13.3.0 h6f18a23_11
+    - gnuconfig 2020.11.07 hd8ed1ab_0
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.43 h712a8e2_5
+    - libgcc 15.1.0 h767d61c_2
+    - libgcc-devel_linux-64 13.3.0 hc03c837_102
+    - libgcc-ng 15.1.0 h69a702a_2
+    - libgomp 15.1.0 h767d61c_2
+    - libltdl 2.4.3a h5888daf_0
+    - libsanitizer 13.3.0 he8ea267_2
+    - libstdcxx 15.1.0 h8f9b012_2
+    - libtool 2.5.4 h5888daf_0
+    - make 4.4.1 hb9d3cd8_2
+    - pkg-config 0.29.2 h4bc722e_1009
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025b h78e105d_0
+  host:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - libgcc 15.1.0 h767d61c_2
+    - libgomp 15.1.0 h767d61c_2
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - libgcc >=13
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libnsl.so
+about:
+  home: https://github.com/thkukuk/libnsl
+  license: LGPL-2.1-only
+  license_family: GPL
+  license_file: COPYING
+  summary: Public client interface library for NIS(YP)
+extra:
+  recipe-maintainers:
+    - isuruf
+    - izahn
+    - xhochy
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20250618.1.1
+  remote_url: https://github.com/conda-forge/libnsl-feedstock
+  sha: d113b13e81067a67222231e8ca8d4b3445103c4f

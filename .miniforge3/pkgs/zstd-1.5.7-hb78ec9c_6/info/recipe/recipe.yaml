@@ -1,0 +1,154 @@
+schema_version: 1
+
+context:
+  version: 1.5.7
+
+recipe:
+  name: zstd-split
+  version: ${{ version }}
+
+source:
+  url: https://github.com/facebook/zstd/archive/v${{ version }}.tar.gz
+  sha256: 37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3
+
+build:
+  number: 6
+
+outputs:
+  - package:
+      name: zstd
+    build:
+      script:
+        file: ${{ 'install.bat' if win else 'install.sh' if unix else '' }}
+    requirements:
+      build:
+        - ${{ stdlib('c') }}
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+        - ninja
+        - if: unix
+          then: make
+        - cmake-no-system
+      host:
+        - zlib
+      run_exports:
+        - ${{ pin_subpackage('zstd', upper_bound='x.x') }}
+    tests:
+      - package_contents:
+          lib:
+            - zstd
+            # duplicated for packages depending on lib-prefixed files
+            - if: win
+              then: libzstd
+          include:
+            - zstd.h
+          files:
+            exists:
+              - if: unix
+                then: lib/pkgconfig/libzstd.pc
+              - if: win
+                then: Library/lib/pkgconfig/libzstd.pc
+            not_exists:
+              - if: unix
+                then: lib/libzstd.a
+              - if: win
+                then:
+                  - Library/lib/zstd_static.lib
+                  - Library/lib/libzstd_static.lib
+      - script:
+          - zstd -be -i5
+      - files:
+          recipe:
+            - cf_test/
+        requirements:
+          run:
+            - ${{ compiler('c') }}
+            - cmake
+            - if: unix
+              then: make
+            - pkg-config
+        script:
+          - if: unix
+            then: export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
+            else: set "PKG_CONFIG_PATH=%LIBRARY_LIB%\pkgconfig"
+          - pkg-config --cflags libzstd
+          - cd cf_test
+          - if: unix and (build_platform == target_platform)
+            then: cmake $CMAKE_ARGS .
+          - if: win
+            then: cmake %CMAKE_ARGS% .
+  - package:
+      name: zstd-static
+    build:
+      script:
+        file: ${{ 'install.bat' if win else 'install.sh' if unix else '' }}
+    requirements:
+      build:
+        - ${{ stdlib('c') }}
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+        - ninja
+        - if: unix
+          then: make
+        - cmake-no-system
+      host:
+        - ${{ pin_subpackage('zstd', exact=True) }}
+      run:
+        - ${{ pin_subpackage('zstd', exact=True) }}
+    tests:
+      - package_contents:
+          files:
+            exists:
+              - if: unix
+                then:
+                - lib/libzstd.a
+              - if: win
+                then:
+                - Library/lib/zstd_static.lib
+      - script:
+          - zstd -be -i5
+      - files:
+          recipe:
+            - cf_test/
+        requirements:
+          run:
+            - ${{ compiler('c') }}
+            - ${{ stdlib('c') }}
+            - cmake
+            - if: unix
+              then: make
+            - pkg-config
+        script:
+          - if: unix
+            then: export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
+            else: set "PKG_CONFIG_PATH=%LIBRARY_LIB%\pkgconfig"
+          - pkg-config --cflags libzstd
+          - cd cf_test
+          - if: build_platform == target_platform and unix
+            then: cmake $CMAKE_ARGS .
+          - if: win
+            then: cmake %CMAKE_ARGS% .
+
+about:
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: Zstandard - Fast real-time compression algorithm
+  description: |
+    Zstandard is a real-time compression algorithm, providing high compression
+    ratios. It offers a very wide range of compression / speed trade-off, while
+    being backed by a very fast decoder. It also offers a special mode for
+    small data, called dictionary compression, and can create dictionaries from
+    any sample set. Zstandard library is provided as open source software using
+    a BSD license.
+  homepage: http://www.zstd.net
+  repository: https://github.com/facebook/zstd
+  documentation: https://facebook.github.io/zstd/zstd_manual.html
+
+extra:
+  feedstock-name: zstd
+  recipe-maintainers:
+    - JohanMabille
+    - rmax
+    - msarahan
+    - xhochy
+    - hmaarrfk

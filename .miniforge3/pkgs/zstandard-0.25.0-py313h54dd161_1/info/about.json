@@ -1,0 +1,16 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "description": "This project provides Python bindings for interfacing with the\nZstandard compression library. A C extension and CFFI interface are\nprovided.",
+  "dev_url": "https://github.com/indygreg/python-zstandard",
+  "doc_url": "https://github.com/indygreg/python-zstandard/blob/master/README.rst#python-zstandard",
+  "extra": {
+    "flow_run_id": "azure_20251107.1.1",
+    "remote_url": "https://github.com/conda-forge/zstandard-feedstock",
+    "sha": "f8430912e28ad46b40b0e73fac6071ddc51da442"
+  },
+  "home": "https://github.com/indygreg/python-zstandard",
+  "license": "BSD-3-Clause",
+  "summary": "Zstandard bindings for Python"
+}

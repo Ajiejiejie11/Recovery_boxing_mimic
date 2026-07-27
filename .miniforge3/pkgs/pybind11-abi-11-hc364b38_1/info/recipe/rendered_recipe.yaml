@@ -1,0 +1,110 @@
+recipe:
+  schema_version: 1
+  context:
+    name: pybind11
+    version: 3.0.0
+    abi_version: '11'
+    build_number: 1
+  package:
+    name: pybind11-abi
+    version: '11'
+  source:
+  - url: https://github.com/pybind/pybind11/archive/v3.0.0.tar.gz
+    sha256: 453b1a3e2b266c3ae9da872411cadb6d693ac18063bd73226d96cfb7015a200c
+  build:
+    number: 1
+    string: hc364b38_1
+    noarch: generic
+  requirements:
+    run_exports:
+      weak:
+      - pybind11-abi ==11
+  tests:
+  - script: python check_abi.py ${{ abi_version }}
+    files:
+      source:
+      - include/pybind11/detail/internals.h
+      recipe:
+      - check_abi.py
+  about:
+    homepage: https://github.com/pybind/pybind11
+    repository: https://github.com/pybind/pybind11
+    documentation: https://pybind11.readthedocs.io/
+    license: BSD-3-Clause
+    license_family: BSD
+    license_file:
+    - LICENSE
+    summary: Seamless operability between C++11 and Python
+  extra:
+    feedstock-name: pybind11
+    recipe-maintainers:
+    - ax3l
+    - SylvainCorlay
+    - wjakob
+    - henryiii
+build_configuration:
+  target_platform: noarch
+  host_platform:
+    platform: linux-64
+    virtual_packages:
+    - __unix=0=0
+    - __linux=6.11.0=0
+    - __glibc=2.34=0
+    - __archspec=1=x86_64_v4
+  build_platform:
+    platform: linux-64
+    virtual_packages:
+    - __unix=0=0
+    - __linux=6.11.0=0
+    - __glibc=2.34=0
+    - __archspec=1=x86_64_v4
+  variant:
+    channel_sources: conda-forge
+    channel_targets: conda-forge main
+    target_platform: noarch
+  hash:
+    hash: c364b38
+  directories:
+    host_prefix: /home/conda/feedstock_root/build_artifacts/bld/rattler-build_pybind11-abi_1752769938/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_p
+    build_prefix: /home/conda/feedstock_root/build_artifacts/bld/rattler-build_pybind11-abi_1752769938/build_env
+    work_dir: /home/conda/feedstock_root/build_artifacts/bld/rattler-build_pybind11-abi_1752769938/work
+    build_dir: /home/conda/feedstock_root/build_artifacts/bld/rattler-build_pybind11-abi_1752769938
+  channels:
+  - https://conda.anaconda.org/conda-forge
+  channel_priority: strict
+  solve_strategy: highest
+  timestamp: 2025-07-17T16:32:18.071204450Z
+  subpackages:
+    pybind11:
+      name: pybind11
+      version: 3.0.0
+      build_string: pyh3f99518_1
+    pybind11-abi:
+      name: pybind11-abi
+      version: '11'
+      build_string: hc364b38_1
+    pybind11-global:
+      name: pybind11-global
+      version: 3.0.0
+      build_string: pyhf748d72_1
+  packaging_settings:
+    archive_type: conda
+    compression_level: 15
+finalized_dependencies:
+  build: null
+  host: null
+  run:
+    depends: []
+    constraints: []
+    run_exports:
+      weak:
+      - pybind11-abi ==11
+finalized_sources:
+- url: https://github.com/pybind/pybind11/archive/v3.0.0.tar.gz
+  sha256: 453b1a3e2b266c3ae9da872411cadb6d693ac18063bd73226d96cfb7015a200c
+system_tools:
+  rattler-build: 0.44.0
+extra_meta:
+  flow_run_id: azure_20250717.1.1
+  remote_url: https://github.com/conda-forge/pybind11-feedstock
+  sha: fb95513208efdd7abf28b2736c32e801f1633de1

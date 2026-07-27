@@ -1,0 +1,15 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "dev_url": "https://github.com/sethmlarson/truststore",
+  "doc_url": "https://truststore.readthedocs.io/en/latest/",
+  "extra": {
+    "flow_run_id": "azure_20251223.1.1",
+    "remote_url": "https://github.com/conda-forge/truststore-feedstock",
+    "sha": "11fa6ee01decb947bce1bc178f8a99d63f50e5d6"
+  },
+  "home": "https://github.com/sethmlarson/truststore",
+  "license": "MIT",
+  "summary": "Verify certificates using native system trust stores"
+}

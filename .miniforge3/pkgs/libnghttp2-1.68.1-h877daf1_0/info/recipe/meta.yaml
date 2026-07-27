@@ -1,0 +1,93 @@
+# This file created by conda-build 26.1.0
+# ------------------------------------------------
+
+package:
+  name: libnghttp2
+  version: 1.68.1
+source:
+  url: https://github.com/nghttp2/nghttp2/releases/download/v1.68.1/nghttp2-1.68.1.tar.gz
+  sha256: ceb434c1f9dfe2a9d305b6b797786fb9227484dfa88508d14ca1c50263db55d3
+build:
+  run_exports:
+    - libnghttp2 >=1.68.1,<2.0a0
+  number: 0
+  string: h877daf1_0
+requirements:
+  build:
+    - _openmp_mutex 4.5 20_gnu
+    - binutils_impl_linux-64 2.45.1 default_hfdba357_101
+    - binutils_linux-64 2.45.1 default_h4852527_101
+    - gcc_impl_linux-64 14.3.0 hbdf3cc3_18
+    - gcc_linux-64 14.3.0 h298d278_21
+    - gxx_impl_linux-64 14.3.0 h2185e75_18
+    - gxx_linux-64 14.3.0 h033eb0a_21
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.45.1 default_hbd61a6d_101
+    - libgcc 15.2.0 he0feb66_18
+    - libgcc-devel_linux-64 14.3.0 hf649bbc_118
+    - libgcc-ng 15.2.0 h69a702a_18
+    - libgomp 15.2.0 he0feb66_18
+    - libsanitizer 14.3.0 h8f1669f_18
+    - libstdcxx 15.2.0 h934c35e_18
+    - libstdcxx-devel_linux-64 14.3.0 h9f08a49_118
+    - libzlib 1.3.1 hb9d3cd8_2
+    - make 4.4.1 hb9d3cd8_2
+    - pkg-config 0.29.2 h4bc722e_1009
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025c hc9c84f9_1
+    - zstd 1.5.7 hb78ec9c_6
+  host:
+    - _openmp_mutex 4.5 20_gnu
+    - c-ares 1.34.6 hb03c661_0
+    - ca-certificates 2026.2.25 hbd8a1cb_0
+    - libev 4.33 hd590300_2
+    - libgcc 15.2.0 he0feb66_18
+    - libgcc-ng 15.2.0 h69a702a_18
+    - libgomp 15.2.0 he0feb66_18
+    - libstdcxx 15.2.0 h934c35e_18
+    - libzlib 1.3.1 hb9d3cd8_2
+    - openssl 3.5.5 h35e630c_1
+    - zlib 1.3.1 hb9d3cd8_2
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - c-ares >=1.34.6,<2.0a0
+    - libev >=4.33,<4.34.0a0
+    - libev >=4.33,<5.0a0
+    - libgcc >=14
+    - libstdcxx >=14
+    - libzlib >=1.3.1,<2.0a0
+    - openssl >=3.5.5,<4.0a0
+test:
+  commands:
+    - nghttp -nv https://nghttp2.org
+    - test ! -f ${PREFIX}/lib/libnghttp2.a
+    - test -f ${PREFIX}/lib/libnghttp2.so
+about:
+  home: http://github.com/nghttp2/nghttp2
+  license: MIT
+  license_family: MIT
+  license_file: COPYING
+  summary: This is an implementation of Hypertext Transfer Protocol version 2.
+  description: 'This is an implementation of the Hypertext Transfer Protocol version
+    2 in C.
+
+
+    The framing layer of HTTP/2 is implemented as a reusable C library. On top
+
+    of that, we have implemented an HTTP/2 client, server and proxy. We have
+
+    also developed load test and benchmarking tools for HTTP/2.
+
+    '
+  doc_url: https://nghttp2.org/documentation/
+  dev_url: https://github.com/nghttp2/nghttp2
+extra:
+  recipe-maintainers:
+    - cpaulik
+    - mariusvniekerk
+    - wolfv
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20260318.4.1
+  remote_url: https://github.com/conda-forge/nghttp2-feedstock
+  sha: 2ecae45e846015421817190f983206a523835523

@@ -1,0 +1,23 @@
+{
+  "name": "libnsl",
+  "version": "2.0.1",
+  "build": "hb9d3cd8_1",
+  "build_number": 1,
+  "channel": "https://conda.anaconda.org/conda-forge/linux-64",
+  "subdir": "linux-64",
+  "fn": "libnsl-2.0.1-hb9d3cd8_1.conda",
+  "md5": "d864d34357c3b65a4b731f78c0801dc4",
+  "url": "https://conda.anaconda.org/conda-forge/linux-64/libnsl-2.0.1-hb9d3cd8_1.conda",
+  "sha256": "927fe72b054277cde6cb82597d0fcf6baf127dcbce2e0a9d8925a68f1265eef5",
+  "arch": "x86_64",
+  "platform": "linux",
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=13"
+  ],
+  "constrains": [],
+  "license": "LGPL-2.1-only",
+  "license_family": "GPL",
+  "timestamp": 1750274110928,
+  "size": 33731
+}

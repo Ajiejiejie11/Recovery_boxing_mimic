@@ -1,0 +1,42 @@
+From 4f1b0822a51395be5c22e7a8bdecada81397e823 Mon Sep 17 00:00:00 2001
+From: Nehal J Wani <nehaljw.kkd1@gmail.com>
+Date: Sat, 5 Apr 2025 16:12:47 +0100
+Subject: [PATCH 2/2] Ensure c-extension looks up symbols locally
+
+From man(3) dlopen:
+
+RTLD_DEEPBIND (since glibc 2.3.4)
+      Place the lookup scope of the symbols in this shared object ahead
+      of the global scope.  This means that a self-contained object will
+      use its own symbols in preference to global symbols with the same
+      name  contained  in objects that have already been loaded.
+---
+ zstandard/__init__.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/zstandard/__init__.py b/zstandard/__init__.py
+index 9c32d9d..ccc53fc 100644
+--- a/zstandard/__init__.py
++++ b/zstandard/__init__.py
+@@ -17,6 +17,7 @@ from __future__ import absolute_import, unicode_literals
+ import builtins
+ import io
+ import os
++import sys
+ import platform
+ from typing import ByteString
+ 
+@@ -36,7 +37,10 @@ _module_policy = os.environ.get("PYTHON_ZSTANDARD_IMPORT_POLICY", "default")
+ 
+ if _module_policy == "default":
+     if platform.python_implementation() in ("CPython",):
++        dlopen_flags_prev = sys.getdlopenflags()
++        sys.setdlopenflags(os.RTLD_NOW | os.RTLD_DEEPBIND)
+         from .backend_c import *  # type: ignore
++        sys.setdlopenflags(dlopen_flags_prev)
+ 
+         backend = "cext"
+     elif platform.python_implementation() in ("PyPy",):
+-- 
+2.49.0
+

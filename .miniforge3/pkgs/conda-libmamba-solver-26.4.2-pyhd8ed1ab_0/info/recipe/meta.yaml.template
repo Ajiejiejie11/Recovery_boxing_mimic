@@ -1,0 +1,62 @@
+{% set name = "conda-libmamba-solver" %}
+{% set version = "26.4.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/conda/conda-libmamba-solver/archive/{{ version }}.tar.gz
+  sha256: d69a45db04785a1a48d29d98ee4ce6c19147be4703866a23c6b0da1de12b5378
+  folder: src/
+
+build:
+  noarch: python
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install src/ -vv
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - hatchling
+    - hatch-vcs
+  run:
+    - python >={{ python_min }}
+    - libmambapy >=2.0.0
+    - boltons >=23.0.0
+    - msgpack-python >=1.1.1
+    - requests >=2.28.0,<3
+    - zstandard >=0.15
+  run_constrained:
+    # This is technically a `run` dependency (we do import it), but
+    # conda already depends on conda-libmamba-solver, so it creates a
+    # dependency cycle that complicates migrations
+    - conda >=25.9
+
+test:
+  requires:
+    - python {{ python_min }}
+    - conda
+  imports:
+    - conda_libmamba_solver
+  commands:
+    - conda create -n test --dry-run scipy --solver=libmamba
+    - CONDA_SOLVER=libmamba conda create -n test --dry-run scipy
+
+about:
+  home: https://github.com/conda/conda-libmamba-solver
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: src/LICENSE
+  summary: The fast mamba solver, now in conda!
+  dev_url: https://github.com/conda/conda-libmamba-solver
+  doc_url: https://conda.github.io/conda-libmamba-solver/
+
+extra:
+  recipe-maintainers:
+    - jaimergp
+    - jezdez
+    - wolfv

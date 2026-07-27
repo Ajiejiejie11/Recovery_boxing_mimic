@@ -1,0 +1,18 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "extra": {
+    "feedstock-name": "backports.zstd",
+    "flow_run_id": "github_25739004135",
+    "recipe-maintainers": [
+      "rogdham",
+      "bollwyvl"
+    ],
+    "remote_url": "https://github.com/conda-forge/backports.zstd-feedstock",
+    "sha": "1217c251d3a82b07913b04e9a4a585b93c91253b"
+  },
+  "home": "https://github.com/rogdham/backports.zstd",
+  "license": "BSD-3-Clause AND MIT AND EPL-2.0",
+  "summary": "Backport of compression.zstd"
+}

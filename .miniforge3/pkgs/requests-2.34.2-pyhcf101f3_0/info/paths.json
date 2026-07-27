@@ -1,0 +1,179 @@
+{
+  "paths": [
+    {
+      "_path": "site-packages/requests/__init__.py",
+      "path_type": "hardlink",
+      "sha256": "311157e7fa4aa9166c827d5237e6fd694eeb5ca549ee40e2e90f89f21abcd56e",
+      "size_in_bytes": 5922
+    },
+    {
+      "_path": "site-packages/requests/__version__.py",
+      "path_type": "hardlink",
+      "sha256": "abba90670b0370a3dc40d97c2dea46a35d4bec941ff10d7c3cf3098ef04a17f9",
+      "size_in_bytes": 435
+    },
+    {
+      "_path": "site-packages/requests/_internal_utils.py",
+      "path_type": "hardlink",
+      "sha256": "4c7d8d132c9898fc7d715e473f3ac74785ddc4ab96d2c9240f87835dc6d981ff",
+      "size_in_bytes": 1542
+    },
+    {
+      "_path": "site-packages/requests/_types.py",
+      "path_type": "hardlink",
+      "sha256": "d06df79f54a279c0cc3faec596c446246d5ad14edfd529eb328defbd62a44a89",
+      "size_in_bytes": 5838
+    },
+    {
+      "_path": "site-packages/requests/adapters.py",
+      "path_type": "hardlink",
+      "sha256": "647eabd4453de232aa40b55ff033d6f19778910b7e7069c51fdf63076fc77493",
+      "size_in_bytes": 28064
+    },
+    {
+      "_path": "site-packages/requests/api.py",
+      "path_type": "hardlink",
+      "sha256": "4d15480ac046f089209798e8650476ef4a28ebe6f81b400758f8ef42ec6b5509",
+      "size_in_bytes": 7152
+    },
+    {
+      "_path": "site-packages/requests/auth.py",
+      "path_type": "hardlink",
+      "sha256": "e93951a552d4c3c5fd9b84a5e1d49b03caaba4723c4ff112da6053600ec85a65",
+      "size_in_bytes": 12233
+    },
+    {
+      "_path": "site-packages/requests/certs.py",
+      "path_type": "hardlink",
+      "sha256": "fd9c6b83359cef90ff6c4eeeab8dcc2388da382ebca7d00a499b3c0b434a87e4",
+      "size_in_bytes": 430
+    },
+    {
+      "_path": "site-packages/requests/compat.py",
+      "path_type": "hardlink",
+      "sha256": "5d79ba289690b5015044341a1f7bc7d24134fc13a2db3efcf852515bf9aa18b4",
+      "size_in_bytes": 2465
+    },
+    {
+      "_path": "site-packages/requests/cookies.py",
+      "path_type": "hardlink",
+      "sha256": "0a1ce6140f2b9420522c5080e356e689fa796c2522f55ca10826f5ed8e0a723c",
+      "size_in_bytes": 21549
+    },
+    {
+      "_path": "site-packages/requests/exceptions.py",
+      "path_type": "hardlink",
+      "sha256": "c5e18f3352454968e337bb3056f0867df2f37c0a0d2c1a77dc05e7e0b3c0411b",
+      "size_in_bytes": 4564
+    },
+    {
+      "_path": "site-packages/requests/help.py",
+      "path_type": "hardlink",
+      "sha256": "723519bb1884da18d84f6b2fb78f7ebf7fb57f732070b6025ae071dac6a2d179",
+      "size_in_bytes": 4210
+    },
+    {
+      "_path": "site-packages/requests/hooks.py",
+      "path_type": "hardlink",
+      "sha256": "ebd8a02475d31a0e473a8f553e9501ff43645b9563885ad52844e7a63f0d76ab",
+      "size_in_bytes": 1138
+    },
+    {
+      "_path": "site-packages/requests/models.py",
+      "path_type": "hardlink",
+      "sha256": "d1bc0d990abf5d5ebee05f890911b4363fadf2d5264b686a963df47c529b6ace",
+      "size_in_bytes": 41783
+    },
+    {
+      "_path": "site-packages/requests/packages.py",
+      "path_type": "hardlink",
+      "sha256": "fe0d2067af355320252874631fa91a9db6a8c71d9e01beaacdc5e2383c932287",
+      "size_in_bytes": 904
+    },
+    {
+      "_path": "site-packages/requests/py.typed",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "site-packages/requests/sessions.py",
+      "path_type": "hardlink",
+      "sha256": "96fbb30bbbf06a59a5268d13b57885149756aa3f31695b5c15e41dd7bb2f67a6",
+      "size_in_bytes": 34248
+    },
+    {
+      "_path": "site-packages/requests/status_codes.py",
+      "path_type": "hardlink",
+      "sha256": "1950f47c89cf18019787e07d8ce48f66d6b38e622f7d94d70a90247fee6c040e",
+      "size_in_bytes": 4351
+    },
+    {
+      "_path": "site-packages/requests/structures.py",
+      "path_type": "hardlink",
+      "sha256": "ba9460c39078f25e6f1d2a24ac941ac6f8d2ee97197fa8c8d0c262d8a1e67a02",
+      "size_in_bytes": 4134
+    },
+    {
+      "_path": "site-packages/requests/utils.py",
+      "path_type": "hardlink",
+      "sha256": "657fd02343b2586bbd138a4ec0f03ceeb7610c2712f96ac54f28a708bf7d079c",
+      "size_in_bytes": 36322
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/INSTALLER",
+      "path_type": "hardlink",
+      "sha256": "bc33022edcb7639ff53355b4e91dade50a0bbf0299efeb6171d1ec0ba5029cfc",
+      "size_in_bytes": 6
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/METADATA",
+      "path_type": "hardlink",
+      "sha256": "8c384ba3e979480faae2859d3c5e6c1276dd2c3616e322e124d52c8cfc556f27",
+      "size_in_bytes": 4806
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/RECORD",
+      "path_type": "hardlink",
+      "sha256": "44f4733c8c04eccc5273ba3e5112a0535efe1f463a4783b8566370c0d87c740c",
+      "size_in_bytes": 3251
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/REQUESTED",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/WHEEL",
+      "path_type": "hardlink",
+      "sha256": "69e6228a0d35958183cc1812f07c565ce837b95eb51bd8a33acba9fa4f68d6c9",
+      "size_in_bytes": 91
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/direct_url.json",
+      "path_type": "hardlink",
+      "sha256": "c55e5b59aae52d38b773d403d3ceb54866bd368491ab3dc23d50d63eb9e51930",
+      "size_in_bytes": 119
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/licenses/LICENSE",
+      "path_type": "hardlink",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+      "size_in_bytes": 10142
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/licenses/NOTICE",
+      "path_type": "hardlink",
+      "sha256": "f5110972dedad2b4e9d314518daf3b7d72d6e02e499acd802181de6f74571dcc",
+      "size_in_bytes": 38
+    },
+    {
+      "_path": "site-packages/requests-2.34.2.dist-info/top_level.txt",
+      "path_type": "hardlink",
+      "sha256": "7cc4959877dbe6b6c63a8eb1bfe3bfb545fa8fe5b28b1b2c13e4a7c1c0d1c4d4",
+      "size_in_bytes": 9
+    }
+  ],
+  "paths_version": 1
+}

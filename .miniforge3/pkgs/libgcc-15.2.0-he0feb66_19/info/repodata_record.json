@@ -1,0 +1,26 @@
+{
+    "arch": "x86_64",
+    "build": "he0feb66_19",
+    "build_number": 19,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "libgcc-ng ==15.2.0=*_19",
+        "libgomp 15.2.0 he0feb66_19"
+    ],
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "_openmp_mutex >=4.5"
+    ],
+    "fn": "libgcc-15.2.0-he0feb66_19.conda",
+    "license": "GPL-3.0-only WITH GCC-exception-3.1",
+    "license_family": "GPL",
+    "md5": "57736f29cc2b0ec0b6c2952d3f101b6a",
+    "name": "libgcc",
+    "platform": "linux",
+    "sha256": "8e0a3b5e41272e5678499b5dfc4cddb673f9e935de01eb0767ce857001229f46",
+    "size": 1041084,
+    "subdir": "linux-64",
+    "timestamp": 1778269013026,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libgcc-15.2.0-he0feb66_19.conda",
+    "version": "15.2.0"
+}

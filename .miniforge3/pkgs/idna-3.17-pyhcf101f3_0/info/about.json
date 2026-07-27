@@ -1,0 +1,18 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "description": "A library to support the Internationalised Domain Names in Applications\n(IDNA) protocol as specified in RFC 5891. This version of the protocol\nis often referred to as \"IDNA2008\".",
+  "extra": {
+    "flow_run_id": "github_26599535570",
+    "recipe-maintainers": [
+      "goanpeca",
+      "jschueller"
+    ],
+    "remote_url": "https://github.com/conda-forge/idna-feedstock",
+    "sha": "858ef7b0c76d88f0478f3a348c465e1e500fd87b"
+  },
+  "home": "https://github.com/kjd/idna",
+  "license": "BSD-3-Clause",
+  "summary": "Internationalized Domain Names in Applications (IDNA)."
+}

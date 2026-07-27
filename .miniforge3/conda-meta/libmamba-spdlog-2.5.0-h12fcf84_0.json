@@ -1,0 +1,78 @@
+{
+    "arch": "x86_64",
+    "build": "h12fcf84_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "libstdcxx >=14",
+        "libgcc >=14",
+        "__glibc >=2.17,<3.0.a0",
+        "libmamba >=2.5.0,<2.6.0a0"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libmamba-spdlog-2.5.0-h12fcf84_0",
+    "files": [
+        "include/mamba/spdlog/logging_spdlog.hpp",
+        "include/mamba/spdlog/logging_spdlog_impl.hpp",
+        "lib/cmake/libmamba-spdlog/libmamba-spdlogConfig.cmake",
+        "lib/cmake/libmamba-spdlog/libmamba-spdlogTargets.cmake",
+        "lib/cmake/libmamba-spdlog/libmamba-spdlogVersion.cmake"
+    ],
+    "fn": "libmamba-spdlog-2.5.0-h12fcf84_0.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libmamba-spdlog-2.5.0-h12fcf84_0",
+        "type": 1
+    },
+    "md5": "c866cdca3b16b5c7a0fd9916d5d64577",
+    "name": "libmamba-spdlog",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libmamba-spdlog-2.5.0-h12fcf84_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "include/mamba/spdlog/logging_spdlog.hpp",
+                "path_type": "hardlink",
+                "sha256": "9e61807c65a0638718b5fb2d2e1cc06d7ff0f995ae83acec8780b5dbb8609309",
+                "sha256_in_prefix": "9e61807c65a0638718b5fb2d2e1cc06d7ff0f995ae83acec8780b5dbb8609309",
+                "size_in_bytes": 3862
+            },
+            {
+                "_path": "include/mamba/spdlog/logging_spdlog_impl.hpp",
+                "path_type": "hardlink",
+                "sha256": "f60e691cbe507dea1e91ef8ca4ff57b59eb954b1097497b13068327035c02187",
+                "sha256_in_prefix": "f60e691cbe507dea1e91ef8ca4ff57b59eb954b1097497b13068327035c02187",
+                "size_in_bytes": 7643
+            },
+            {
+                "_path": "lib/cmake/libmamba-spdlog/libmamba-spdlogConfig.cmake",
+                "path_type": "hardlink",
+                "sha256": "e5a4507e7a57091570af9900bc2dec5d4d5a7cc2b31e50457b9e5294eca062d2",
+                "sha256_in_prefix": "e5a4507e7a57091570af9900bc2dec5d4d5a7cc2b31e50457b9e5294eca062d2",
+                "size_in_bytes": 1052
+            },
+            {
+                "_path": "lib/cmake/libmamba-spdlog/libmamba-spdlogTargets.cmake",
+                "path_type": "hardlink",
+                "sha256": "a83ec6484e5b4975ff89e8fa8cc091139cf6574e1480de2e516972a7f78da542",
+                "sha256_in_prefix": "a83ec6484e5b4975ff89e8fa8cc091139cf6574e1480de2e516972a7f78da542",
+                "size_in_bytes": 4293
+            },
+            {
+                "_path": "lib/cmake/libmamba-spdlog/libmamba-spdlogVersion.cmake",
+                "path_type": "hardlink",
+                "sha256": "82ba3b0b0200e1332ceaec3bd2b350a7cc074ebcc4abf6b769a5ba65d76134e0",
+                "sha256_in_prefix": "82ba3b0b0200e1332ceaec3bd2b350a7cc074ebcc4abf6b769a5ba65d76134e0",
+                "size_in_bytes": 1859
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "libmamba-spdlog==2.5.0=h12fcf84_0",
+    "sha256": "75deca8004690aed0985845f734927e48aa49a683ee09b3d9ff4e22ace9e4a8e",
+    "size": 20396,
+    "subdir": "linux-64",
+    "timestamp": 1767884157870,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libmamba-spdlog-2.5.0-h12fcf84_0.conda",
+    "version": "2.5.0"
+}

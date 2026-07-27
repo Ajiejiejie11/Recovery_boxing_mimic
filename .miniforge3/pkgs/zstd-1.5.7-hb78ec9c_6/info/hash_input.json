@@ -1,0 +1,1 @@
+{"build_platform": "linux-64", "c_compiler": "gcc_bootstrap", "c_compiler_version": "14", "c_stdlib": "sysroot", "c_stdlib_version": "2.17", "channel_sources": "conda-forge", "channel_targets": "conda-forge main", "cxx_compiler": "gcc_bootstrap", "cxx_compiler_version": "14", "target_platform": "linux-64", "zlib": "1"}

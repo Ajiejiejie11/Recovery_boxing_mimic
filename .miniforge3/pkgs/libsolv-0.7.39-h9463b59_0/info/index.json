@@ -1,0 +1,17 @@
+{
+  "arch": "x86_64",
+  "build": "h9463b59_0",
+  "build_number": 0,
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libstdcxx >=14",
+    "libgcc >=14",
+    "libzlib >=1.3.2,<2.0a0"
+  ],
+  "license": "BSD-3-Clause",
+  "name": "libsolv",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1780057179710,
+  "version": "0.7.39"
+}

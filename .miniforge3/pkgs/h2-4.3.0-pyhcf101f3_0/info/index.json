@@ -1,0 +1,16 @@
+{
+  "build": "pyhcf101f3_0",
+  "build_number": 0,
+  "depends": [
+    "python >=3.10",
+    "hyperframe >=6.1,<7",
+    "hpack >=4.1,<5",
+    "python"
+  ],
+  "license": "MIT",
+  "name": "h2",
+  "noarch": "python",
+  "subdir": "noarch",
+  "timestamp": 1756364871835,
+  "version": "4.3.0"
+}

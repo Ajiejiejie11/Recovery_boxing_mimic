@@ -1,0 +1,43 @@
+{% set name = "hpack" %}
+{% set version = "4.1.0" %}
+{% set sha256 = "ec5eca154f7056aa06f196a557655c5b009b382873ac8d1e66e79e87535f1dca" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+  run:
+    - python >={{ python_min }}
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - hpack
+
+about:
+  home: http://python-hyper.org/hpack/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: HTTP/2 Header Encoding for Python
+  dev_url: https://github.com/python-hyper/hpack
+
+extra:
+  recipe-maintainers:
+    - primozgodec
+    - astaric

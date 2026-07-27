@@ -1,0 +1,47 @@
+{
+    "build": "hc364b38_1",
+    "build_number": 1,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/pybind11-abi-11-hc364b38_1",
+    "files": [
+        "etc/conda/test-files/pybind11-abi/0/check_abi.py",
+        "etc/conda/test-files/pybind11-abi/0/include/pybind11/detail/internals.h"
+    ],
+    "fn": "pybind11-abi-11-hc364b38_1.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/pybind11-abi-11-hc364b38_1",
+        "type": 1
+    },
+    "md5": "f0599959a2447c1e544e216bddf393fa",
+    "name": "pybind11-abi",
+    "noarch": "generic",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/pybind11-abi-11-hc364b38_1.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "etc/conda/test-files/pybind11-abi/0/check_abi.py",
+                "path_type": "hardlink",
+                "sha256": "22a26b69d0bd92e5a3f758bacc75546b2ed783e1fcab990dbf6c89f08684ede4",
+                "sha256_in_prefix": "22a26b69d0bd92e5a3f758bacc75546b2ed783e1fcab990dbf6c89f08684ede4",
+                "size_in_bytes": 876
+            },
+            {
+                "_path": "etc/conda/test-files/pybind11-abi/0/include/pybind11/detail/internals.h",
+                "path_type": "hardlink",
+                "sha256": "875fb3fe37220b3d8a12e79b1b8aee1b6f2693395afda24ffbf016cf47ce65f1",
+                "sha256_in_prefix": "875fb3fe37220b3d8a12e79b1b8aee1b6f2693395afda24ffbf016cf47ce65f1",
+                "size_in_bytes": 31629
+            }
+        ],
+        "paths_version": 1
+    },
+    "requested_spec": "pybind11-abi==11=hc364b38_1",
+    "sha256": "9e7fe12f727acd2787fb5816b2049cef4604b7a00ad3e408c5e709c298ce8bf1",
+    "size": 14671,
+    "subdir": "noarch",
+    "timestamp": 1752769938071,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/pybind11-abi-11-hc364b38_1.conda",
+    "version": "11"
+}

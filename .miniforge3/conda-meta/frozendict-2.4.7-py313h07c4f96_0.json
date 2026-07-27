@@ -1,0 +1,212 @@
+{
+    "arch": "x86_64",
+    "build": "py313h07c4f96_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14",
+        "python >=3.13,<3.14.0a0",
+        "python_abi 3.13.* *_cp313"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/frozendict-2.4.7-py313h07c4f96_0",
+    "files": [
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/INSTALLER",
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/METADATA",
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/RECORD",
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/REQUESTED",
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/WHEEL",
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/direct_url.json",
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/licenses/LICENSE.txt",
+        "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/top_level.txt",
+        "lib/python3.13/site-packages/frozendict/__init__.py",
+        "lib/python3.13/site-packages/frozendict/__init__.pyi",
+        "lib/python3.13/site-packages/frozendict/__pycache__/__init__.cpython-313.pyc",
+        "lib/python3.13/site-packages/frozendict/__pycache__/_frozendict_py.cpython-313.pyc",
+        "lib/python3.13/site-packages/frozendict/__pycache__/cool.cpython-313.pyc",
+        "lib/python3.13/site-packages/frozendict/__pycache__/core.cpython-313.pyc",
+        "lib/python3.13/site-packages/frozendict/__pycache__/monkeypatch.cpython-313.pyc",
+        "lib/python3.13/site-packages/frozendict/__pycache__/version.cpython-313.pyc",
+        "lib/python3.13/site-packages/frozendict/_frozendict_py.py",
+        "lib/python3.13/site-packages/frozendict/cool.py",
+        "lib/python3.13/site-packages/frozendict/core.py",
+        "lib/python3.13/site-packages/frozendict/monkeypatch.py",
+        "lib/python3.13/site-packages/frozendict/py.typed",
+        "lib/python3.13/site-packages/frozendict/version.py"
+    ],
+    "fn": "frozendict-2.4.7-py313h07c4f96_0.conda",
+    "license": "LGPL-3.0-only",
+    "license_family": "LGPL",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/frozendict-2.4.7-py313h07c4f96_0",
+        "type": 1
+    },
+    "md5": "4a1bc2334e0e0f1b062e1f6d8a30e9b4",
+    "name": "frozendict",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/frozendict-2.4.7-py313h07c4f96_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/INSTALLER",
+                "path_type": "hardlink",
+                "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+                "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+                "size_in_bytes": 5
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/METADATA",
+                "path_type": "hardlink",
+                "sha256": "0fde5c4b7e0f210a1f08bf5bc8a0247062eb7ddf5c3d6034df174c5b8373a855",
+                "sha256_in_prefix": "0fde5c4b7e0f210a1f08bf5bc8a0247062eb7ddf5c3d6034df174c5b8373a855",
+                "size_in_bytes": 23571
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/RECORD",
+                "path_type": "hardlink",
+                "sha256": "b596d28ec79b43fc110850fdd6ed3ebe787b6b9f266215c4d0b55bffabca6296",
+                "sha256_in_prefix": "b596d28ec79b43fc110850fdd6ed3ebe787b6b9f266215c4d0b55bffabca6296",
+                "size_in_bytes": 1640
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/REQUESTED",
+                "path_type": "hardlink",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/WHEEL",
+                "path_type": "hardlink",
+                "sha256": "79d4bb8191d168cf31fb7337c680244b1c9e2df663580848babd622ec5e404ba",
+                "sha256_in_prefix": "79d4bb8191d168cf31fb7337c680244b1c9e2df663580848babd622ec5e404ba",
+                "size_in_bytes": 104
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/direct_url.json",
+                "path_type": "hardlink",
+                "sha256": "66f4dca713af920f533ab4102a3f79ff502a91af16d26881732a1a4576f70302",
+                "sha256_in_prefix": "66f4dca713af920f533ab4102a3f79ff502a91af16d26881732a1a4576f70302",
+                "size_in_bytes": 106
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/licenses/LICENSE.txt",
+                "path_type": "hardlink",
+                "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+                "sha256_in_prefix": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+                "size_in_bytes": 7652
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict-2.4.7.dist-info/top_level.txt",
+                "path_type": "hardlink",
+                "sha256": "1f4c7fc8e7e9d34c4ad5647f24c1dcb7ec2bfbb1edf6e0bd89047668734bfeec",
+                "sha256_in_prefix": "1f4c7fc8e7e9d34c4ad5647f24c1dcb7ec2bfbb1edf6e0bd89047668734bfeec",
+                "size_in_bytes": 11
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__init__.py",
+                "path_type": "hardlink",
+                "sha256": "378eb842ed4f03e6da7f3f037ad071e2c4ac6b20d0bb2b6edff7a6a7f436abec",
+                "sha256_in_prefix": "378eb842ed4f03e6da7f3f037ad071e2c4ac6b20d0bb2b6edff7a6a7f436abec",
+                "size_in_bytes": 1533
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__init__.pyi",
+                "path_type": "hardlink",
+                "sha256": "ca35f9ee0f233e3b3eb0d61fd62a45784435196f15632d5f8105d15857826bfc",
+                "sha256_in_prefix": "ca35f9ee0f233e3b3eb0d61fd62a45784435196f15632d5f8105d15857826bfc",
+                "size_in_bytes": 3748
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__pycache__/__init__.cpython-313.pyc",
+                "path_type": "hardlink",
+                "sha256": "846b0b33d4389b450848c40713dd9f8c5df9505c5c4dbbbd45e4a6aac40d9f7f",
+                "sha256_in_prefix": "846b0b33d4389b450848c40713dd9f8c5df9505c5c4dbbbd45e4a6aac40d9f7f",
+                "size_in_bytes": 1964
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__pycache__/_frozendict_py.cpython-313.pyc",
+                "path_type": "hardlink",
+                "sha256": "618c34df415a496123ac6f02ddfce59a12e3ff93dec0389757cbff18b9ec4caa",
+                "sha256_in_prefix": "618c34df415a496123ac6f02ddfce59a12e3ff93dec0389757cbff18b9ec4caa",
+                "size_in_bytes": 8315
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__pycache__/cool.cpython-313.pyc",
+                "path_type": "hardlink",
+                "sha256": "60c35a30b29906368f52b2bebf84d7cd76d70717ebf22b1c1ba6accfec953ede",
+                "sha256_in_prefix": "60c35a30b29906368f52b2bebf84d7cd76d70717ebf22b1c1ba6accfec953ede",
+                "size_in_bytes": 9234
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__pycache__/core.cpython-313.pyc",
+                "path_type": "hardlink",
+                "sha256": "749196352f5b30713d9403faddd521312a4b13af90e50a71c78cc9a480b8bf3e",
+                "sha256_in_prefix": "749196352f5b30713d9403faddd521312a4b13af90e50a71c78cc9a480b8bf3e",
+                "size_in_bytes": 180
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__pycache__/monkeypatch.cpython-313.pyc",
+                "path_type": "hardlink",
+                "sha256": "18ecc18e4f7068204dca98dad49d2a0298c232beff72a922a524fe10560a26f7",
+                "sha256_in_prefix": "18ecc18e4f7068204dca98dad49d2a0298c232beff72a922a524fe10560a26f7",
+                "size_in_bytes": 5574
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/__pycache__/version.cpython-313.pyc",
+                "path_type": "hardlink",
+                "sha256": "2b8e57bf1d3881742219d0bb15a9ff43e0fad1e8828a79a28286c3f5e59d2315",
+                "sha256_in_prefix": "2b8e57bf1d3881742219d0bb15a9ff43e0fad1e8828a79a28286c3f5e59d2315",
+                "size_in_bytes": 169
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/_frozendict_py.py",
+                "path_type": "hardlink",
+                "sha256": "d15b530b7ecd3d94b92e619ec8fbd83425c1180855c8d423bafef4c4321db327",
+                "sha256_in_prefix": "d15b530b7ecd3d94b92e619ec8fbd83425c1180855c8d423bafef4c4321db327",
+                "size_in_bytes": 6518
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/cool.py",
+                "path_type": "hardlink",
+                "sha256": "cf4200e27cd162b55516309e5cee770414e7f42814d2f54a13329c8f89d58b6d",
+                "sha256_in_prefix": "cf4200e27cd162b55516309e5cee770414e7f42814d2f54a13329c8f89d58b6d",
+                "size_in_bytes": 8602
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/core.py",
+                "path_type": "hardlink",
+                "sha256": "6478facb76b04611d1269803eea0858e163b53f8e3be351d3945569f59296796",
+                "sha256_in_prefix": "6478facb76b04611d1269803eea0858e163b53f8e3be351d3945569f59296796",
+                "size_in_bytes": 218
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/monkeypatch.py",
+                "path_type": "hardlink",
+                "sha256": "4f4a4ce7e7406ac46bcc20cbfe682d32492c5ed5b6030970e3fdf18163bf547d",
+                "sha256_in_prefix": "4f4a4ce7e7406ac46bcc20cbfe682d32492c5ed5b6030970e3fdf18163bf547d",
+                "size_in_bytes": 6021
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/py.typed",
+                "path_type": "hardlink",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/frozendict/version.py",
+                "path_type": "hardlink",
+                "sha256": "a20910d0de2c26c25fe758d778c72d1a2b09bf395b5ff34fedbb0814f8d16a3b",
+                "sha256_in_prefix": "a20910d0de2c26c25fe758d778c72d1a2b09bf395b5ff34fedbb0814f8d16a3b",
+                "size_in_bytes": 18
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "frozendict==2.4.7=py313h07c4f96_0",
+    "sha256": "1dc15e9bc7c457a36b238696bca67d2e330aa1596320ad9673ed0e5c4aaa94bc",
+    "size": 31275,
+    "subdir": "linux-64",
+    "timestamp": 1763082974198,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/frozendict-2.4.7-py313h07c4f96_0.conda",
+    "version": "2.4.7"
+}

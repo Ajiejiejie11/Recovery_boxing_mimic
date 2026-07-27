@@ -1,0 +1,48 @@
+schema_version: 1
+
+context:
+  name: pluggy
+  version: "1.6.0"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/pluggy-${{ version }}.tar.gz
+  sha256: 7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3
+
+build:
+  noarch: python
+  number: 1
+  script: ${{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - setuptools
+    - setuptools-scm
+    - pip
+  run:
+    - python >=${{ python_min }}
+
+tests:
+  - python:
+      python_version: ${{ python_min }}.*
+      imports:
+        - pluggy
+      pip_check: true
+
+about:
+  homepage: https://github.com/pytest-dev/pluggy
+  license: MIT
+  license_file: LICENSE
+  summary: Plugin registration and hook calling for Python
+  documentation: https://pluggy.readthedocs.io/en/latest/
+  repository: https://github.com/pytest-dev/pluggy/
+
+extra:
+  recipe-maintainers:
+    - johnnygenomics
+    - nicoddemus
+    - adriendelsalle

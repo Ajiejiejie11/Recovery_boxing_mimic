@@ -1,0 +1,107 @@
+{
+    "arch": "x86_64",
+    "build": "hb700be7_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14",
+        "libstdcxx >=14"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/simdjson-4.2.4-hb700be7_0",
+    "files": [
+        "include/simdjson.h",
+        "lib/cmake/simdjson/simdjson-config-version.cmake",
+        "lib/cmake/simdjson/simdjson-config.cmake",
+        "lib/cmake/simdjson/simdjsonTargets-release.cmake",
+        "lib/cmake/simdjson/simdjsonTargets.cmake",
+        "lib/libsimdjson.so",
+        "lib/libsimdjson.so.29",
+        "lib/libsimdjson.so.29.0.0",
+        "lib/pkgconfig/simdjson.pc"
+    ],
+    "fn": "simdjson-4.2.4-hb700be7_0.conda",
+    "license": "Apache-2.0",
+    "license_family": "APACHE",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/simdjson-4.2.4-hb700be7_0",
+        "type": 1
+    },
+    "md5": "da6caa4c932708d447fb80eed702cb4e",
+    "name": "simdjson",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/simdjson-4.2.4-hb700be7_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "include/simdjson.h",
+                "path_type": "hardlink",
+                "sha256": "b46c00cf5869725c49a686784bc38ae599ba6a8b742452896e4bc3790d5c8fc1",
+                "sha256_in_prefix": "b46c00cf5869725c49a686784bc38ae599ba6a8b742452896e4bc3790d5c8fc1",
+                "size_in_bytes": 6379108
+            },
+            {
+                "_path": "lib/cmake/simdjson/simdjson-config-version.cmake",
+                "path_type": "hardlink",
+                "sha256": "8bc7f2f0375f4dbf6c3578881eaf379a06a57f581de582bbdd902b1483cb5386",
+                "sha256_in_prefix": "8bc7f2f0375f4dbf6c3578881eaf379a06a57f581de582bbdd902b1483cb5386",
+                "size_in_bytes": 3675
+            },
+            {
+                "_path": "lib/cmake/simdjson/simdjson-config.cmake",
+                "path_type": "hardlink",
+                "sha256": "7112e60de69e538cfa37bccf32295cd0bddfe1618226e08b2cdabbdbe006ca79",
+                "sha256_in_prefix": "7112e60de69e538cfa37bccf32295cd0bddfe1618226e08b2cdabbdbe006ca79",
+                "size_in_bytes": 213
+            },
+            {
+                "_path": "lib/cmake/simdjson/simdjsonTargets-release.cmake",
+                "path_type": "hardlink",
+                "sha256": "ffdcd5d9f258f3dc3a6de8497ae5696a853c13fe060f9c2d36ccb9ff16a5af3f",
+                "sha256_in_prefix": "ffdcd5d9f258f3dc3a6de8497ae5696a853c13fe060f9c2d36ccb9ff16a5af3f",
+                "size_in_bytes": 879
+            },
+            {
+                "_path": "lib/cmake/simdjson/simdjsonTargets.cmake",
+                "path_type": "hardlink",
+                "sha256": "f4a2bd6688c813aa48686bc2bf500038ec6c629dbc5da55736ade58174d9a61c",
+                "sha256_in_prefix": "f4a2bd6688c813aa48686bc2bf500038ec6c629dbc5da55736ade58174d9a61c",
+                "size_in_bytes": 4286
+            },
+            {
+                "_path": "lib/libsimdjson.so",
+                "path_type": "softlink",
+                "sha256_in_prefix": "1651bf9f16142690c9025a02e9b12343443f23893ba810d08ec377663445d3e8",
+                "size_in_bytes": 225072
+            },
+            {
+                "_path": "lib/libsimdjson.so.29",
+                "path_type": "softlink",
+                "sha256_in_prefix": "1651bf9f16142690c9025a02e9b12343443f23893ba810d08ec377663445d3e8",
+                "size_in_bytes": 225072
+            },
+            {
+                "_path": "lib/libsimdjson.so.29.0.0",
+                "path_type": "hardlink",
+                "sha256": "1651bf9f16142690c9025a02e9b12343443f23893ba810d08ec377663445d3e8",
+                "sha256_in_prefix": "1651bf9f16142690c9025a02e9b12343443f23893ba810d08ec377663445d3e8",
+                "size_in_bytes": 225072
+            },
+            {
+                "_path": "lib/pkgconfig/simdjson.pc",
+                "path_type": "hardlink",
+                "sha256": "1fcedb4750c3e8475845bf3663de61ed2be1b495d01843cfa137abd49dbddcf0",
+                "sha256_in_prefix": "956c58a9386ebdcfa00afcb2ab00b3700e2fc9ac48b0e41136e0d5fc8f64c27e",
+                "size_in_bytes": 526
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "simdjson==4.2.4=hb700be7_0",
+    "sha256": "ffe0c49e65486b485e66c7e116b1782189c970c16cb2fe9710a568e44bb9ede3",
+    "size": 294996,
+    "subdir": "linux-64",
+    "timestamp": 1766034103379,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/simdjson-4.2.4-hb700be7_0.conda",
+    "version": "4.2.4"
+}

@@ -1,0 +1,23 @@
+{
+    "arch": "x86_64",
+    "build": "hb700be7_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14",
+        "libstdcxx >=14"
+    ],
+    "fn": "simdjson-4.2.4-hb700be7_0.conda",
+    "license": "Apache-2.0",
+    "license_family": "APACHE",
+    "md5": "da6caa4c932708d447fb80eed702cb4e",
+    "name": "simdjson",
+    "platform": "linux",
+    "sha256": "ffe0c49e65486b485e66c7e116b1782189c970c16cb2fe9710a568e44bb9ede3",
+    "size": 294996,
+    "subdir": "linux-64",
+    "timestamp": 1766034103379,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/simdjson-4.2.4-hb700be7_0.conda",
+    "version": "4.2.4"
+}

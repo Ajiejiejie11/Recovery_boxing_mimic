@@ -1,0 +1,25 @@
+{
+    "arch": "x86_64",
+    "build": "20_gnu",
+    "build_number": 20,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "openmp_impl <0.0a0"
+    ],
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgomp >=7.5.0"
+    ],
+    "fn": "_openmp_mutex-4.5-20_gnu.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "md5": "a9f577daf3de00bca7c3c76c0ecbd1de",
+    "name": "_openmp_mutex",
+    "platform": "linux",
+    "sha256": "1dd3fffd892081df9726d7eb7e0dea6198962ba775bd88842135a4ddb4deb3c9",
+    "size": 28948,
+    "subdir": "linux-64",
+    "timestamp": 1770939786096,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda",
+    "version": "4.5"
+}

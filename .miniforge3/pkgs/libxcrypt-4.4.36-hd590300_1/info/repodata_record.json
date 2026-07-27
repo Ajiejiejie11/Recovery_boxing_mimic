@@ -1,0 +1,21 @@
+{
+  "name": "libxcrypt",
+  "version": "4.4.36",
+  "build": "hd590300_1",
+  "build_number": 1,
+  "channel": "https://conda.anaconda.org/conda-forge/linux-64",
+  "subdir": "linux-64",
+  "fn": "libxcrypt-4.4.36-hd590300_1.conda",
+  "md5": "5aa797f8787fe7a17d1b0821485b5adc",
+  "url": "https://conda.anaconda.org/conda-forge/linux-64/libxcrypt-4.4.36-hd590300_1.conda",
+  "sha256": "6ae68e0b86423ef188196fff6207ed0c8195dd84273cb5623b85aa08033a410c",
+  "arch": "x86_64",
+  "platform": "linux",
+  "depends": [
+    "libgcc-ng >=12"
+  ],
+  "constrains": [],
+  "license": "LGPL-2.1-or-later",
+  "timestamp": 1702724383534,
+  "size": 100393
+}

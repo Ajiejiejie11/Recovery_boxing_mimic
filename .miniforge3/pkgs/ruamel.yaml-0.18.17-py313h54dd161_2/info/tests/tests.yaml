@@ -1,0 +1,9 @@
+- python:
+    imports:
+    - ruamel.yaml
+- script:
+    content: pip check
+  requirements:
+    run:
+    - pip
+    - ruamel.yaml.clib 0.2.15.*

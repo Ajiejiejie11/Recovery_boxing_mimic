@@ -1,0 +1,11 @@
+{
+  "paths": [
+    {
+      "_path": "lib/libgomp.so.1",
+      "path_type": "softlink",
+      "sha256": "7f03470f3da57b4e659243588bda6c150f09882ee43f33fd72d895586fe95cf7",
+      "size_in_bytes": 1475480
+    }
+  ],
+  "paths_version": 1
+}

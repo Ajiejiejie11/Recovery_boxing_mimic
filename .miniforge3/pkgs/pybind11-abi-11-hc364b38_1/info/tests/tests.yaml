@@ -1,0 +1,8 @@
+- script:
+    content: python check_abi.py 11
+    cwd: etc/conda/test-files/pybind11-abi/0
+  files:
+    source:
+    - include/pybind11/detail/internals.h
+    recipe:
+    - check_abi.py

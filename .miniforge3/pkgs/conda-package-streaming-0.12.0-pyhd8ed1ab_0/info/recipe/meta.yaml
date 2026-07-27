@@ -1,0 +1,72 @@
+# This file created by conda-build 25.5.0
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Thu Jul  3 13:07:30 2025
+# ------------------------------------------------
+
+package:
+  name: conda-package-streaming
+  version: 0.12.0
+source:
+  url: https://github.com/conda/conda-package-streaming/archive/refs/tags/v0.12.0.tar.gz
+  sha256: 2cd261d3bc3bd4c51e2bb84a8397b6cc1b591f837838439d4befc12fc3d77314
+build:
+  script: /home/conda/feedstock_root/build_artifacts/conda-package-streaming_1751548120229/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/bin/python
+    -m pip install --no-build-isolation . -vv
+  number: '0'
+  noarch: python
+  string: pyhd8ed1ab_0
+requirements:
+  host:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - bzip2 1.0.8 h4bc722e_7
+    - ca-certificates 2025.6.15 hbd8a1cb_0
+    - flit-core 3.12.0 pyhd8ed1ab_0
+    - ld_impl_linux-64 2.43 h1423503_5
+    - libexpat 2.7.0 h5888daf_0
+    - libffi 3.4.6 h2dba641_1
+    - libgcc 15.1.0 h767d61c_3
+    - libgcc-ng 15.1.0 h69a702a_3
+    - libgomp 15.1.0 h767d61c_3
+    - liblzma 5.8.1 hb9d3cd8_2
+    - libnsl 2.0.1 hb9d3cd8_1
+    - libsqlite 3.50.2 h6cd9bfd_0
+    - libuuid 2.38.1 h0b41bf4_0
+    - libxcrypt 4.4.36 hd590300_1
+    - libzlib 1.3.1 hb9d3cd8_2
+    - ncurses 6.5 h2d0b736_3
+    - openssl 3.5.1 h7b32b05_0
+    - pip 25.1.1 pyh8b19718_0
+    - python 3.9.23 hc30ae73_0_cpython
+    - readline 8.2 h8c095d6_2
+    - setuptools 80.9.0 pyhff2d567_0
+    - tk 8.6.13 noxft_hd72426e_102
+    - tzdata 2025b h78e105d_0
+    - wheel 0.45.1 pyhd8ed1ab_1
+  run:
+    - python >=3.9
+    - zstandard >=0.15
+test:
+  imports:
+    - conda_package_streaming.url
+  commands:
+    - pip check
+  requires:
+    - pip
+    - python 3.9.*
+    - requests
+about:
+  home: https://github.com/conda/conda-package-streaming
+  summary: Download metadata from conda packages without transferring entire file.
+  license: BSD-3-Clause
+  license_file: LICENSE
+  doc_url: https://conda.github.io/conda-package-streaming/
+  dev_url: https://github.com/conda/conda-package-streaming
+extra:
+  recipe-maintainers:
+    - dholth
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20250703.1.1
+  remote_url: https://github.com/conda-forge/conda-package-streaming-feedstock
+  sha: 827256a6c54dc17d9b5a1eaf20640347831d9901

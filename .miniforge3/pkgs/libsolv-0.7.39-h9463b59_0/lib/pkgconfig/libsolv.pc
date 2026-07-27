@@ -1,0 +1,8 @@
+libdir=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_libsolv_1780057179/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh/lib
+includedir=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_libsolv_1780057179/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh/include
+
+Name: libsolv
+Description: Library for solving packages
+Version: 0.7.39
+Libs: -L${libdir} -lsolv
+Cflags: -I${includedir}

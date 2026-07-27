@@ -1,0 +1,23 @@
+{
+    "arch": "x86_64",
+    "build": "h33c6efd_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14",
+        "libstdcxx >=14"
+    ],
+    "fn": "icu-78.3-h33c6efd_0.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "c80d8a3b84358cb967fa81e7075fbc8a",
+    "name": "icu",
+    "platform": "linux",
+    "sha256": "fbf86c4a59c2ed05bbffb2ba25c7ed94f6185ec30ecb691615d42342baa1a16a",
+    "size": 12723451,
+    "subdir": "linux-64",
+    "timestamp": 1773822285671,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/icu-78.3-h33c6efd_0.conda",
+    "version": "78.3"
+}

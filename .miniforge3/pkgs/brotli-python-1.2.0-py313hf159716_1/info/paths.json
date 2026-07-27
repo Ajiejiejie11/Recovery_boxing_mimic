@@ -1,0 +1,71 @@
+{
+  "paths": [
+    {
+      "_path": "lib/python3.13/site-packages/__pycache__/brotli.cpython-313.pyc",
+      "path_type": "hardlink",
+      "sha256": "3b481fd464e33fddbe4ddf0b83f01138a366e2253571fd36ecf74b918a2547ea",
+      "size_in_bytes": 1910
+    },
+    {
+      "_path": "lib/python3.13/site-packages/_brotli.cpython-313-x86_64-linux-gnu.so",
+      "path_type": "hardlink",
+      "sha256": "3bbc242267f636b673a21652b78fa97be9fe957ff9fe180245c1b2a183eb5f02",
+      "size_in_bytes": 904000
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/INSTALLER",
+      "path_type": "hardlink",
+      "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+      "size_in_bytes": 5
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/METADATA",
+      "path_type": "hardlink",
+      "sha256": "2238dbee879e0d9ce4dd292643d96870e3e27a4ad55c438fbe2ee0f6f4652193",
+      "size_in_bytes": 6116
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/RECORD",
+      "path_type": "hardlink",
+      "sha256": "1dda337c96d62ff90ce24d406bb990a971e2fe9e1531332ea5e0da86bbf8380d",
+      "size_in_bytes": 869
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/REQUESTED",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/WHEEL",
+      "path_type": "hardlink",
+      "sha256": "79d4bb8191d168cf31fb7337c680244b1c9e2df663580848babd622ec5e404ba",
+      "size_in_bytes": 104
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/direct_url.json",
+      "path_type": "hardlink",
+      "sha256": "669e49800e808b90929762642b31575621af4bca6dbac95afafa3d2b1aec7dc9",
+      "size_in_bytes": 108
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/licenses/LICENSE",
+      "path_type": "hardlink",
+      "sha256": "3d180008e36922a4e8daec11c34c7af264fed5962d07924aea928c38e8663c94",
+      "size_in_bytes": 1084
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli-1.2.0.dist-info/top_level.txt",
+      "path_type": "hardlink",
+      "sha256": "82c4b9e07ae13b766f785c5e32b2a8ffba87e129b84db43b8c62d5044a89e0d2",
+      "size_in_bytes": 15
+    },
+    {
+      "_path": "lib/python3.13/site-packages/brotli.py",
+      "path_type": "hardlink",
+      "sha256": "813610bf0d74a6998d7b47d912e8892c3896e6eac19cb7b22575e04fc294b63f",
+      "size_in_bytes": 1970
+    }
+  ],
+  "paths_version": 1
+}

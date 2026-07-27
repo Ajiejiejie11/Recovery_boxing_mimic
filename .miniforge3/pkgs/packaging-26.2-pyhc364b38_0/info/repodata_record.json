@@ -1,0 +1,21 @@
+{
+    "build": "pyhc364b38_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python >=3.8",
+        "python"
+    ],
+    "fn": "packaging-26.2-pyhc364b38_0.conda",
+    "license": "Apache-2.0",
+    "license_family": "APACHE",
+    "md5": "4c06a92e74452cfa53623a81592e8934",
+    "name": "packaging",
+    "noarch": "python",
+    "sha256": "3906abfb6511a3bb309e39b9b1b7bc38f50a723971de2395489fd1f379255890",
+    "size": 91574,
+    "subdir": "noarch",
+    "timestamp": 1777103621679,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/packaging-26.2-pyhc364b38_0.conda",
+    "version": "26.2"
+}

@@ -1,0 +1,18 @@
+- script:
+    content: zstd -be -i5
+- script:
+    content: |-
+      export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
+      pkg-config --cflags libzstd
+      cd cf_test
+      cmake $CMAKE_ARGS .
+    cwd: etc/conda/test-files/zstd/1
+  requirements:
+    run:
+    - gcc_bootstrap_linux-64 =14
+    - cmake
+    - make
+    - pkg-config
+  files:
+    recipe:
+    - cf_test/

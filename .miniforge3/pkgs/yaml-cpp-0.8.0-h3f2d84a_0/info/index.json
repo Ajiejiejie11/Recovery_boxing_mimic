@@ -1,0 +1,17 @@
+{
+  "arch": "x86_64",
+  "build": "h3f2d84a_0",
+  "build_number": 0,
+  "depends": [
+    "libstdcxx >=13",
+    "libgcc >=13",
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=13"
+  ],
+  "license": "MIT",
+  "name": "yaml-cpp",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1745307989800,
+  "version": "0.8.0"
+}

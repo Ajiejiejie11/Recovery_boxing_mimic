@@ -1,0 +1,15 @@
+--- libmpdec/Makefile.vc	2026-01-26 18:23:50.918604445 -0800
++++ libmpdec/Makefile.vc	2026-01-26 18:29:21.655791626 -0800
+@@ -17,6 +17,12 @@
+ MPD_PREC = 19
+ MPD_DPREC = 38
+ !endif
++!if "$(MACHINE)" == "ARM64"
++CONFIG = /DCONFIG_64 /DANSI
++MPD_HEADER = mpdecimal64vc.h
++MPD_PREC = 19
++MPD_DPREC = 38
++!endif
+ !if "$(MACHINE)" == "ansi64"
+ CONFIG = /DCONFIG_64 /DANSI
+ MPD_HEADER = mpdecimal64vc.

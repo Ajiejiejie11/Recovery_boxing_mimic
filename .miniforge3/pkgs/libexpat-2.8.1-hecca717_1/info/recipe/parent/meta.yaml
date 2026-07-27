@@ -1,0 +1,100 @@
+{% set version = "2.8.1" %}
+{% set ver = version|replace(".", "_") %}
+
+package:
+  name: expat-split
+  version: {{ version }}
+
+source:
+  url: https://github.com/libexpat/libexpat/releases/download/R_{{ ver }}/expat-{{ version }}.tar.xz
+  sha256: 10b195ee78160a908388180a8fe3603d4e9a12f4755fbf5f3816b23a9d750da0
+  patches:
+    # Add missing symbol on Windows
+    - 3cdd1df2644388aff25dd0ed7128c7bb1de1a7d8.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - cmake-no-system   # [win]
+    - make              # [unix]
+    - gnuconfig         # [unix]
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+    - {{ compiler('cxx') }}
+  host:
+
+test:
+  commands:
+    - xmlwf -h
+
+outputs:
+  - name: libexpat
+    script: install.sh  # [unix]
+    script: install.bat  # [win]
+    files:
+      - lib/libexpat.so.*          # [linux]
+      - lib/libexpat.*.dylib       # [osx]
+      - Library/bin/libexpat.dll   # [win]
+    build:
+      ignore_run_exports_from:
+        # This package needs the compiler for the tests, but the library
+        # does not link to libstdc++.so
+        - {{ compiler('cxx') }}
+    requirements:
+      build:
+        - cmake-no-system   # [win]
+        - make              # [unix]
+        - gnuconfig         # [unix]
+        - {{ compiler('c') }}
+        - {{ stdlib("c") }}
+        - {{ compiler('cxx') }}
+      host:
+      run:
+      run_constrained:
+        - expat {{ version }}.*
+
+  - name: expat
+    script: install.sh  # [unix]
+    script: install.bat  # [win]
+    build:
+      run_exports:
+        # changes soname at major versions, default settings OK
+        # https://abi-laboratory.pro/tracker/timeline/expat/
+        - {{ pin_subpackage('libexpat') }}
+      ignore_run_exports_from:
+        # This package needs the compiler for the tests, but the executable
+        # does not link to libstdc++.so
+        - {{ compiler('cxx') }}
+    requirements:
+      build:
+        - cmake-no-system   # [win]
+        - make              # [unix]
+        - gnuconfig         # [unix]
+        - {{ compiler('c') }}
+        - {{ stdlib("c") }}
+        - {{ compiler('cxx') }}
+      host:
+        - {{ pin_subpackage('libexpat', exact=True) }}
+      run:
+        - {{ pin_subpackage('libexpat', exact=True) }}
+
+about:
+  home: http://expat.sourceforge.net/
+  dev_url: https://github.com/libexpat/libexpat
+  license: MIT
+  license_family: MIT
+  license_file: COPYING
+  summary: Expat XML parser library in C
+
+extra:
+  feedstock-name: expat
+  recipe-maintainers:
+    - kwilcox
+    - ocefpaf
+    - isuruf
+    - pelson
+    - mingwandroid
+    - msarahan
+    - scopatz

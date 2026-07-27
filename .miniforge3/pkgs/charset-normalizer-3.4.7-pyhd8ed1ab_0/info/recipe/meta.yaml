@@ -1,0 +1,76 @@
+# This file created by conda-build 26.3.0
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Thu Apr  2 10:50:26 2026
+# ------------------------------------------------
+
+package:
+  name: charset-normalizer
+  version: 3.4.7
+source:
+  url: https://pypi.org/packages/source/c/charset-normalizer/charset_normalizer-3.4.7.tar.gz
+  sha256: ae89db9e5f98a11a4bf50407d4363e7b09b31e55bc117b4f7d80aab97ba009e5
+build:
+  number: '0'
+  noarch: python
+  entry_points:
+    - normalizer = charset_normalizer.cli:cli_detect
+  script: /home/conda/feedstock_root/build_artifacts/charset-normalizer_1775127091311/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_pl/bin/python
+    -m pip install . -vv
+  string: pyhd8ed1ab_0
+requirements:
+  host:
+    - _openmp_mutex 4.5 20_gnu
+    - bzip2 1.0.8 hda65f42_9
+    - ca-certificates 2026.2.25 hbd8a1cb_0
+    - icu 78.3 h33c6efd_0
+    - ld_impl_linux-64 2.45.1 default_hbd61a6d_102
+    - libexpat 2.7.5 hecca717_0
+    - libffi 3.5.2 h3435931_0
+    - libgcc 15.2.0 he0feb66_18
+    - libgcc-ng 15.2.0 h69a702a_18
+    - libgomp 15.2.0 he0feb66_18
+    - liblzma 5.8.2 hb03c661_0
+    - libnsl 2.0.1 hb9d3cd8_1
+    - libsqlite 3.52.0 hf4e2dac_0
+    - libstdcxx 15.2.0 h934c35e_18
+    - libuuid 2.42 h5347b49_0
+    - libxcrypt 4.4.36 hd590300_1
+    - libzlib 1.3.2 h25fd6f3_2
+    - ncurses 6.5 h2d0b736_3
+    - openssl 3.6.1 h35e630c_1
+    - packaging 26.0 pyhcf101f3_0
+    - pip 26.0.1 pyh8b19718_0
+    - python 3.10.20 h3c07f61_0_cpython
+    - readline 8.3 h853b02a_0
+    - setuptools 82.0.1 pyh332efcf_0
+    - tk 8.6.13 noxft_h366c992_103
+    - tzdata 2025c hc9c84f9_1
+    - wheel 0.46.3 pyhd8ed1ab_0
+    - zstd 1.5.7 hb78ec9c_6
+  run:
+    - python >=3.10
+test:
+  imports:
+    - charset_normalizer
+  commands:
+    - pip check
+    - normalizer --help
+  requires:
+    - pip
+    - python 3.10.*
+about:
+  home: https://github.com/Ousret/charset_normalizer
+  summary: The Real First Universal Charset Detector. Open, modern and actively maintained
+    alternative to Chardet.
+  license: MIT
+  license_file:
+    - LICENSE
+    - data/NOTICE.md
+extra:
+  recipe-maintainers:
+    - ocefpaf
+  final: true
+  copy_test_source_files: true
+  flow_run_id: github_23896833796
+  remote_url: https://github.com/conda-forge/charset-normalizer-feedstock
+  sha: f81a7a8b681a4e7d855446c137571fbf61de72ce

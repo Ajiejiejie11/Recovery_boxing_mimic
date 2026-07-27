@@ -1,0 +1,17 @@
+{
+    "build": "h0f90c79_1",
+    "build_number": 1,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "fn": "nlohmann_json-abi-3.12.0-h0f90c79_1.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "59659d0213082bc13be8500bab80c002",
+    "name": "nlohmann_json-abi",
+    "noarch": "generic",
+    "sha256": "2a909594ca78843258e4bda36e43d165cda844743329838a29402823c8f20dec",
+    "size": 4335,
+    "subdir": "noarch",
+    "timestamp": 1758194464430,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/nlohmann_json-abi-3.12.0-h0f90c79_1.conda",
+    "version": "3.12.0"
+}

@@ -1,0 +1,15 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "dev_url": "https://sourceforge.net/p/ruamel-yaml",
+  "doc_url": "https://yaml.dev/doc/ruamel.yaml",
+  "extra": {
+    "flow_run_id": "azure_20251219.3.1",
+    "remote_url": "https://github.com/conda-forge/ruamel.yaml-feedstock",
+    "sha": "33f069c5afa7191a5dbc2debf542db4f6aadebc4"
+  },
+  "home": "https://pypi.org/project/ruamel.yaml",
+  "license": "MIT",
+  "summary": "A YAML package for Python. It is a derivative of Kirill Simonov's PyYAML 3.11 which supports YAML1.1"
+}
