@@ -1,0 +1,14 @@
+{
+  "arch": "x86_64",
+  "build": "h69a702a_19",
+  "build_number": 19,
+  "depends": [
+    "libgcc 15.2.0 he0feb66_19"
+  ],
+  "license": "GPL-3.0-only WITH GCC-exception-3.1",
+  "name": "libgcc-ng",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1778269016987,
+  "version": "15.2.0"
+}

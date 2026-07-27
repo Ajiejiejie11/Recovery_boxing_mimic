@@ -1,0 +1,185 @@
+{
+  "paths": [
+    {
+      "_path": "site-packages/packaging/__init__.py",
+      "path_type": "hardlink",
+      "sha256": "42130474fbb65e882b2735774b42964bab7b97423d93c11e0d1265e1f9f0f3bb",
+      "size_in_bytes": 494
+    },
+    {
+      "_path": "site-packages/packaging/_elffile.py",
+      "path_type": "hardlink",
+      "sha256": "fac2a4a6d62acd8c36fb1dd007225ae66078adf3d6bb5a719191d1c755801426",
+      "size_in_bytes": 3211
+    },
+    {
+      "_path": "site-packages/packaging/_manylinux.py",
+      "path_type": "hardlink",
+      "sha256": "1dfea707470eadac84b3debea77a085c08069c5aaebf6d033b997ea36fd79efd",
+      "size_in_bytes": 9559
+    },
+    {
+      "_path": "site-packages/packaging/_musllinux.py",
+      "path_type": "hardlink",
+      "sha256": "67ab308c7dcc03b5d2dea5e798c37b40f86a3f77e7a18234790d7c7bdf878001",
+      "size_in_bytes": 2707
+    },
+    {
+      "_path": "site-packages/packaging/_parser.py",
+      "path_type": "hardlink",
+      "sha256": "29fda7b03c38739e17f36a58f1b6b8174d81bdee8eca018c0232fe05e82a71ec",
+      "size_in_bytes": 11698
+    },
+    {
+      "_path": "site-packages/packaging/_structures.py",
+      "path_type": "hardlink",
+      "sha256": "eb48d16c5efca7ccf930a9cd77a700a6b80e69d0891d5d03966526441a8565cb",
+      "size_in_bytes": 1109
+    },
+    {
+      "_path": "site-packages/packaging/_tokenizer.py",
+      "path_type": "hardlink",
+      "sha256": "b455365abf996497406e45cb109a3ba9440325a2247dfb7d0ea6a27e210d0fb0",
+      "size_in_bytes": 5391
+    },
+    {
+      "_path": "site-packages/packaging/dependency_groups.py",
+      "path_type": "hardlink",
+      "sha256": "5d92005452bdb871b84421a9ae6267dd522751631eb3185afe4cad26e30ef5e6",
+      "size_in_bytes": 10218
+    },
+    {
+      "_path": "site-packages/packaging/direct_url.py",
+      "path_type": "hardlink",
+      "sha256": "78a99b0e23cfd6c2d5e0c8ff902499aaa927ac8c953bd4abec9a45f0a0a3a785",
+      "size_in_bytes": 10917
+    },
+    {
+      "_path": "site-packages/packaging/errors.py",
+      "path_type": "hardlink",
+      "sha256": "ea17c461701ff2ffc817ae7e94569d24e30889e04fdb120ab721178c6d67188b",
+      "size_in_bytes": 2680
+    },
+    {
+      "_path": "site-packages/packaging/licenses/__init__.py",
+      "path_type": "hardlink",
+      "sha256": "fc9c745d1883ff9f296a5b169f22eb2ee879f59a4608f20f5cb29d668f4e26f4",
+      "size_in_bytes": 7293
+    },
+    {
+      "_path": "site-packages/packaging/licenses/_spdx.py",
+      "path_type": "hardlink",
+      "sha256": "596ec35e2ca0ebcba9fd8343ff0a51625af548786257815f24b41f7e08613314",
+      "size_in_bytes": 51122
+    },
+    {
+      "_path": "site-packages/packaging/markers.py",
+      "path_type": "hardlink",
+      "sha256": "f1f0c8521005e9832708d0791528b087da4422eb22173005ef727ed0e07c6d39",
+      "size_in_bytes": 17055
+    },
+    {
+      "_path": "site-packages/packaging/metadata.py",
+      "path_type": "hardlink",
+      "sha256": "72b021d04dc654656a3e5bba11d445b1a1be63a518ce74d4aa3b8629118fbfa7",
+      "size_in_bytes": 38770
+    },
+    {
+      "_path": "site-packages/packaging/py.typed",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "site-packages/packaging/pylock.py",
+      "path_type": "hardlink",
+      "sha256": "1bfd609dc4e60db44b6358e8e150c8f54c3e6f9204ae1fd0f55fc16d5253983f",
+      "size_in_bytes": 33890
+    },
+    {
+      "_path": "site-packages/packaging/requirements.py",
+      "path_type": "hardlink",
+      "sha256": "75dd5cf5a6b5829e4d23a6ed17a5054508cf9f59f14179c4fd3df8c830d31297",
+      "size_in_bytes": 4383
+    },
+    {
+      "_path": "site-packages/packaging/specifiers.py",
+      "path_type": "hardlink",
+      "sha256": "31fa7c6af420d25568b75eeda3d955281b590f516c5814c8b681b0154677c2d8",
+      "size_in_bytes": 71514
+    },
+    {
+      "_path": "site-packages/packaging/tags.py",
+      "path_type": "hardlink",
+      "sha256": "350d707a8ebdfd28ed7b7c4167523f1badc22200a668dd02db89b3fb3de1198a",
+      "size_in_bytes": 34224
+    },
+    {
+      "_path": "site-packages/packaging/utils.py",
+      "path_type": "hardlink",
+      "sha256": "33bf8930a89cdac3f562d57ff1a5bb795181fb1dc00ee282892aec55e09dd94a",
+      "size_in_bytes": 9848
+    },
+    {
+      "_path": "site-packages/packaging/version.py",
+      "path_type": "hardlink",
+      "sha256": "635693b717b7b27db138c6b905d23ce7e01c1eec9b6da9ce56412fbd24510bc2",
+      "size_in_bytes": 38369
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/INSTALLER",
+      "path_type": "hardlink",
+      "sha256": "bc33022edcb7639ff53355b4e91dade50a0bbf0299efeb6171d1ec0ba5029cfc",
+      "size_in_bytes": 6
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/METADATA",
+      "path_type": "hardlink",
+      "sha256": "4f9cbcd7933415a4793f7767c98a2b6a512c823fc81c87337815705f230ecabf",
+      "size_in_bytes": 3543
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/RECORD",
+      "path_type": "hardlink",
+      "sha256": "8548d2f3e6235e855b663e76d84d204b39e659080f49c80f64ec443e70363c88",
+      "size_in_bytes": 3491
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/REQUESTED",
+      "path_type": "hardlink",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_in_bytes": 0
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/WHEEL",
+      "path_type": "hardlink",
+      "sha256": "1b68144734c4b66791f27add5d425f3620775585718a03d0f9b110ba3a4d88db",
+      "size_in_bytes": 82
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/direct_url.json",
+      "path_type": "hardlink",
+      "sha256": "e85b767b66fb7aa0e1088ccb34ef13344ff977d49a40997635113ba20f2f19eb",
+      "size_in_bytes": 120
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/licenses/LICENSE",
+      "path_type": "hardlink",
+      "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+      "size_in_bytes": 197
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/licenses/LICENSE.APACHE",
+      "path_type": "hardlink",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "size_in_bytes": 10174
+    },
+    {
+      "_path": "site-packages/packaging-26.2.dist-info/licenses/LICENSE.BSD",
+      "path_type": "hardlink",
+      "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+      "size_in_bytes": 1344
+    }
+  ],
+  "paths_version": 1
+}

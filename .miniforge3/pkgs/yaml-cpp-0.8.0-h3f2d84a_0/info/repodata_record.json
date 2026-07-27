@@ -1,0 +1,24 @@
+{
+    "arch": "x86_64",
+    "build": "h3f2d84a_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "libstdcxx >=13",
+        "libgcc >=13",
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=13"
+    ],
+    "fn": "yaml-cpp-0.8.0-h3f2d84a_0.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "92b90f5f7a322e74468bb4909c7354b5",
+    "name": "yaml-cpp",
+    "platform": "linux",
+    "sha256": "4b0b713a4308864a59d5f0b66ac61b7960151c8022511cdc914c0c0458375eca",
+    "size": 223526,
+    "subdir": "linux-64",
+    "timestamp": 1745307989800,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/yaml-cpp-0.8.0-h3f2d84a_0.conda",
+    "version": "0.8.0"
+}

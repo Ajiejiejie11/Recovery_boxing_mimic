@@ -1,0 +1,11 @@
+prefix=/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3
+exec_prefix=${prefix}
+includedir=/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/include
+libdir=/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/lib
+
+Name: Yaml-cpp
+Description: A YAML parser and emitter for C++
+Version: 0.8.0
+Requires:
+Libs: -L${libdir} -lyaml-cpp
+Cflags: -I${includedir}

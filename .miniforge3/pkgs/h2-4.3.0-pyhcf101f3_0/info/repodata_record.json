@@ -1,0 +1,23 @@
+{
+    "build": "pyhcf101f3_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python >=3.10",
+        "hyperframe >=6.1,<7",
+        "hpack >=4.1,<5",
+        "python"
+    ],
+    "fn": "h2-4.3.0-pyhcf101f3_0.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "164fc43f0b53b6e3a7bc7dce5e4f1dc9",
+    "name": "h2",
+    "noarch": "python",
+    "sha256": "84c64443368f84b600bfecc529a1194a3b14c3656ee2e832d15a20e0329b6da3",
+    "size": 95967,
+    "subdir": "noarch",
+    "timestamp": 1756364871835,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/h2-4.3.0-pyhcf101f3_0.conda",
+    "version": "4.3.0"
+}

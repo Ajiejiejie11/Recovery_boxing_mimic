@@ -1,0 +1,60 @@
+schema_version: 1
+
+context:
+  version: 4.3.0
+
+package:
+  name: h2
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/h/h2/h2-${{ version }}.tar.gz
+  sha256: 6c59efe4323fa18b47a632221a1888bd7fde6249819beda254aeca909f221bf1
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --disable-pip-version-check
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - setuptools
+    - pip
+  run:
+    - python >=${{ python_min }}
+    - hyperframe >=6.1,<7
+    - hpack >=4.1,<5
+
+tests:
+  - python:
+      imports: h2
+      pip_check: true
+      python_version:
+        - ${{ python_min }}.*
+        - 3.13.*
+  - requirements:
+      run:
+        - python ${{ python_min }}.*
+        - pytest-cov
+        - hypothesis
+    files:
+      source:
+        - tests/
+    script:
+      - coverage run --source=h2 --branch -m pytest -vv --tb=long --color=yes
+      - coverage report --show-missing --skip-covered --fail-under=100
+
+about:
+  license: MIT
+  license_file: LICENSE
+  summary: HTTP/2 State-Machine based protocol implementation
+  homepage: https://python-hyper.org
+  repository: https://github.com/python-hyper/h2
+
+extra:
+  recipe-maintainers:
+    - primozgodec
+    - wiphoo
+    - bollwyvl

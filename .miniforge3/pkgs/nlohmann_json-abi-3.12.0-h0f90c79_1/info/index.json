@@ -1,0 +1,10 @@
+{
+  "build": "h0f90c79_1",
+  "build_number": 1,
+  "license": "MIT",
+  "name": "nlohmann_json-abi",
+  "noarch": "generic",
+  "subdir": "noarch",
+  "timestamp": 1758194464430,
+  "version": "3.12.0"
+}

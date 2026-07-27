@@ -1,0 +1,19 @@
+{
+  "arch": "x86_64",
+  "build": "h9835478_0",
+  "build_number": 0,
+  "depends": [
+    "libmamba ==2.5.0 hd28c85e_0",
+    "__glibc >=2.17,<3.0.a0",
+    "libmamba >=2.5.0,<2.6.0a0",
+    "reproc-cpp >=14.2,<15.0a0",
+    "reproc >=14.2,<15.0a0",
+    "zstd >=1.5.7,<1.6.0a0"
+  ],
+  "license": "BSD-3-Clause",
+  "name": "mamba",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1767884157871,
+  "version": "2.5.0"
+}

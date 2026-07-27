@@ -1,0 +1,14 @@
+{
+  "build": "pyhcf101f3_0",
+  "build_number": 0,
+  "depends": [
+    "python >=3.10",
+    "python"
+  ],
+  "license": "BSD-3-Clause",
+  "name": "pycparser",
+  "noarch": "python",
+  "subdir": "noarch",
+  "timestamp": 1779293633166,
+  "version": "3.0"
+}

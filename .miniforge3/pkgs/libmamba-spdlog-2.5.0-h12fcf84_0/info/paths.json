@@ -1,0 +1,35 @@
+{
+  "paths": [
+    {
+      "_path": "include/mamba/spdlog/logging_spdlog.hpp",
+      "path_type": "hardlink",
+      "sha256": "9e61807c65a0638718b5fb2d2e1cc06d7ff0f995ae83acec8780b5dbb8609309",
+      "size_in_bytes": 3862
+    },
+    {
+      "_path": "include/mamba/spdlog/logging_spdlog_impl.hpp",
+      "path_type": "hardlink",
+      "sha256": "f60e691cbe507dea1e91ef8ca4ff57b59eb954b1097497b13068327035c02187",
+      "size_in_bytes": 7643
+    },
+    {
+      "_path": "lib/cmake/libmamba-spdlog/libmamba-spdlogConfig.cmake",
+      "path_type": "hardlink",
+      "sha256": "e5a4507e7a57091570af9900bc2dec5d4d5a7cc2b31e50457b9e5294eca062d2",
+      "size_in_bytes": 1052
+    },
+    {
+      "_path": "lib/cmake/libmamba-spdlog/libmamba-spdlogTargets.cmake",
+      "path_type": "hardlink",
+      "sha256": "a83ec6484e5b4975ff89e8fa8cc091139cf6574e1480de2e516972a7f78da542",
+      "size_in_bytes": 4293
+    },
+    {
+      "_path": "lib/cmake/libmamba-spdlog/libmamba-spdlogVersion.cmake",
+      "path_type": "hardlink",
+      "sha256": "82ba3b0b0200e1332ceaec3bd2b350a7cc074ebcc4abf6b769a5ba65d76134e0",
+      "size_in_bytes": 1859
+    }
+  ],
+  "paths_version": 1
+}

@@ -1,0 +1,21 @@
+{
+    "arch": "x86_64",
+    "build": "py313h78bf25f_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "python >=3.13,<3.14.0a0",
+        "python_abi 3.13.* *_cp313"
+    ],
+    "fn": "menuinst-2.4.2-py313h78bf25f_0.conda",
+    "license": "BSD-3-Clause AND MIT",
+    "md5": "de23b371c68d08159fcda30bf8165072",
+    "name": "menuinst",
+    "platform": "linux",
+    "sha256": "ce35922197dc6e58cfca23986c205b79894b1a8626abb6c18feeada6314f6492",
+    "size": 182687,
+    "subdir": "linux-64",
+    "timestamp": 1765733254053,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/menuinst-2.4.2-py313h78bf25f_0.conda",
+    "version": "2.4.2"
+}

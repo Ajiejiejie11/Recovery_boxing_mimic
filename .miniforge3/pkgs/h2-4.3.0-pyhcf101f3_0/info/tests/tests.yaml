@@ -1,0 +1,19 @@
+- python:
+    imports:
+    - h2
+    python_version:
+    - 3.10.*
+    - 3.13.*
+- script:
+    content: |-
+      coverage run --source=h2 --branch -m pytest -vv --tb=long --color=yes
+      coverage report --show-missing --skip-covered --fail-under=100
+    cwd: etc/conda/test-files/h2/1
+  requirements:
+    run:
+    - python 3.10.*
+    - pytest-cov
+    - hypothesis
+  files:
+    source:
+    - tests/

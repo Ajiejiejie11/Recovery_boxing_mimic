@@ -1,0 +1,15 @@
+{
+  "arch": "x86_64",
+  "build": "h3b78370_2",
+  "build_number": 2,
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14"
+  ],
+  "license": "LGPL-2.1-only",
+  "name": "libiconv",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1754908768807,
+  "version": "1.18"
+}

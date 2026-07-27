@@ -1,0 +1,21 @@
+{
+  "arch": "x86_64",
+  "build": "py313hf159716_1",
+  "build_number": 1,
+  "constrains": [
+    "libbrotlicommon 1.2.0 hb03c661_1"
+  ],
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14",
+    "libstdcxx >=14",
+    "python >=3.13,<3.14.0a0",
+    "python_abi 3.13.* *_cp313"
+  ],
+  "license": "MIT",
+  "name": "brotli-python",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1764017371123,
+  "version": "1.2.0"
+}

@@ -1,0 +1,22 @@
+{
+    "arch": "x86_64",
+    "build": "h3435931_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14"
+    ],
+    "fn": "libffi-3.5.2-h3435931_0.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "a360c33a5abe61c07959e449fa1453eb",
+    "name": "libffi",
+    "platform": "linux",
+    "sha256": "31f19b6a88ce40ebc0d5a992c131f57d919f73c0b92cd1617a5bec83f6e961e6",
+    "size": 58592,
+    "subdir": "linux-64",
+    "timestamp": 1769456073053,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libffi-3.5.2-h3435931_0.conda",
+    "version": "3.5.2"
+}

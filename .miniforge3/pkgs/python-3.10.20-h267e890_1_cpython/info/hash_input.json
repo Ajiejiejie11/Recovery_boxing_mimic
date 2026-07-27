@@ -1,0 +1,22 @@
+{
+  "expat": "2",
+  "sqlite": "3",
+  "readline": "8",
+  "c_compiler_version": "14",
+  "channel_targets": "conda-forge main",
+  "openssl": "3.5",
+  "libuuid": "2",
+  "zlib": "1",
+  "c_stdlib_version": "2.17",
+  "liblzma_devel": "5",
+  "bzip2": "1",
+  "c_stdlib": "sysroot",
+  "cxx_compiler": "gxx",
+  "ncurses": "6",
+  "CI": "github_actions",
+  "target_platform": "linux-64",
+  "tk": "8.6",
+  "cxx_compiler_version": "14",
+  "c_compiler": "gcc",
+  "__glibc": "__glibc >=2.17,<3.0.a0"
+}

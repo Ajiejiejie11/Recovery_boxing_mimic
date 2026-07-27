@@ -1,0 +1,37 @@
+# This file created by conda-build 25.5.0
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Fri Jul 18 02:30:48 2025
+# ------------------------------------------------
+
+package:
+  name: python_abi
+  version: '3.13'
+build:
+  number: '8'
+  string: 8_cp313
+  noarch: generic
+  track_features: null
+requirements:
+  run_constrained:
+    - python 3.13.* *_cp313
+  build: []
+  run: []
+test:
+  commands:
+    - echo "hello"
+about:
+  home: https://github.com/conda-forge/python_abi-feedstock
+  summary: Metapackage to select python implementation
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+extra:
+  recipe-maintainers:
+    - chrisburr
+    - isuruf
+    - xhochy
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20250717.3.1
+  remote_url: https://github.com/conda-forge/python_abi-feedstock
+  sha: 21d54adcc66aa3497122c4fcd6fb0373aff2d0b5

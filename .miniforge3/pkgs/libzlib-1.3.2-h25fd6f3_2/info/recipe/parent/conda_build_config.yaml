@@ -1,0 +1,4 @@
+# compilers depends on zlib itself -> use the bootstrap compiler
+c_compiler:             # [not win]
+  - clang_bootstrap     # [osx]
+  - gcc_bootstrap       # [linux]

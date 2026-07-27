@@ -1,0 +1,80 @@
+# This file created by conda-build 25.5.0
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Mon Aug 11 09:49:35 2025
+# ------------------------------------------------
+
+package:
+  name: keyutils
+  version: 1.6.3
+source:
+  url: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git/snapshot/keyutils-1.6.3.tar.gz
+  sha256: a61d5706136ae4c05bd48f86186bcfdbd88dd8bd5107e3e195c924cfc1b39bb4
+  patches:
+    - patches/0001-Make-endian-detection-in-work-on-non-RHEL-distributi.patch
+    - patches/0002-Fix-installing-shared-library-symlinks-with-DESTDIR.patch
+build:
+  number: '0'
+  run_exports:
+    - keyutils >=1.6.3,<2.0a0
+  string: hb9d3cd8_0
+requirements:
+  build:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - binutils_impl_linux-64 2.44 h4bf12b8_1
+    - binutils_linux-64 2.44 h4852527_1
+    - conda-gcc-specs 13.4.0 h54dc52d_4
+    - file 5.46 hadc24fc_0
+    - gcc 13.4.0 h81444f0_4
+    - gcc_impl_linux-64 13.4.0 h69c5793_4
+    - gcc_linux-64 13.4.0 h621f4e2_11
+    - gxx 13.4.0 h7467c50_4
+    - gxx_impl_linux-64 13.4.0 haf17267_4
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.44 h1423503_1
+    - libgcc 15.1.0 h767d61c_4
+    - libgcc-devel_linux-64 13.4.0 hba01cd7_104
+    - libgomp 15.1.0 h767d61c_4
+    - libmagic 5.46 hadc24fc_0
+    - libsanitizer 13.4.0 h14bf0c3_4
+    - libstdcxx 15.1.0 h8f9b012_4
+    - libstdcxx-devel_linux-64 13.4.0 hba01cd7_104
+    - libzlib 1.3.1 hb9d3cd8_2
+    - make 4.4.1 hb9d3cd8_2
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025b h78e105d_0
+  host:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - libgcc 15.1.0 h767d61c_4
+    - libgomp 15.1.0 h767d61c_4
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - libgcc >=13
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libkeyutils.so
+    - keyctl --version | grep '1.6.3'
+about:
+  home: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git/
+  license: LGPL-2.1-or-later
+  license_file: LICENCE.LGPL
+  summary: Linux Key Management Utilities
+  description: 'Keyutils is a set of utilities for managing the key retention facility
+    in
+
+    the kernel, which can be used by filesystems, block devices and more to
+
+    gain and retain the authorization and encryption keys required to perform
+
+    secure operations.
+
+    '
+extra:
+  recipe-maintainers:
+    - chrisburr
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20250811.1.1
+  remote_url: https://github.com/conda-forge/keyutils-feedstock
+  sha: 9ab5205ac83a921957aafc9880b062848e5734f9

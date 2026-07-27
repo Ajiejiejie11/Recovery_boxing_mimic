@@ -1,0 +1,14 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "dev_url": "https://sourceforge.net/projects/ruamel-yaml-clib",
+  "extra": {
+    "flow_run_id": "azure_20251219.3.1",
+    "remote_url": "https://github.com/conda-forge/ruamel.yaml.clib-feedstock",
+    "sha": "f2786dbc9d24ed95c255b5d93c84ba4fbf08ac6f"
+  },
+  "home": "https://pypi.org/project/ruamel.yaml.clib",
+  "license": "MIT",
+  "summary": "C version of reader, parser and emitter for ruamel.yaml derived from libyaml"
+}

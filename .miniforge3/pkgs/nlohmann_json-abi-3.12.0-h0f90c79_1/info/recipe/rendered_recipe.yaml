@@ -1,0 +1,99 @@
+recipe:
+  schema_version: 1
+  context:
+    name: nlohmann_json
+    version: 3.12.0
+  package:
+    name: nlohmann_json-abi
+    version: 3.12.0
+  source:
+  - url: https://github.com/nlohmann/json/archive/v3.12.0.tar.gz
+    sha256: 4b92eb0c06d10683f7447ce9406cb97cd4b453be18d7279320f7b2f025c10187
+  build:
+    number: 1
+    string: h0f90c79_1
+    script: echo "nlohmann_json-abi is built"
+    noarch: generic
+  requirements:
+    run_exports:
+      weak:
+      - nlohmann_json-abi ==3.12.0
+  about:
+    homepage: http://github.com/nlohmann/json
+    repository: http://github.com/nlohmann/json
+    documentation: http://nlohmann.github.io/json/
+    license: MIT
+    license_file:
+    - LICENSE.MIT
+    summary: JSON for Modern C++
+    description: |-
+      Empty package which enforces ABI compatibility for nlohmann_json.
+      This package ensures all linked shared libraries use the exact same
+      version of nlohmann_json to prevent runtime errors.
+  extra:
+    recipe-maintainers:
+    - constantinpape
+    - SylvainCorlay
+    - JohanMabille
+    - wolfv
+build_configuration:
+  target_platform: noarch
+  host_platform:
+    platform: osx-arm64
+    virtual_packages:
+    - __unix=0=0
+    - __osx=15.5=0
+    - __archspec=1=skylake
+  build_platform:
+    platform: osx-64
+    virtual_packages:
+    - __unix=0=0
+    - __osx=15.5=0
+    - __archspec=1=skylake
+  variant:
+    MACOSX_DEPLOYMENT_TARGET: '11.0'
+    channel_sources: conda-forge
+    channel_targets: conda-forge main
+    target_platform: noarch
+  hash:
+    hash: 0f90c79
+  directories:
+    host_prefix: /Users/runner/miniforge3/conda-bld/bld/rattler-build_nlohmann_json-abi_1758194464/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac
+    build_prefix: /Users/runner/miniforge3/conda-bld/bld/rattler-build_nlohmann_json-abi_1758194464/build_env
+    work_dir: /Users/runner/miniforge3/conda-bld/bld/rattler-build_nlohmann_json-abi_1758194464/work
+    build_dir: /Users/runner/miniforge3/conda-bld/bld/rattler-build_nlohmann_json-abi_1758194464
+  channels:
+  - https://conda.anaconda.org/conda-forge
+  channel_priority: strict
+  solve_strategy: highest
+  timestamp: 2025-09-18T11:21:04.430855Z
+  subpackages:
+    nlohmann_json:
+      name: nlohmann_json
+      version: 3.12.0
+      build_string: h248ca61_1
+    nlohmann_json-abi:
+      name: nlohmann_json-abi
+      version: 3.12.0
+      build_string: h0f90c79_1
+  packaging_settings:
+    archive_type: conda
+    compression_level: 15
+finalized_dependencies:
+  build: null
+  host: null
+  run:
+    depends: []
+    constraints: []
+    run_exports:
+      weak:
+      - nlohmann_json-abi ==3.12.0
+finalized_sources:
+- url: https://github.com/nlohmann/json/archive/v3.12.0.tar.gz
+  sha256: 4b92eb0c06d10683f7447ce9406cb97cd4b453be18d7279320f7b2f025c10187
+system_tools:
+  rattler-build: 0.47.0
+extra_meta:
+  flow_run_id: azure_20250918.1.1
+  remote_url: https://github.com/conda-forge/nlohmann_json-feedstock
+  sha: ca78a986cfd2240a598bbac6d2af53d3cbae478a

@@ -1,0 +1,41 @@
+triplet:
+  - x86_64-conda-linux-gnu
+  - powerpc64le-conda-linux-gnu
+  - aarch64-conda-linux-gnu
+  - s390x-conda-linux-gnu
+  - riscv64-conda-linux-gnu
+  - x86_64-w64-mingw32
+  - x86_64-apple-darwin13.4.0
+  - arm64-apple-darwin20.0.0
+ctng_vendor:
+  - conda
+  - conda
+  - conda
+  - conda
+  - conda
+  - none
+  - none
+  - none
+cross_target_platform:
+  - linux-64
+  - linux-ppc64le
+  - linux-aarch64
+  - linux-s390x
+  - linux-riscv64
+  - win-64
+  - osx-64
+  - osx-arm64
+cxx_compiler:       # [linux or win]
+  - gcc_bootstrap   # [linux or win]
+c_stdlib:           # [win]
+  - m2w64-sysroot   # [win]
+bootstrap:
+  - true
+  - false
+zip_keys:
+  -
+    - triplet
+    - ctng_vendor
+    - cross_target_platform
+cxx_compiler_version:  # [osx]
+- '17'                 # [osx]

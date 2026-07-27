@@ -1,0 +1,22 @@
+{
+    "arch": "x86_64",
+    "build": "hb03c661_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14"
+    ],
+    "fn": "c-ares-1.34.6-hb03c661_0.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "md5": "920bb03579f15389b9e512095ad995b7",
+    "name": "c-ares",
+    "platform": "linux",
+    "sha256": "cc9accf72fa028d31c2a038460787751127317dcfa991f8d1f1babf216bb454e",
+    "size": 207882,
+    "subdir": "linux-64",
+    "timestamp": 1765214722852,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/c-ares-1.34.6-hb03c661_0.conda",
+    "version": "1.34.6"
+}

@@ -1,0 +1,8 @@
+- python:
+    imports:
+    - zstandard
+- script:
+    content: pip check
+  requirements:
+    run:
+    - pip

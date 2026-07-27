@@ -1,0 +1,11 @@
+{
+  "build": "hc364b38_1",
+  "build_number": 1,
+  "license": "BSD-3-Clause",
+  "license_family": "BSD",
+  "name": "pybind11-abi",
+  "noarch": "generic",
+  "subdir": "noarch",
+  "timestamp": 1752769938071,
+  "version": "11"
+}

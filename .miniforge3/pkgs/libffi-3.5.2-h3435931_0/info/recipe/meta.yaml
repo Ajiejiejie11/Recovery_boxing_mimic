@@ -1,0 +1,92 @@
+# This file created by conda-build 25.11.1
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Mon Jan 26 19:30:43 2026
+# ------------------------------------------------
+
+package:
+  name: libffi
+  version: 3.5.2
+source:
+  url: https://github.com/libffi/libffi/releases/download/v3.5.2/libffi-3.5.2.tar.gz
+  sha256: f3a3082a23b37c293a4fcd1053147b371f2ff91fa7ea1b2a52e335676bac82dc
+  patches:
+    - 0001-arm64-use-a-dedicated-dylib-for-trampolines-so-it-ca.patch
+    - 0002-Add-support-for-ffi_find_closure_for_code_np-on-Appl.patch
+    - 0003-define-extend_hfa_type-with-inline-assembly-for-clan.patch
+build:
+  number: '0'
+  run_exports:
+    - libffi >=3.5.2,<3.6.0a0
+  string: h3435931_0
+requirements:
+  build:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - autoconf 2.72 pl5321hbb4ee43_1
+    - automake 1.16.5 pl5321ha770c72_0
+    - binutils_impl_linux-64 2.45 default_hfdba357_105
+    - binutils_linux-64 2.45 default_h4852527_105
+    - gcc_impl_linux-64 14.3.0 he8b2097_16
+    - gcc_linux-64 14.3.0 h298d278_17
+    - gnuconfig 2025.07.09 hd8ed1ab_0
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.45 default_hbd61a6d_105
+    - libgcc 15.2.0 he0feb66_16
+    - libgcc-devel_linux-64 14.3.0 hf649bbc_116
+    - libgcc-ng 15.2.0 h69a702a_16
+    - libgomp 15.2.0 he0feb66_16
+    - libltdl 2.4.3a h5888daf_0
+    - libsanitizer 14.3.0 h8f1669f_16
+    - libstdcxx 15.2.0 h934c35e_16
+    - libstdcxx-devel_linux-64 14.3.0 h9f08a49_116
+    - libtool 2.5.4 h5888daf_0
+    - libxcrypt 4.4.36 hd590300_1
+    - libzlib 1.3.1 hb9d3cd8_2
+    - m4 1.4.20 hb9d3cd8_0
+    - make 4.4.1 hb9d3cd8_2
+    - ncurses 6.5 h2d0b736_3
+    - patch 2.8 hb03c661_1002
+    - perl 5.32.1 7_hd590300_perl5
+    - sysroot_linux-64 2.17 h0157908_18
+    - texinfo 7.2 pl5321haa1a288_0
+    - tzdata 2025c hc9c84f9_1
+    - zstd 1.5.7 hb78ec9c_6
+  host:
+    - _libgcc_mutex 0.1 conda_forge
+    - _openmp_mutex 4.5 2_gnu
+    - libgcc 15.2.0 he0feb66_16
+    - libgomp 15.2.0 he0feb66_16
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - libgcc >=14
+test:
+  requires: null
+  commands:
+    - test -e $PREFIX/lib/libffi${SHLIB_EXT}
+    - test -e $PREFIX/lib/libffi.a
+    - test -e $PREFIX/include/ffi.h
+    - test -e $PREFIX/include/ffitarget.h
+about:
+  home: https://sourceware.org/libffi/
+  license: MIT
+  license_file: LICENSE
+  summary: A Portable Foreign Function Interface Library.
+  description: 'The libffi library provides a portable, high level programming interface
+
+    to various calling conventions. This allows a programmer to call any
+
+    function specified by a call interface description at run-time.
+
+    '
+  doc_url: https://sourceware.org/libffi/
+  dev_url: https://github.com/libffi/libffi
+extra:
+  recipe-maintainers:
+    - isuruf
+    - scopatz
+    - stefan-balke
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20260126.5.1
+  remote_url: https://github.com/conda-forge/libffi-feedstock
+  sha: 4268e9444bf3fe0d570ffaa9d56b3f9d2711c9e6

@@ -1,0 +1,54 @@
+# This file created by conda-build 26.3.0
+# ------------------------------------------------
+
+package:
+  name: libstdcxx
+  version: 15.2.0
+source:
+  - url:
+      - https://mirrors.ocf.berkeley.edu/gnu/gcc/gcc-15.2.0/gcc-15.2.0.tar.gz
+    sha256: 7294d65cc1a0558cb815af0ca8c7763d86f7a31199794ede3f630c0d1b0a5723
+    patches:
+      - patches/0001-allow-commands-in-main-specfile.patch
+      - patches/0002-patch-zoneinfo_dir_override-to-point-to-our-tzdata.patch
+      - patches/0003-add-ldl-to-libstdc___la_LDFLAGS.patch
+      - patches/0004-Hardcode-HAVE_ALIGNED_ALLOC-1-in-libstdc-v3-configur.patch
+  - url: https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz
+    sha256: 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
+    folder: zlib2
+build:
+  number: 19
+  detect_binary_files_with_prefix: false
+  missing_dso_whitelist:
+    - '*'
+  string: h934c35e_19
+requirements:
+  host:
+    - kernel-headers_linux-64 3.10.0 he581ecd_18
+    - libgcc 15.2.0 he0feb66_19
+    - sysroot_linux-64 2.17 hb09d241_18
+    - tzdata 2025c hc9c84f9_1
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - libgcc 15.2.0 he0feb66_19
+  run_constrained:
+    - libstdcxx-ng ==15.2.0=*_19
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libstdc++.so
+about:
+  summary: The GNU C++ Runtime Library
+  home: https://gcc.gnu.org/
+  license: GPL-3.0-only WITH GCC-exception-3.1
+extra:
+  feedstock-name: ctng-compilers-feedstock
+  recipe-maintainers:
+    - beckermr
+    - isuruf
+    - timsnyder
+    - xhochy
+  final: true
+  copy_test_source_files: true
+  flow_run_id: azure_20260508.3.1
+  remote_url: https://github.com/conda-forge/ctng-compilers-feedstock
+  sha: 56d1f0049683ead04fe3ed3276d698dbaacac230

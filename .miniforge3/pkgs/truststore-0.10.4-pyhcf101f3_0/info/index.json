@@ -1,0 +1,14 @@
+{
+  "build": "pyhcf101f3_0",
+  "build_number": 0,
+  "depends": [
+    "python >=3.10,<4",
+    "python"
+  ],
+  "license": "MIT",
+  "name": "truststore",
+  "noarch": "python",
+  "subdir": "noarch",
+  "timestamp": 1766494826559,
+  "version": "0.10.4"
+}

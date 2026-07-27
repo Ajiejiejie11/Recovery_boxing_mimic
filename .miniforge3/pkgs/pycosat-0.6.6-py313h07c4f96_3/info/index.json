@@ -1,0 +1,17 @@
+{
+  "arch": "x86_64",
+  "build": "py313h07c4f96_3",
+  "build_number": 3,
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14",
+    "python >=3.13,<3.14.0a0",
+    "python_abi 3.13.* *_cp313"
+  ],
+  "license": "MIT",
+  "name": "pycosat",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1757744775176,
+  "version": "0.6.6"
+}

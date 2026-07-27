@@ -1,0 +1,15 @@
+{
+  "arch": "x86_64",
+  "build": "h280c20c_1002",
+  "build_number": 1002,
+  "depends": [
+    "libgcc >=14",
+    "__glibc >=2.17,<3.0.a0"
+  ],
+  "license": "GPL-2.0-or-later",
+  "name": "lzo",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1753889274283,
+  "version": "2.10"
+}

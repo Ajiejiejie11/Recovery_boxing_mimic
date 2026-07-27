@@ -1,0 +1,16 @@
+{
+  "arch": "x86_64",
+  "build": "h853b02a_0",
+  "build_number": 0,
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14",
+    "ncurses >=6.5,<7.0a0"
+  ],
+  "license": "GPL-3.0-only",
+  "name": "readline",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1765813471974,
+  "version": "8.3"
+}

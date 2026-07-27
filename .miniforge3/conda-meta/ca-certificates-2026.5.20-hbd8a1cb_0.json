@@ -1,0 +1,50 @@
+{
+    "arch": null,
+    "build": "hbd8a1cb_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__unix"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/ca-certificates-2026.5.20-hbd8a1cb_0",
+    "files": [
+        "ssl/cacert.pem",
+        "ssl/cert.pem"
+    ],
+    "fn": "ca-certificates-2026.5.20-hbd8a1cb_0.conda",
+    "license": "ISC",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/ca-certificates-2026.5.20-hbd8a1cb_0",
+        "type": 1
+    },
+    "md5": "489b8e97e666c93f68fdb35c3c9b957f",
+    "name": "ca-certificates",
+    "noarch": "generic",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/ca-certificates-2026.5.20-hbd8a1cb_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "ssl/cacert.pem",
+                "path_type": "hardlink",
+                "sha256": "7cef540c6af3bf0a3c7d0070bd3fd7aae34f8aa805b408d1c27a01c8aeb305df",
+                "sha256_in_prefix": "7cef540c6af3bf0a3c7d0070bd3fd7aae34f8aa805b408d1c27a01c8aeb305df",
+                "size_in_bytes": 236095
+            },
+            {
+                "_path": "ssl/cert.pem",
+                "path_type": "softlink",
+                "sha256_in_prefix": "7cef540c6af3bf0a3c7d0070bd3fd7aae34f8aa805b408d1c27a01c8aeb305df",
+                "size_in_bytes": 236095
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": null,
+    "requested_spec": "ca-certificates==2026.5.20=hbd8a1cb_0",
+    "sha256": "9812a303a1395e1dafbd92e5bc8a1ff6013bcbba0a09c7f03a8d23e43560aa9b",
+    "size": 129868,
+    "subdir": "noarch",
+    "timestamp": 1779289852439,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.5.20-hbd8a1cb_0.conda",
+    "version": "2026.5.20"
+}

@@ -1,0 +1,12 @@
+diff --git a/autogen.sh b/autogen.sh
+index 833f904..734db0f 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -91,7 +91,6 @@ fi
+ 
+ 
+ LIBTOOLIZE=libtoolize
+-case `uname` in Darwin*) LIBTOOLIZE=glibtoolize ;; esac
+ if ! ($LIBTOOLIZE --version) < /dev/null > /dev/null 2>&1; then
+ 	error_mesg "You must have libtool-2 installed to generate the util-linux build system."
+ else

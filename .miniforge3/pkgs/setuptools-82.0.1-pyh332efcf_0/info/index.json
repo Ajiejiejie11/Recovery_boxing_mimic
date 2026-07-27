@@ -1,0 +1,16 @@
+{
+  "arch": null,
+  "build": "pyh332efcf_0",
+  "build_number": 0,
+  "depends": [
+    "python >=3.10"
+  ],
+  "license": "MIT",
+  "license_family": "MIT",
+  "name": "setuptools",
+  "noarch": "python",
+  "platform": null,
+  "subdir": "noarch",
+  "timestamp": 1773074868565,
+  "version": "82.0.1"
+}

@@ -1,0 +1,17 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "extra": {
+    "flow_run_id": "github_23466659810",
+    "recipe-maintainers": [
+      "anguslees",
+      "xhochy"
+    ],
+    "remote_url": "https://github.com/conda-forge/jsonpointer-feedstock",
+    "sha": "cd3118685268860e6362904a6871da29f8c05564"
+  },
+  "home": "https://github.com/stefankoegl/python-json-pointer",
+  "license": "BSD-3-Clause",
+  "summary": "Identify specific nodes in a JSON document (RFC 6901)"
+}

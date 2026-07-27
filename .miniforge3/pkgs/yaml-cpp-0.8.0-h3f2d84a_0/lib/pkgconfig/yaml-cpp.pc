@@ -1,0 +1,11 @@
+prefix=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_yaml-cpp_1745307989/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place
+exec_prefix=${prefix}
+includedir=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_yaml-cpp_1745307989/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place/include
+libdir=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_yaml-cpp_1745307989/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place/lib
+
+Name: Yaml-cpp
+Description: A YAML parser and emitter for C++
+Version: 0.8.0
+Requires:
+Libs: -L${libdir} -lyaml-cpp
+Cflags: -I${includedir}

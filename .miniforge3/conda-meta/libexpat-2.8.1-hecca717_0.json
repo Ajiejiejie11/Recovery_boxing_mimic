@@ -1,0 +1,54 @@
+{
+    "arch": "x86_64",
+    "build": "hecca717_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "expat 2.8.1.*"
+    ],
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libexpat-2.8.1-hecca717_0",
+    "files": [
+        "lib/libexpat.so.1",
+        "lib/libexpat.so.1.12.1"
+    ],
+    "fn": "libexpat-2.8.1-hecca717_0.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libexpat-2.8.1-hecca717_0",
+        "type": 1
+    },
+    "md5": "93764a5ca80616e9c10106cdaec92f74",
+    "name": "libexpat",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libexpat-2.8.1-hecca717_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "lib/libexpat.so.1",
+                "path_type": "softlink",
+                "sha256_in_prefix": "4bb8cece1824370d993b401e7fc099776eca8b383fe31aef3105aa7ed7e205a0",
+                "size_in_bytes": 195520
+            },
+            {
+                "_path": "lib/libexpat.so.1.12.1",
+                "path_type": "hardlink",
+                "sha256": "4bb8cece1824370d993b401e7fc099776eca8b383fe31aef3105aa7ed7e205a0",
+                "sha256_in_prefix": "4bb8cece1824370d993b401e7fc099776eca8b383fe31aef3105aa7ed7e205a0",
+                "size_in_bytes": 195520
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "libexpat==2.8.1=hecca717_0",
+    "sha256": "363018b25fdb5534c79783d912bd4b685a3547f4fc5996357ad548899b0ee8e7",
+    "size": 77294,
+    "subdir": "linux-64",
+    "timestamp": 1779278686680,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libexpat-2.8.1-hecca717_0.conda",
+    "version": "2.8.1"
+}

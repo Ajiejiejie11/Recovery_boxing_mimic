@@ -1,0 +1,24 @@
+{
+  "name": "pip",
+  "version": "26.1.2",
+  "build": "pyh8b19718_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/conda-forge/noarch",
+  "subdir": "noarch",
+  "fn": "pip-26.1.2-pyh8b19718_0.conda",
+  "md5": "511fbc2c63d2c73650ad1755e4d357ba",
+  "url": "https://conda.anaconda.org/conda-forge/noarch/pip-26.1.2-pyh8b19718_0.conda",
+  "sha256": "29b7d75bf81ad11645a8e320b369abdc90a92b93f2a9178e853d9dddf82e5106",
+  "depends": [
+    "python >=3.10,<3.13.0a0",
+    "setuptools",
+    "wheel"
+  ],
+  "constrains": [],
+  "noarch": "python",
+  "license": "MIT",
+  "license_family": "MIT",
+  "package_type": "noarch_python",
+  "timestamp": 1780262795392,
+  "size": 1203173
+}

@@ -1,0 +1,69 @@
+{
+    "arch": "x86_64",
+    "build": "h934c35e_19",
+    "build_number": 19,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "libstdcxx-ng ==15.2.0=*_19"
+    ],
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc 15.2.0 he0feb66_19"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libstdcxx-15.2.0-h934c35e_19",
+    "files": [
+        "lib/libstdc++.so",
+        "lib/libstdc++.so.6",
+        "lib/libstdc++.so.6.0.34",
+        "share/licenses/libstdc++/RUNTIME.LIBRARY.EXCEPTION"
+    ],
+    "fn": "libstdcxx-15.2.0-h934c35e_19.conda",
+    "license": "GPL-3.0-only WITH GCC-exception-3.1",
+    "license_family": "GPL",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libstdcxx-15.2.0-h934c35e_19",
+        "type": 1
+    },
+    "md5": "5794b3bdc38177caf969dabd3af08549",
+    "name": "libstdcxx",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libstdcxx-15.2.0-h934c35e_19.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "lib/libstdc++.so",
+                "path_type": "softlink",
+                "sha256_in_prefix": "9581ad615b7c073423f57b69a3b148a89f8ea76fc909124211f9007909b807a6",
+                "size_in_bytes": 21295144
+            },
+            {
+                "_path": "lib/libstdc++.so.6",
+                "path_type": "softlink",
+                "sha256_in_prefix": "9581ad615b7c073423f57b69a3b148a89f8ea76fc909124211f9007909b807a6",
+                "size_in_bytes": 21295144
+            },
+            {
+                "_path": "lib/libstdc++.so.6.0.34",
+                "path_type": "hardlink",
+                "sha256": "9581ad615b7c073423f57b69a3b148a89f8ea76fc909124211f9007909b807a6",
+                "sha256_in_prefix": "9581ad615b7c073423f57b69a3b148a89f8ea76fc909124211f9007909b807a6",
+                "size_in_bytes": 21295144
+            },
+            {
+                "_path": "share/licenses/libstdc++/RUNTIME.LIBRARY.EXCEPTION",
+                "path_type": "hardlink",
+                "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+                "sha256_in_prefix": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+                "size_in_bytes": 3324
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "libstdcxx==15.2.0=h934c35e_19",
+    "sha256": "dff1058c76ec6b8759e41cefa2508162d00e4a5e6721aa68ec3fd10094e702dc",
+    "size": 5852044,
+    "subdir": "linux-64",
+    "timestamp": 1778269036376,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-15.2.0-h934c35e_19.conda",
+    "version": "15.2.0"
+}

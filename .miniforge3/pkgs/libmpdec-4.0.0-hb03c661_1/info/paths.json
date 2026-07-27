@@ -1,0 +1,17 @@
+{
+  "paths": [
+    {
+      "_path": "lib/libmpdec.so.4",
+      "path_type": "softlink",
+      "sha256": "6be97fc47c07871b522613d575190b7e454e4f2ba7b85f4aabe812fb0ea93fc1",
+      "size_in_bytes": 232000
+    },
+    {
+      "_path": "lib/libmpdec.so.4.0.0",
+      "path_type": "hardlink",
+      "sha256": "6be97fc47c07871b522613d575190b7e454e4f2ba7b85f4aabe812fb0ea93fc1",
+      "size_in_bytes": 232000
+    }
+  ],
+  "paths_version": 1
+}

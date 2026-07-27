@@ -1,0 +1,15 @@
+{
+  "arch": null,
+  "build": "hbd8a1cb_0",
+  "build_number": 0,
+  "depends": [
+    "__unix"
+  ],
+  "license": "ISC",
+  "name": "ca-certificates",
+  "noarch": "generic",
+  "platform": null,
+  "subdir": "noarch",
+  "timestamp": 1781708962055,
+  "version": "2026.6.17"
+}

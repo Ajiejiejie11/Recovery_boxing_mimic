@@ -1,0 +1,22 @@
+{
+    "arch": "x86_64",
+    "build": "h171cf75_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "libstdcxx >=14",
+        "libgcc >=14",
+        "__glibc >=2.17,<3.0.a0"
+    ],
+    "fn": "cpp-expected-1.3.1-h171cf75_0.conda",
+    "license": "CC0-1.0",
+    "md5": "d17488e343e4c5c0bd0db18b3934d517",
+    "name": "cpp-expected",
+    "platform": "linux",
+    "sha256": "0d9405d9f2de5d4b15d746609d87807aac10e269072d6408b769159762ed113d",
+    "size": 24283,
+    "subdir": "linux-64",
+    "timestamp": 1756734785482,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/cpp-expected-1.3.1-h171cf75_0.conda",
+    "version": "1.3.1"
+}

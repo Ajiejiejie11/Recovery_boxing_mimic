@@ -1,0 +1,31 @@
+{
+  "arch": "x86_64",
+  "build": "h6add32d_100_cp313",
+  "build_number": 100,
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "bzip2 >=1.0.8,<2.0a0",
+    "ld_impl_linux-64 >=2.36.1",
+    "libexpat >=2.7.5,<3.0a0",
+    "libffi >=3.5.2,<3.6.0a0",
+    "libgcc >=14",
+    "liblzma >=5.8.2,<6.0a0",
+    "libmpdec >=4.0.0,<5.0a0",
+    "libsqlite >=3.52.0,<4.0a0",
+    "libuuid >=2.42,<3.0a0",
+    "libzlib >=1.3.2,<2.0a0",
+    "ncurses >=6.5,<7.0a0",
+    "openssl >=3.5.6,<4.0a0",
+    "python_abi 3.13.* *_cp313",
+    "readline >=8.3,<9.0a0",
+    "tk >=8.6.13,<8.7.0a0",
+    "tzdata"
+  ],
+  "license": "Python-2.0",
+  "name": "python",
+  "platform": "linux",
+  "python_site_packages_path": "lib/python3.13/site-packages",
+  "subdir": "linux-64",
+  "timestamp": 1775614712638,
+  "version": "3.13.13"
+}

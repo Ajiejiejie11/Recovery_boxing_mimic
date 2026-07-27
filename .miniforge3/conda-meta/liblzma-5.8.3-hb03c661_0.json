@@ -1,0 +1,54 @@
+{
+    "arch": "x86_64",
+    "build": "hb03c661_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "xz 5.8.3.*"
+    ],
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/liblzma-5.8.3-hb03c661_0",
+    "files": [
+        "lib/liblzma.so.5",
+        "lib/liblzma.so.5.8.3"
+    ],
+    "fn": "liblzma-5.8.3-hb03c661_0.conda",
+    "license": "0BSD",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/liblzma-5.8.3-hb03c661_0",
+        "type": 1
+    },
+    "md5": "b88d90cad08e6bc8ad540cb310a761fb",
+    "name": "liblzma",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/liblzma-5.8.3-hb03c661_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "lib/liblzma.so.5",
+                "path_type": "hardlink",
+                "sha256": "07dceced575343c83860aedde6e7e2ac5deb7a0fa31b0f195c44388544817abc",
+                "sha256_in_prefix": "07dceced575343c83860aedde6e7e2ac5deb7a0fa31b0f195c44388544817abc",
+                "size_in_bytes": 222712
+            },
+            {
+                "_path": "lib/liblzma.so.5.8.3",
+                "path_type": "hardlink",
+                "sha256": "07dceced575343c83860aedde6e7e2ac5deb7a0fa31b0f195c44388544817abc",
+                "sha256_in_prefix": "07dceced575343c83860aedde6e7e2ac5deb7a0fa31b0f195c44388544817abc",
+                "size_in_bytes": 222712
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "liblzma==5.8.3=hb03c661_0",
+    "sha256": "ec30e52a3c1bf7d0425380a189d209a52baa03f22fb66dd3eb587acaa765bd6d",
+    "size": 113478,
+    "subdir": "linux-64",
+    "timestamp": 1775825492909,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/liblzma-5.8.3-hb03c661_0.conda",
+    "version": "5.8.3"
+}

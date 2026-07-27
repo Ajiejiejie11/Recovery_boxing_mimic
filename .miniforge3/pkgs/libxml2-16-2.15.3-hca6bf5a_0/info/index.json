@@ -1,0 +1,23 @@
+{
+  "arch": "x86_64",
+  "build": "hca6bf5a_0",
+  "build_number": 0,
+  "constrains": [
+    "libxml2 2.15.3"
+  ],
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "icu >=78.3,<79.0a0",
+    "libgcc >=14",
+    "libiconv >=1.18,<2.0a0",
+    "liblzma >=5.8.3,<6.0a0",
+    "libzlib >=1.3.2,<2.0a0"
+  ],
+  "license": "MIT",
+  "license_family": "MIT",
+  "name": "libxml2-16",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1776376739004,
+  "version": "2.15.3"
+}

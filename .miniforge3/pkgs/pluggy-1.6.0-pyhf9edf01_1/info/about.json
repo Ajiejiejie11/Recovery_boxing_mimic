@@ -1,0 +1,10 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "dev_url": "https://github.com/pytest-dev/pluggy/",
+  "doc_url": "https://pluggy.readthedocs.io/en/latest/",
+  "home": "https://github.com/pytest-dev/pluggy",
+  "license": "MIT",
+  "summary": "Plugin registration and hook calling for Python"
+}

@@ -1,0 +1,31 @@
+{
+    "arch": "x86_64",
+    "build": "gpl_hc2c16d8_101",
+    "build_number": 101,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "bzip2 >=1.0.8,<2.0a0",
+        "libgcc >=14",
+        "liblzma >=5.8.3,<6.0a0",
+        "libxml2",
+        "libxml2-16 >=2.14.6",
+        "libzlib >=1.3.2,<2.0a0",
+        "lz4-c >=1.10.0,<1.11.0a0",
+        "lzo >=2.10,<3.0a0",
+        "openssl >=3.5.6,<4.0a0",
+        "zstd >=1.5.7,<1.6.0a0"
+    ],
+    "fn": "libarchive-3.8.7-gpl_hc2c16d8_101.conda",
+    "license": "BSD-2-Clause",
+    "license_family": "BSD",
+    "md5": "bb1483d91797dae0b466cab86ceb59a7",
+    "name": "libarchive",
+    "platform": "linux",
+    "sha256": "78dd3d493d72c7d7c7647912fe383a3545a2695ee308037b64e9d0752ccedbe9",
+    "size": 890218,
+    "subdir": "linux-64",
+    "timestamp": 1778486345922,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libarchive-3.8.7-gpl_hc2c16d8_101.conda",
+    "version": "3.8.7"
+}

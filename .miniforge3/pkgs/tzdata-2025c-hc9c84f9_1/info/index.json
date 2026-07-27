@@ -1,0 +1,11 @@
+{
+  "build": "hc9c84f9_1",
+  "build_number": 1,
+  "depends": [],
+  "license": "LicenseRef-Public-Domain",
+  "name": "tzdata",
+  "noarch": "generic",
+  "subdir": "noarch",
+  "timestamp": 1767016325805,
+  "version": "2025c"
+}

@@ -1,0 +1,4 @@
+- python:
+    imports:
+    - pycparser
+    python_version: 3.10.*

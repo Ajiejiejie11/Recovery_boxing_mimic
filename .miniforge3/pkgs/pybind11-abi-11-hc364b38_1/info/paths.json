@@ -1,0 +1,17 @@
+{
+  "paths": [
+    {
+      "_path": "etc/conda/test-files/pybind11-abi/0/check_abi.py",
+      "path_type": "hardlink",
+      "sha256": "22a26b69d0bd92e5a3f758bacc75546b2ed783e1fcab990dbf6c89f08684ede4",
+      "size_in_bytes": 876
+    },
+    {
+      "_path": "etc/conda/test-files/pybind11-abi/0/include/pybind11/detail/internals.h",
+      "path_type": "hardlink",
+      "sha256": "875fb3fe37220b3d8a12e79b1b8aee1b6f2693395afda24ffbf016cf47ce65f1",
+      "size_in_bytes": 31629
+    }
+  ],
+  "paths_version": 1
+}

@@ -1,0 +1,69 @@
+{% set version = "2026.5.20" %}
+
+{% set pip_version = "25.0.1" %}
+{% set setuptools_version = "75.8.0" %}
+{% set wheel_version = "0.45.1" %}
+
+package:
+  name: certifi
+  version: {{ version }}
+
+source:
+  - url: https://pypi.org/packages/source/c/certifi/certifi-{{ version }}.tar.gz
+    sha256: 69dea482ab64caa7b9f6aba1c6bf48bb6a5448d1c0f1b17ab42ad8c763a5344d
+    folder: certifi
+  # Download bootstrapped wheels into their respective source directories
+  - url: https://pypi.org/packages/py3/p/pip/pip-{{ pip_version }}-py3-none-any.whl
+    sha256: c46efd13b6aa8279f33f2864459c8ce587ea6a1a59ee20de055868d8f7688f7f
+    folder: boostrap_wheels
+  - url: https://pypi.org/packages/py3/s/setuptools/setuptools-{{ setuptools_version }}-py3-none-any.whl
+    sha256: e3982f444617239225d675215d51f6ba05f845d4eec313da4418fdbb56fb27e3
+    folder: boostrap_wheels
+  - url: https://pypi.org/packages/py3/w/wheel/wheel-{{ wheel_version }}-py3-none-any.whl
+    sha256: 708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248
+    folder: boostrap_wheels
+
+build:
+  number: 0
+  noarch: python
+  script_env:
+    # Add bootstrapped wheels to `PYTHONPATH` so Python can find them for the build
+    - >-
+      PYTHONPATH={{ os.sep.join([SRC_DIR|default("."), "boostrap_wheels"]) ~ os.pathsep ~ os.environ.get("PYTHONPATH", "") }}
+  script:
+    - cd certifi
+    - {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - python {{ python_min }}
+  run:
+    - python >={{ python_min }}
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - certifi
+
+about:
+  home: http://certifi.io/
+  license: ISC
+  license_file: certifi/LICENSE
+  summary: Python package for providing Mozilla's CA Bundle.
+  description: |
+    Certifi is a curated collection of Root Certificates for validating the
+    trustworthiness of SSL certificates while verifying the identity of TLS
+    hosts.
+  doc_url: https://pypi.python.org/pypi/certifi
+  dev_url: https://github.com/certifi/python-certifi
+  doc_source_url: https://github.com/certifi/certifi.io/blob/master/README.rst
+
+extra:
+  recipe-maintainers:
+    - jjhelmus
+    - mingwandroid
+    - jakirkham
+    - pelson
+    - sigmavirus24
+    - ocefpaf

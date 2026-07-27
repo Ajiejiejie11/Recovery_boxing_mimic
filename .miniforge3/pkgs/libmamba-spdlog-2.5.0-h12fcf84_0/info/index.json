@@ -1,0 +1,17 @@
+{
+  "arch": "x86_64",
+  "build": "h12fcf84_0",
+  "build_number": 0,
+  "depends": [
+    "libstdcxx >=14",
+    "libgcc >=14",
+    "__glibc >=2.17,<3.0.a0",
+    "libmamba >=2.5.0,<2.6.0a0"
+  ],
+  "license": "BSD-3-Clause",
+  "name": "libmamba-spdlog",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1767884157870,
+  "version": "2.5.0"
+}

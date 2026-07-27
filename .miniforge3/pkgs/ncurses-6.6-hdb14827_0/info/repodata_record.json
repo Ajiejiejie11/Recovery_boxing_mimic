@@ -1,0 +1,21 @@
+{
+    "arch": "x86_64",
+    "build": "hdb14827_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14"
+    ],
+    "fn": "ncurses-6.6-hdb14827_0.conda",
+    "license": "X11 AND BSD-3-Clause",
+    "md5": "fc21868a1a5aacc937e7a18747acb8a5",
+    "name": "ncurses",
+    "platform": "linux",
+    "sha256": "fc89f74bbe362fb29fa3c037697a89bec140b346a2469a90f7936d1d7ea4d8a3",
+    "size": 918956,
+    "subdir": "linux-64",
+    "timestamp": 1777422145199,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/ncurses-6.6-hdb14827_0.conda",
+    "version": "6.6"
+}

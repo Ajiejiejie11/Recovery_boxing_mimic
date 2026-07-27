@@ -1,0 +1,112 @@
+# This file created by conda-build 26.3.0
+# ------------------------------------------------
+
+package:
+  name: libarchive
+  version: 3.8.7
+source:
+  url: https://github.com/libarchive/libarchive/archive/v3.8.7.tar.gz
+  sha256: bc942030fe7cb30e04eed31bd5f63c38cdfd712315b303e91b64e58f05db2346
+  patches:
+    - patches/0001-Add-lib-to-CMAKE_FIND_LIBRARY_PREFIXES-for-lzma.patch
+build:
+  string: gpl_hc2c16d8_101
+  run_exports:
+    - libarchive >=3.8.7,<3.9.0a0
+  number: 101
+requirements:
+  build:
+    - _openmp_mutex 4.5 20_gnu
+    - autoconf 2.72 pl5321hbb4ee43_1
+    - automake 1.17 pl5321ha770c72_0
+    - binutils_impl_linux-64 2.45.1 default_hfdba357_102
+    - binutils_linux-64 2.45.1 default_h4852527_102
+    - gcc_impl_linux-64 14.3.0 h235f0fe_19
+    - gcc_linux-64 14.3.0 h50e9bb6_24
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.45.1 default_hbd61a6d_102
+    - libgcc 15.2.0 he0feb66_19
+    - libgcc-devel_linux-64 14.3.0 hf649bbc_119
+    - libgcc-ng 15.2.0 h69a702a_19
+    - libgomp 15.2.0 he0feb66_19
+    - libltdl 2.4.3a h5888daf_0
+    - libsanitizer 14.3.0 h8f1669f_19
+    - libstdcxx 15.2.0 h934c35e_19
+    - libstdcxx-devel_linux-64 14.3.0 h9f08a49_119
+    - libtool 2.5.4 h5888daf_0
+    - libxcrypt 4.4.36 hd590300_1
+    - libzlib 1.3.2 h25fd6f3_2
+    - m4 1.4.21 hb03c661_0
+    - make 4.4.1 hb9d3cd8_2
+    - perl 5.32.1 7_hd590300_perl5
+    - pkg-config 0.29.2 h4bc722e_1009
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025c hc9c84f9_1
+    - zstd 1.5.7 hb78ec9c_6
+  host:
+    - _openmp_mutex 4.5 20_gnu
+    - bzip2 1.0.8 hda65f42_9
+    - ca-certificates 2026.4.22 hbd8a1cb_0
+    - libgcc 15.2.0 he0feb66_19
+    - libgomp 15.2.0 he0feb66_19
+    - libiconv 1.18 h3b78370_2
+    - liblzma 5.8.3 hb03c661_0
+    - liblzma-devel 5.8.3 hb03c661_0
+    - libstdcxx 15.2.0 h934c35e_19
+    - libxml2 2.14.6 h031cc0b_3
+    - libxml2-16 2.14.6 hf2a90c1_3
+    - libxml2-devel 2.14.6 h031cc0b_3
+    - libzlib 1.3.2 h25fd6f3_2
+    - lz4-c 1.10.0 h5888daf_1
+    - lzo 2.10 h280c20c_1002
+    - openssl 3.5.6 h35e630c_0
+    - zlib 1.3.2 h25fd6f3_2
+    - zstd 1.5.7 hb78ec9c_6
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - bzip2 >=1.0.8,<2.0a0
+    - libgcc >=14
+    - liblzma >=5.8.3,<6.0a0
+    - libxml2
+    - libxml2-16 >=2.14.6
+    - libzlib >=1.3.2,<2.0a0
+    - lz4-c >=1.10.0,<1.11.0a0
+    - lzo >=2.10,<3.0a0
+    - openssl >=3.5.6,<4.0a0
+    - zstd >=1.5.7,<1.6.0a0
+test:
+  requires:
+    - cmake
+    - gcc_linux-64 14.*
+    - ninja
+  files:
+    - test/*
+  commands:
+    - test -f "${PREFIX}/lib/pkgconfig/libarchive.pc"
+    - test -f "${PREFIX}/include/archive.h"
+    - test -f "${PREFIX}/include/archive_entry.h"
+    - test -f "${PREFIX}/lib/libarchive.a"
+    - test -f "${PREFIX}/lib/libarchive${SHLIB_EXT}"
+    - bsdcat --version
+    - bsdcpio --version
+    - bsdtar --version
+    - bsdtar -tf test/hello_world.xar
+    - cmake -G Ninja -S test/ -B build/ -D LIB_NAME="libarchive.so" ${CMAKE_ARGS}
+    - cmake --build build/
+    - cmake --build build --target test
+about:
+  home: http://www.libarchive.org/
+  summary: Multi-format archive and compression library
+  license: BSD-2-Clause
+  license_file: COPYING
+  license_family: BSD
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - jjerphan
+    - ocefpaf
+  final: true
+  copy_test_source_files: true
+  flow_run_id: github_25657609660
+  remote_url: https://github.com/conda-forge/libarchive-feedstock
+  sha: 9b7a943a8ab329ffca486b1634f633e01e65146a

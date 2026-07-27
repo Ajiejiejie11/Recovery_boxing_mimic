@@ -1,0 +1,56 @@
+{% set version = "82.0.1" %}
+
+
+package:
+  name: setuptools
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/setuptools/setuptools-{{ version }}.tar.gz
+  sha256: 7d872682c5d01cfde07da7bccc7b65469d3dca203318515ada1de5eda35efbf9
+  patches:
+    # distutils patches from python-feedstock
+    - patches/0021-Add-d1trimfile-SRC_DIR-to-make-pdbs-more-relocatable.patch
+
+build:
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python {{ python_min }}
+  run:
+    - python >={{ python_min }}
+
+test:
+  requires:
+    # The linter will complain about the missing python_min, but we need
+    # this unpinned to allow setuptools to be used in the downstream tests
+    # of the python-feedstock.
+    # See also https://github.com/conda-forge/conda-forge.github.io/pull/2387
+    - python
+  imports:
+    - setuptools
+
+about:
+  home: https://github.com/pypa/setuptools
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: Download, build, install, upgrade, and uninstall Python packages
+  description: |
+    Setuptools is a fully-featured, actively-maintained, and stable library
+    designed to facilitate packaging Python projects.
+  doc_url: http://pythonhosted.org/setuptools/
+  dev_url: https://github.com/pypa/setuptools
+  doc_source_url: https://github.com/pypa/setuptools/tree/master/docs
+
+extra:
+  recipe-maintainers:
+    - xhochy
+    - rgommers
+    - jakirkham
+    - msarahan
+    - ocefpaf
+    - nicoddemus
+    - isuruf

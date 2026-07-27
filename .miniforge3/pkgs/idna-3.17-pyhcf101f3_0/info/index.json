@@ -1,0 +1,14 @@
+{
+  "build": "pyhcf101f3_0",
+  "build_number": 0,
+  "depends": [
+    "python >=3.10",
+    "python"
+  ],
+  "license": "BSD-3-Clause",
+  "name": "idna",
+  "noarch": "python",
+  "subdir": "noarch",
+  "timestamp": 1779999227630,
+  "version": "3.17"
+}

@@ -1,0 +1,297 @@
+{
+    "arch": null,
+    "build": "pyhd8ed1ab_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "conda >=25.9"
+    ],
+    "depends": [
+        "boltons >=23.0.0",
+        "libmambapy >=2.0.0",
+        "msgpack-python >=1.1.1",
+        "python >=3.10",
+        "requests >=2.28.0,<3",
+        "zstandard >=0.15"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/conda-libmamba-solver-26.4.2-pyhd8ed1ab_0",
+    "files": [
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/INSTALLER",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/METADATA",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/RECORD",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/REQUESTED",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/WHEEL",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/direct_url.json",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/entry_points.txt",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/licenses/AUTHORS.md",
+        "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/licenses/LICENSE",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__init__.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/conda_build_exceptions.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/exceptions.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/index.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/mamba_utils.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/plugin.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/repoquery.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/shards.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/shards_cache.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/shards_subset.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/shards_typing.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/solver.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/state.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/utils.py",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/__init__.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/conda_build_exceptions.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/exceptions.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/index.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/mamba_utils.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/plugin.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/repoquery.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards_cache.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards_subset.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards_typing.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/solver.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/state.cpython-313.pyc",
+        "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/utils.cpython-313.pyc"
+    ],
+    "fn": "conda-libmamba-solver-26.4.2-pyhd8ed1ab_0.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/conda-libmamba-solver-26.4.2-pyhd8ed1ab_0",
+        "type": 1
+    },
+    "md5": "b8d70ceaeb03c3fb4fcfa0ace49272dc",
+    "name": "conda-libmamba-solver",
+    "noarch": "python",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/conda-libmamba-solver-26.4.2-pyhd8ed1ab_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/INSTALLER",
+                "path_type": "hardlink",
+                "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+                "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+                "size_in_bytes": 5
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/METADATA",
+                "path_type": "hardlink",
+                "sha256": "e80f4d7c63bdc0befe6620344f581a4ab4a3c223a31178ccfb7ad20c20e47a20",
+                "sha256_in_prefix": "e80f4d7c63bdc0befe6620344f581a4ab4a3c223a31178ccfb7ad20c20e47a20",
+                "size_in_bytes": 5661
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/RECORD",
+                "path_type": "hardlink",
+                "sha256": "c014d2dd96472c9ab880eb7c237a7174557ad6d3959fdc42fa4736dcb2c92072",
+                "sha256_in_prefix": "c014d2dd96472c9ab880eb7c237a7174557ad6d3959fdc42fa4736dcb2c92072",
+                "size_in_bytes": 3093
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/REQUESTED",
+                "path_type": "hardlink",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/WHEEL",
+                "path_type": "hardlink",
+                "sha256": "41c708c5adba6e097513ab8ccb9f1d7865a2fb469e22491a9e01dcc64da459fc",
+                "sha256_in_prefix": "41c708c5adba6e097513ab8ccb9f1d7865a2fb469e22491a9e01dcc64da459fc",
+                "size_in_bytes": 87
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/direct_url.json",
+                "path_type": "hardlink",
+                "sha256": "83ee7a442d34e83df8cd4ff21ad8f993d72500eee406a540c1596e7bf984192c",
+                "sha256_in_prefix": "83ee7a442d34e83df8cd4ff21ad8f993d72500eee406a540c1596e7bf984192c",
+                "size_in_bytes": 121
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/entry_points.txt",
+                "path_type": "hardlink",
+                "sha256": "24703165ad1fd520140a056ab8e75450e1aa49170ccb3deb9298972f53e5a1cf",
+                "sha256_in_prefix": "24703165ad1fd520140a056ab8e75450e1aa49170ccb3deb9298972f53e5a1cf",
+                "size_in_bytes": 61
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/licenses/AUTHORS.md",
+                "path_type": "hardlink",
+                "sha256": "08a95e8e44383589b0a9f4e3faeb68ef37217a6d67b81ac3bd3c50911061cc2a",
+                "sha256_in_prefix": "08a95e8e44383589b0a9f4e3faeb68ef37217a6d67b81ac3bd3c50911061cc2a",
+                "size_in_bytes": 518
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver-26.4.2.dist-info/licenses/LICENSE",
+                "path_type": "hardlink",
+                "sha256": "b3973794ccbf1601c348aee5b4bfe0345c3bcd21dc0dc80a38441b99405febb0",
+                "sha256_in_prefix": "b3973794ccbf1601c348aee5b4bfe0345c3bcd21dc0dc80a38441b99405febb0",
+                "size_in_bytes": 1663
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__init__.py",
+                "path_type": "hardlink",
+                "sha256": "12bd7767da49a50275a599daed60568d2daaf9958fe8c6d346f35bb6e13c195b",
+                "sha256_in_prefix": "12bd7767da49a50275a599daed60568d2daaf9958fe8c6d346f35bb6e13c195b",
+                "size_in_bytes": 564
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/conda_build_exceptions.py",
+                "path_type": "hardlink",
+                "sha256": "b8f73b3ca9fd20df95e38c04a4a7991d9a688e21f6870b9029d07309f64710ad",
+                "sha256_in_prefix": "b8f73b3ca9fd20df95e38c04a4a7991d9a688e21f6870b9029d07309f64710ad",
+                "size_in_bytes": 1396
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/exceptions.py",
+                "path_type": "hardlink",
+                "sha256": "02a1129199a1bde44ac547d14e8f9048f11615bd4321e5fa5bcfb0619f6a86f3",
+                "sha256_in_prefix": "02a1129199a1bde44ac547d14e8f9048f11615bd4321e5fa5bcfb0619f6a86f3",
+                "size_in_bytes": 485
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/index.py",
+                "path_type": "hardlink",
+                "sha256": "5539eaa8467e8e54763628211c2a71f5626e656739d41e7d20467b4c0ffcb638",
+                "sha256_in_prefix": "5539eaa8467e8e54763628211c2a71f5626e656739d41e7d20467b4c0ffcb638",
+                "size_in_bytes": 33404
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/mamba_utils.py",
+                "path_type": "hardlink",
+                "sha256": "6962fe217a8fc7d6a46e493b8e039e2608e177360e059aa5b84cab47d2c9c421",
+                "sha256_in_prefix": "6962fe217a8fc7d6a46e493b8e039e2608e177360e059aa5b84cab47d2c9c421",
+                "size_in_bytes": 6879
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/plugin.py",
+                "path_type": "hardlink",
+                "sha256": "a08fa0cc6c3bc07049790cd515feea9c0f32a2fe9f36fc2c2db6236de92901aa",
+                "sha256_in_prefix": "a08fa0cc6c3bc07049790cd515feea9c0f32a2fe9f36fc2c2db6236de92901aa",
+                "size_in_bytes": 1148
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/repoquery.py",
+                "path_type": "hardlink",
+                "sha256": "d88af30c171f78ce86abbbcdd1f92624de5329630cf13befa5d1f57486e139ff",
+                "sha256_in_prefix": "d88af30c171f78ce86abbbcdd1f92624de5329630cf13befa5d1f57486e139ff",
+                "size_in_bytes": 7610
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/shards.py",
+                "path_type": "hardlink",
+                "sha256": "20625f97a41901898a7eccca615ec2c2c2ee440efa20bff2e09468a3f724f539",
+                "sha256_in_prefix": "20625f97a41901898a7eccca615ec2c2c2ee440efa20bff2e09468a3f724f539",
+                "size_in_bytes": 28952
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/shards_cache.py",
+                "path_type": "hardlink",
+                "sha256": "c1dd4597b0133402f574e5478c93de139537d5455adc3ac345b63a46ae9556c4",
+                "sha256_in_prefix": "c1dd4597b0133402f574e5478c93de139537d5455adc3ac345b63a46ae9556c4",
+                "size_in_bytes": 6764
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/shards_subset.py",
+                "path_type": "hardlink",
+                "sha256": "a05e2886477abbebf2715408508648090fe757aaada16ce33d4c5fe3e9b80c7d",
+                "sha256_in_prefix": "a05e2886477abbebf2715408508648090fe757aaada16ce33d4c5fe3e9b80c7d",
+                "size_in_bytes": 28137
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/shards_typing.py",
+                "path_type": "hardlink",
+                "sha256": "c7178e4336fd9ea93480df1b272af46e133b237d26937455a72f357c18120035",
+                "sha256_in_prefix": "c7178e4336fd9ea93480df1b272af46e133b237d26937455a72f357c18120035",
+                "size_in_bytes": 1574
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/solver.py",
+                "path_type": "hardlink",
+                "sha256": "203127c85f8c53bd7c72a4dec209482c62ea4bafe3f73fa835d935ae7430cba4",
+                "sha256_in_prefix": "203127c85f8c53bd7c72a4dec209482c62ea4bafe3f73fa835d935ae7430cba4",
+                "size_in_bytes": 47518
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/state.py",
+                "path_type": "hardlink",
+                "sha256": "04f5adf0eef4e80ae5281b6e991b8624d90edd93452330378fe4dc5f63f39515",
+                "sha256_in_prefix": "04f5adf0eef4e80ae5281b6e991b8624d90edd93452330378fe4dc5f63f39515",
+                "size_in_bytes": 33572
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/utils.py",
+                "path_type": "hardlink",
+                "sha256": "428a2b69fa6eaad05b9f860f8668e9ac07a522ca7ed9222703ce33d10873b56d",
+                "sha256_in_prefix": "428a2b69fa6eaad05b9f860f8668e9ac07a522ca7ed9222703ce33d10873b56d",
+                "size_in_bytes": 3833
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/__init__.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/conda_build_exceptions.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/exceptions.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/index.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/mamba_utils.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/plugin.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/repoquery.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards_cache.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards_subset.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/shards_typing.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/solver.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/state.cpython-313.pyc",
+                "path_type": "pyc_file"
+            },
+            {
+                "_path": "lib/python3.13/site-packages/conda_libmamba_solver/__pycache__/utils.cpython-313.pyc",
+                "path_type": "pyc_file"
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": null,
+    "requested_spec": "conda-libmamba-solver==26.4.2=pyhd8ed1ab_0",
+    "sha256": "14545088118baa0d7597f574f2e5b2244817a8def79c8c8c065986ff22acd99d",
+    "size": 59960,
+    "subdir": "noarch",
+    "timestamp": 1778768196921,
+    "url": "https://conda.anaconda.org/conda-forge/noarch/conda-libmamba-solver-26.4.2-pyhd8ed1ab_0.conda",
+    "version": "26.4.2"
+}

@@ -1,0 +1,25 @@
+{
+  "name": "libexpat",
+  "version": "2.8.1",
+  "build": "hecca717_1",
+  "build_number": 1,
+  "channel": "https://conda.anaconda.org/conda-forge/linux-64",
+  "subdir": "linux-64",
+  "fn": "libexpat-2.8.1-hecca717_1.conda",
+  "md5": "b24d3c612f71e7aa74158d92106318b2",
+  "url": "https://conda.anaconda.org/conda-forge/linux-64/libexpat-2.8.1-hecca717_1.conda",
+  "sha256": "16feffd9ddbbe5b718515d38ee376c685ba95491cd901244e24671d20b952a77",
+  "arch": "x86_64",
+  "platform": "linux",
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgcc >=14"
+  ],
+  "constrains": [
+    "expat 2.8.1.*"
+  ],
+  "license": "MIT",
+  "license_family": "MIT",
+  "timestamp": 1781203599810,
+  "size": 77856
+}

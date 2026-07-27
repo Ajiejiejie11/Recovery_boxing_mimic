@@ -1,0 +1,17 @@
+{
+  "arch": null,
+  "build": "8_cp313",
+  "build_number": 8,
+  "constrains": [
+    "python 3.13.* *_cp313"
+  ],
+  "depends": [],
+  "license": "BSD-3-Clause",
+  "license_family": "BSD",
+  "name": "python_abi",
+  "noarch": "generic",
+  "platform": null,
+  "subdir": "noarch",
+  "timestamp": 1752805902938,
+  "version": "3.13"
+}

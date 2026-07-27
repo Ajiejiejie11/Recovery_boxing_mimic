@@ -1,0 +1,153 @@
+# This file created by conda-build 26.3.0
+# meta.yaml template originally from:
+# /home/conda/recipe_root, last modified Wed Apr 29 10:13:15 2026
+# ------------------------------------------------
+
+package:
+  name: conda
+  version: 26.3.2
+source:
+  fn: conda-26.3.2.tar.gz
+  url: https://github.com/conda/conda/releases/download/26.3.2/conda-26.3.2.tar.gz
+  sha256: b5f5c1d4068a6582816d223733993eff354d55ec762ac555b49fdb8de07050c6
+  folder: conda-src
+build:
+  number: '1'
+  script: /home/conda/feedstock_root/build_artifacts/conda_1777457670951/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place/bin/python
+    -m pip install conda-src/ --no-deps --no-build-isolation -vv && /home/conda/feedstock_root/build_artifacts/conda_1777457670951/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place/bin/python
+    -m conda init --install
+  always_include_files:
+    - bin/activate
+    - bin/conda
+    - bin/deactivate
+  string: py313h78bf25f_1
+requirements:
+  build: []
+  host:
+    - _openmp_mutex 4.5 20_gnu
+    - backports.zstd 1.3.0 py313h18e8e13_0
+    - boltons 25.0.0 pyhd8ed1ab_0
+    - brotli-python 1.2.0 py313hf159716_1
+    - bzip2 1.0.8 hda65f42_9
+    - ca-certificates 2026.4.22 hbd8a1cb_0
+    - certifi 2026.4.22 pyhd8ed1ab_0
+    - charset-normalizer 3.4.7 pyhd8ed1ab_0
+    - editables 0.6 pyhcf101f3_0
+    - frozendict 2.4.7 py313h07c4f96_0
+    - h2 4.3.0 pyhcf101f3_0
+    - hatch-vcs 0.5.0 pyhd8ed1ab_0
+    - hatchling 1.29.0 pyhcf101f3_0
+    - hpack 4.1.0 pyhd8ed1ab_0
+    - hyperframe 6.1.0 pyhd8ed1ab_0
+    - icu 78.3 h33c6efd_0
+    - idna 3.13 pyhcf101f3_0
+    - importlib-metadata 8.8.0 pyhcf101f3_0
+    - ld_impl_linux-64 2.45.1 default_hbd61a6d_102
+    - libexpat 2.7.5 hecca717_0
+    - libffi 3.5.2 h3435931_0
+    - libgcc 15.2.0 he0feb66_18
+    - libgomp 15.2.0 he0feb66_18
+    - liblzma 5.8.3 hb03c661_0
+    - libmpdec 4.0.0 hb03c661_1
+    - libsqlite 3.53.0 hf4e2dac_0
+    - libstdcxx 15.2.0 h934c35e_18
+    - libuuid 2.42 h5347b49_0
+    - libzlib 1.3.2 h25fd6f3_2
+    - menuinst 2.4.2 py313h78bf25f_0
+    - ncurses 6.6 hdb14827_0
+    - openssl 3.6.2 h35e630c_0
+    - packaging 26.2 pyhc364b38_0
+    - pathspec 1.1.1 pyhd8ed1ab_0
+    - pip 26.0.1 pyh145f28c_0
+    - platformdirs 4.9.6 pyhcf101f3_0
+    - pluggy 1.6.0 pyhf9edf01_1
+    - pysocks 1.7.1 pyha55dd90_7
+    - python 3.13.13 h6add32d_100_cp313
+    - python_abi 3.13 8_cp313
+    - readline 8.3 h853b02a_0
+    - requests 2.33.1 pyhcf101f3_1
+    - ruamel.yaml 0.18.17 py313h54dd161_2
+    - ruamel.yaml.clib 0.2.15 py313h54dd161_1
+    - setuptools 82.0.1 pyh332efcf_0
+    - setuptools-scm 9.2.2 pyhd8ed1ab_0
+    - tk 8.6.13 noxft_h366c992_103
+    - tomli 2.4.1 pyhcf101f3_0
+    - tqdm 4.67.3 pyh8f84b5b_0
+    - trove-classifiers 2026.4.28.13 pyhd8ed1ab_0
+    - typing-extensions 4.15.0 h396c80c_0
+    - typing_extensions 4.15.0 pyhcf101f3_0
+    - tzdata 2025c hc9c84f9_1
+    - urllib3 2.6.3 pyhd8ed1ab_0
+    - zipp 3.23.1 pyhcf101f3_0
+    - zstd 1.5.7 hb78ec9c_6
+  run:
+    - archspec >=0.2.3
+    - boltons >=23.0.0
+    - charset-normalizer
+    - conda-libmamba-solver >=25.11.0
+    - conda-package-handling >=2.2.0
+    - distro >=1.5.0
+    - frozendict >=2.4.2
+    - jsonpatch >=1.32
+    - menuinst >=2
+    - packaging >=23.0
+    - platformdirs >=3.10.0
+    - pluggy >=1.6.0
+    - pycosat >=0.6.3
+    - python >=3.13,<3.14.0a0
+    - python_abi 3.13.* *_cp313
+    - requests >=2.28.0,<3
+    - ruamel.yaml >=0.11.14,<0.19
+    - setuptools >=60.0.0
+    - tqdm >=4
+    - truststore >=0.8.0
+    - zstandard >=0.19.0
+  run_constrained:
+    - conda-build >=25.9
+    - conda-content-trust >=0.3.0
+    - conda-env >=2.6
+test:
+  requires:
+    - mock
+    - pexpect
+    - responses
+  imports:
+    - conda
+  files:
+    - commands_to_test.sh
+    - test_runner.sh
+  downstreams:
+    - conda-smithy
+about:
+  home: https://conda.io
+  license: BSD-3-Clause
+  license_file: conda-src/LICENSE
+  summary: OS-agnostic, system-level binary package and environment manager.
+  description: 'Conda is an open source package management system and environment
+
+    management system for installing multiple versions of software packages
+
+    and their dependencies and switching easily between them. It works on
+
+    Linux, OS X and Windows, and was created for Python programs but can
+
+    package and distribute any software.
+
+    '
+  doc_url: https://docs.conda.io/projects/conda/en/stable/
+  dev_url: https://github.com/conda/conda
+extra:
+  recipe-maintainers:
+    - beeankha
+    - dbast
+    - isuruf
+    - jakirkham
+    - jezdez
+    - kenodegard
+    - mbargull
+    - ocefpaf
+  final: true
+  copy_test_source_files: true
+  flow_run_id: github_25103116930
+  remote_url: https://github.com/conda-forge/conda-feedstock
+  sha: 08ef5569a17c651e20e036beafc78d03436e10ec

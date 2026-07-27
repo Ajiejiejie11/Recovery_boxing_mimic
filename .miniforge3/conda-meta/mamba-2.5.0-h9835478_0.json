@@ -1,0 +1,63 @@
+{
+    "arch": "x86_64",
+    "build": "h9835478_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "libmamba ==2.5.0 hd28c85e_0",
+        "__glibc >=2.17,<3.0.a0",
+        "libmamba >=2.5.0,<2.6.0a0",
+        "reproc-cpp >=14.2,<15.0a0",
+        "reproc >=14.2,<15.0a0",
+        "zstd >=1.5.7,<1.6.0a0"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/mamba-2.5.0-h9835478_0",
+    "files": [
+        "bin/mamba",
+        "condabin/mamba",
+        "etc/profile.d/mamba.sh"
+    ],
+    "fn": "mamba-2.5.0-h9835478_0.conda",
+    "license": "BSD-3-Clause",
+    "license_family": "BSD",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/mamba-2.5.0-h9835478_0",
+        "type": 1
+    },
+    "md5": "6b7f9c07f2de4939bde5da451dd6dc62",
+    "name": "mamba",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/mamba-2.5.0-h9835478_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "bin/mamba",
+                "path_type": "hardlink",
+                "sha256": "3bdc9e6a107ff3dcb6f7fd42d0f5a9604a4efde3d97d6db829db7dadde858319",
+                "sha256_in_prefix": "591330674d31a2a0a39422580b02cd9e2f8febc3d45853b964412a14bb07134a",
+                "size_in_bytes": 1827424
+            },
+            {
+                "_path": "condabin/mamba",
+                "path_type": "softlink",
+                "sha256_in_prefix": "591330674d31a2a0a39422580b02cd9e2f8febc3d45853b964412a14bb07134a",
+                "size_in_bytes": 12
+            },
+            {
+                "_path": "etc/profile.d/mamba.sh",
+                "path_type": "hardlink",
+                "sha256": "89d2bf6ab76e20ace541a8d98d5db9628bab593a00b2fd1d9e70875caaf45e11",
+                "sha256_in_prefix": "e7338c0b32644276eae43c70c8ebb5420be3df1fa31547c0127e7fdc94793b99",
+                "size_in_bytes": 2336
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "mamba==2.5.0=h9835478_0",
+    "sha256": "f3dc558be3564dde9dd85178c080940af6f7e7d2c6abe14508689fd71e4e3a17",
+    "size": 567170,
+    "subdir": "linux-64",
+    "timestamp": 1767884157871,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/mamba-2.5.0-h9835478_0.conda",
+    "version": "2.5.0"
+}

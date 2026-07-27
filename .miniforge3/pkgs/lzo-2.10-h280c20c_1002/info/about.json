@@ -1,0 +1,14 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "description": "LZO offers pretty fast compression and extremely fast decompression.\nMiniLZO is a very lightweight subset of the LZO library.",
+  "extra": {
+    "flow_run_id": "azure_20250730.5.1",
+    "remote_url": "https://github.com/conda-forge/lzo-feedstock",
+    "sha": "85e72f5b8361803484220b3a5fef7536af9969c9"
+  },
+  "home": "http://www.oberhumer.com/opensource/lzo/",
+  "license": "GPL-2.0-or-later",
+  "summary": "LZO is a portable lossless data compression library written in ANSI C."
+}

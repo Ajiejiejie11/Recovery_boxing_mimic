@@ -1,0 +1,3 @@
+- script:
+    content: python -c "from importlib.util import find_spec; assert find_spec('_ruamel_yaml')"
+- downstream: ruamel.yaml

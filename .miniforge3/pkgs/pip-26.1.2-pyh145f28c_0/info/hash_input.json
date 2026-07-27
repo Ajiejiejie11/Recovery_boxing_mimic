@@ -1,0 +1,4 @@
+{
+  "channel_targets": "conda-forge main",
+  "with_setuptools_wheel": "false"
+}

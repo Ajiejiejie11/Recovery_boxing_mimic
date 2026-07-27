@@ -1,0 +1,86 @@
+# This file created by conda-build 26.3.0
+# ------------------------------------------------
+
+package:
+  name: libxml2-16
+  version: 2.15.3
+source:
+  url: https://gitlab.gnome.org/GNOME/libxml2/-/archive/v2.15.3/libxml2-v2.15.3.tar.gz
+  sha256: 0da50c1415f4ec0364569d2119b1436ba837b31df44af28569d234272c23cf1f
+build:
+  number: '0'
+  noarch: false
+  noarch_python: false
+  python_version_independent: false
+  string: hca6bf5a_0
+requirements:
+  build:
+    - _openmp_mutex 4.5 20_gnu
+    - binutils_impl_linux-64 2.45.1 default_hfdba357_102
+    - binutils_linux-64 2.45.1 default_h4852527_102
+    - gcc_impl_linux-64 14.3.0 hbdf3cc3_18
+    - gcc_linux-64 14.3.0 h298d278_23
+    - kernel-headers_linux-64 3.10.0 he073ed8_18
+    - ld_impl_linux-64 2.45.1 default_hbd61a6d_102
+    - libgcc 15.2.0 he0feb66_18
+    - libgcc-devel_linux-64 14.3.0 hf649bbc_118
+    - libgomp 15.2.0 he0feb66_18
+    - libsanitizer 14.3.0 h8f1669f_18
+    - libstdcxx 15.2.0 h934c35e_18
+    - libstdcxx-devel_linux-64 14.3.0 h9f08a49_118
+    - libzlib 1.3.2 h25fd6f3_2
+    - sysroot_linux-64 2.17 h0157908_18
+    - tzdata 2025c hc9c84f9_1
+    - zstd 1.5.7 hb78ec9c_6
+  host:
+    - _openmp_mutex 4.5 20_gnu
+    - icu 78.3 h33c6efd_0
+    - libgcc 15.2.0 he0feb66_18
+    - libgomp 15.2.0 he0feb66_18
+    - libiconv 1.18 h3b78370_2
+    - liblzma 5.8.3 hb03c661_0
+    - liblzma-devel 5.8.3 hb03c661_0
+    - libstdcxx 15.2.0 h934c35e_18
+    - libzlib 1.3.2 h25fd6f3_2
+    - zlib 1.3.2 h25fd6f3_2
+  run_constrained:
+    - libxml2 2.15.3
+  run:
+    - __glibc >=2.17,<3.0.a0
+    - icu >=78.3,<79.0a0
+    - libgcc >=14
+    - libiconv >=1.18,<2.0a0
+    - liblzma >=5.8.3,<6.0a0
+    - libzlib >=1.3.2,<2.0a0
+test:
+  commands:
+    - test -f $PREFIX/lib/libxml2.so.16
+about:
+  home: http://xmlsoft.org/
+  license: MIT
+  license_family: MIT
+  license_file: Copyright
+  summary: The XML C parser and toolkit of Gnome
+  description: 'Though libxml2 is written in C a variety of language
+
+    bindings make it available in other environments.
+
+    '
+  doc_url: http://xmlsoft.org/html/index.html
+  doc_source_url: https://github.com/GNOME/libxml2/blob/master/doc/devhelp/index.html
+  dev_url: https://git.gnome.org/browse/libxml2/
+extra:
+  feedstock-name: libxml2
+  recipe-maintainers:
+    - gillins
+    - isuruf
+    - jakirkham
+    - jschueller
+    - msarahan
+    - ocefpaf
+    - scopatz
+  final: true
+  copy_test_source_files: true
+  flow_run_id: github_24535984979
+  remote_url: https://github.com/conda-forge/libxml2-feedstock
+  sha: 52e68f7d8a8889042cfdfc22f938770f00c5efe0

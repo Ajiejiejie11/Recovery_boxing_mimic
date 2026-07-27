@@ -1,0 +1,14 @@
+{
+  "build": "pyhf9edf01_1",
+  "build_number": 1,
+  "depends": [
+    "python >=3.9",
+    "python"
+  ],
+  "license": "MIT",
+  "name": "pluggy",
+  "noarch": "python",
+  "subdir": "noarch",
+  "timestamp": 1764896838868,
+  "version": "1.6.0"
+}

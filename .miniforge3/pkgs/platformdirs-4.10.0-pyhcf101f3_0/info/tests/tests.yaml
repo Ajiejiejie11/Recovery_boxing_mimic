@@ -1,0 +1,12 @@
+- python:
+    imports:
+    - platformdirs
+    python_version:
+    - 3.10.*
+    - 3.14.*
+- script:
+    content: mypy -p platformdirs --ignore-missing-imports --disable-error-code=safe-super --exclude=windows
+  requirements:
+    run:
+    - mypy
+    - python 3.10.*

@@ -1,0 +1,61 @@
+Loaded 1/8: /home/xbh/ws/CALM/extras/quanji_npy_skill_dataset/boxing_chaofeng_005.npy
+boxing_chaofeng_005.npy:  30%|##9       | 500/1688 [, frame 501/1689 paused]--1600
+
+Loaded 2/8: /home/xbh/ws/CALM/extras/quanji_npy_skill_dataset/boxing_shanggouquan_001.npy
+boxing_shanggouquan_001.npy:  46%|####6     | 450/972 [, frame 451/973 paused]--800
+
+Loaded 3/8: /home/xbh/ws/CALM/extras/quanji_npy_skill_dataset/boxing_xiti_001.npy
+boxing_xiti_001.npy:  44%|####4     | 460/1042 [, frame 461/1043 paused]--950
+
+Loaded 4/8: /home/xbh/ws/CALM/extras/quanji_npy_skill_dataset/boxing_yewendun_002.npy
+boxing_yewendun_002.npy:  40%|####      | 500/1244 [, frame 501/1245 paused]--1150
+
+Loaded 5/8: /home/xbh/ws/CALM/extras/quanji_npy_skill_dataset/boxing_youceti_001.npy
+boxing_youceti_001.npy:  50%|####9     | 500/1007 [, frame 501/1008 paused]--950
+
+Loaded 6/8: /home/xbh/ws/CALM/extras/quanji_npy_skill_dataset/boxing_zhiquancitan.npy
+boxing_zhiquancitan.npy:  63%|######3   | 560/887 [, frame 561/888 paused]--680
+
+Loaded 7/8: /home/xbh/ws/CALM/extras/quanji_npy_skill_dataset/boxing_zuhequan_003.npy
+boxing_zuhequan_003.npy:  46%|####5     | 460/1010 [, frame 461/1011 paused]--960
+
+get ready
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:   7%|6         | 370/5300 [, frame 371/5301 paused]--530
+
+go forward
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  10%|9         | 520/5300 [, frame 521/5301 paused]--1100
+
+go backward
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  21%|##        | 1100/5300 [, frame 1101/5301 paused]--1920
+
+go move left
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  36%|###6      | 1920/5300 [, frame 1921/5301 paused]--2410
+
+go move right
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  45%|####5     | 2410/5300 [, frame 2411/5301 paused]--3100
+
+walk and turn left
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  58%|#####8    | 3100/5300 [, frame 3101/5301 paused]--4347
+
+walk and turn right
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  82%|########2 | 4347/5300 [, frame 4348/5301 paused]--4749
+
+turn right and stop
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  90%|########9 | 4749/5300 [, frame 4750/5301 paused]--5050
+
+stand still
+Controls: Space pause/resume, Left/Right switch motion, [/] step frames, Esc quit.
+boxing_move_004.npy:  95%|#########5| 5050/5300 [, frame 5051/5301 paused]--5300
+
+
+
+
+

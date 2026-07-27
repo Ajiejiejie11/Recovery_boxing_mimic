@@ -1,0 +1,21 @@
+- python:
+    imports:
+    - tqdm
+    python_version: 3.10.*
+- script:
+    content: |-
+      tqdm --help
+      tqdm -v
+      pytest -k "not perf and not tk"
+    cwd: etc/conda/test-files/tqdm/1
+  requirements:
+    run:
+    - pytest
+    - pytest-cov
+    - pytest-timeout
+    - pytest-asyncio >=0.24
+    - python 3.10.*
+  files:
+    source:
+    - tests
+    - pyproject.toml

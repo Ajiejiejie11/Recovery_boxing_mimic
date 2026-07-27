@@ -1,0 +1,15 @@
+{
+  "build": "pyh8f84b5b_0",
+  "build_number": 0,
+  "depends": [
+    "python >=3.10",
+    "__unix",
+    "python"
+  ],
+  "license": "MPL-2.0 and MIT",
+  "name": "tqdm",
+  "noarch": "python",
+  "subdir": "noarch",
+  "timestamp": 1770153424136,
+  "version": "4.67.3"
+}

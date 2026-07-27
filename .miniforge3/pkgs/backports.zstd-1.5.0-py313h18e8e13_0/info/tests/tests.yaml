@@ -1,0 +1,3 @@
+- python:
+    imports:
+    - backports.zstd

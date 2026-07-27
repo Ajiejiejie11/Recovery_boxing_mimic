@@ -1,0 +1,1 @@
+{"noarch": ["python"], "weak": ["python_abi 3.13.* *_cp313"]}

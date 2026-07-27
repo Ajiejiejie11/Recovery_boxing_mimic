@@ -1,0 +1,82 @@
+context:
+  version: 2025c
+
+package:
+  name: tzdata
+  version: ${{ version }}
+
+source:
+  - url: https://data.iana.org/time-zones/releases/tzdata${{ version }}.tar.gz
+    sha256: 4aa79e4effee53fc4029ffe5f6ebe97937282ebcdf386d5d2da91ce84142f957
+  - url: https://data.iana.org/time-zones/releases/tzcode${{ version }}.tar.gz
+    sha256: 697ebe6625444aef5080f58e49d03424bbb52e08bf483d3ddb5acf10cbd15740
+    # separate directory because r-b refuses to clobber overlapping metadata; undone in build.sh
+    target_directory: tzcode
+
+build:
+  number: 1
+  noarch: generic
+  script:
+    file: build.sh
+    # Workaround as rattler-build sets target_platform to noarch, such that the compiler-activation script would not be run
+    # https://github.com/conda-forge/tzdata-feedstock/pull/34#issuecomment-3593550598
+    env: { target_platform: "${{ host_platform }}" }
+
+requirements:
+  build:
+    - ${{ stdlib('c') }}
+    - ${{ compiler('c') }}
+    - make
+  # We build on osx (see conda-forge.yml) because sysroot_linux-<arch> depends on
+  # tzdata; since this package is data-only, we don't want any of the run-exports
+  ignore_run_exports:
+    from_package:
+      - ${{ stdlib('c') }}
+      - ${{ compiler('c') }}
+
+tests:
+  - script:
+    - test -f "${PREFIX}/share/zoneinfo/leapseconds"
+    - test -f "${PREFIX}/share/zoneinfo/leap-seconds.list"
+    - test -f "${PREFIX}/share/zoneinfo/iso3166.tab"
+    - test -f "${PREFIX}/share/zoneinfo/zone1970.tab"
+    - test -f "${PREFIX}/share/zoneinfo/zone.tab"
+    - test -f "${PREFIX}/share/zoneinfo/tzdata.zi"
+    # Make sure we only package zoneinfo and nothing else.
+    - |
+      dirs="$(
+        find "${PREFIX}" -mindepth 1 -maxdepth 2 \
+        \! -path "${PREFIX}/share" \! -path "${PREFIX}/conda-meta*"
+      )"
+      test "${dirs}" = "${PREFIX}/share/zoneinfo"
+    # Make sure we only package timezone information files.
+    - |
+      heads="$(
+        find "${PREFIX}/share/zoneinfo" -type f \
+          \! -name \*.zi \! -name \*.tab \! -name leapseconds \! -name leap-seconds.list \
+          -exec sh -c 'head -c4 $1 && echo' sh {} \; \
+          | uniq
+      )"
+      test "${heads}" = TZif
+
+about:
+  homepage: https://www.iana.org/time-zones
+  repository: https://github.com/eggert/tz
+  documentation: https://data.iana.org/time-zones/tz-link.html
+  license: LicenseRef-Public-Domain
+  license_file: LICENSE
+  summary: The Time Zone Database (called tz, tzdb or zoneinfo) data
+  description: |
+    The Time Zone Database (called tz, tzdb or zoneinfo) contains code 
+    (the tzcode package) and data (this package) that represent the
+    history of local time for many representative
+    locations around the globe.  It is updated periodically to reflect
+    changes made by political bodies to time zone boundaries, UTC offsets,
+    and daylight-saving rules.
+
+extra:
+  recipe-maintainers:
+    - ocefpaf
+    - mbargull
+    - pganssle
+    - h-vetinari

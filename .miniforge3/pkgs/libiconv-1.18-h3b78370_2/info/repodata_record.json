@@ -1,0 +1,21 @@
+{
+    "arch": "x86_64",
+    "build": "h3b78370_2",
+    "build_number": 2,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "libgcc >=14"
+    ],
+    "fn": "libiconv-1.18-h3b78370_2.conda",
+    "license": "LGPL-2.1-only",
+    "md5": "915f5995e94f60e9a4826e0b0920ee88",
+    "name": "libiconv",
+    "platform": "linux",
+    "sha256": "c467851a7312765447155e071752d7bf9bf44d610a5687e32706f480aad2833f",
+    "size": 790176,
+    "subdir": "linux-64",
+    "timestamp": 1754908768807,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libiconv-1.18-h3b78370_2.conda",
+    "version": "1.18"
+}

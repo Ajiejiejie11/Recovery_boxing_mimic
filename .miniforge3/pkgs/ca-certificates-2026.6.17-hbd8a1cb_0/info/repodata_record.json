@@ -1,0 +1,21 @@
+{
+  "name": "ca-certificates",
+  "version": "2026.6.17",
+  "build": "hbd8a1cb_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/conda-forge/noarch",
+  "subdir": "noarch",
+  "fn": "ca-certificates-2026.6.17-hbd8a1cb_0.conda",
+  "md5": "a9965dd99f683c5f444428f896635716",
+  "url": "https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.6.17-hbd8a1cb_0.conda",
+  "sha256": "f8e3c730fa14ee3f170493779f06522c4acf89169f43db4f039727709b6419cf",
+  "depends": [
+    "__unix"
+  ],
+  "constrains": [],
+  "noarch": "generic",
+  "license": "ISC",
+  "package_type": "noarch_generic",
+  "timestamp": 1781708962055,
+  "size": 128866
+}

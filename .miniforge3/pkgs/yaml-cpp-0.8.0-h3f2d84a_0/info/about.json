@@ -1,0 +1,15 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "dev_url": "https://github.com/jbeder/yaml-cpp",
+  "doc_url": "https://github.com/jbeder/yaml-cpp/wiki/Tutorial",
+  "extra": {
+    "flow_run_id": "azure_20250422.4.1",
+    "remote_url": "https://github.com/conda-forge/yaml-cpp-feedstock",
+    "sha": "969f403176f462309f1350b94c20d20a84203583"
+  },
+  "home": "https://github.com/jbeder/yaml-cpp",
+  "license": "MIT",
+  "summary": "yaml-cpp is a YAML parser and emitter in C++ matching the YAML 1.2 spec."
+}

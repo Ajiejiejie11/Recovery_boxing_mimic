@@ -1,0 +1,16 @@
+{
+  "channels": [
+    "https://conda.anaconda.org/conda-forge/"
+  ],
+  "dev_url": "https://github.com/pybind/pybind11",
+  "doc_url": "https://pybind11.readthedocs.io/",
+  "extra": {
+    "flow_run_id": "azure_20250717.1.1",
+    "remote_url": "https://github.com/conda-forge/pybind11-feedstock",
+    "sha": "fb95513208efdd7abf28b2736c32e801f1633de1"
+  },
+  "home": "https://github.com/pybind/pybind11",
+  "license": "BSD-3-Clause",
+  "license_family": "BSD",
+  "summary": "Seamless operability between C++11 and Python"
+}

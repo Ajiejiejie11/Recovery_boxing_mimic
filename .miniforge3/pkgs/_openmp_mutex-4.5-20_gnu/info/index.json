@@ -1,0 +1,18 @@
+{
+  "arch": "x86_64",
+  "build": "20_gnu",
+  "build_number": 20,
+  "constrains": [
+    "openmp_impl <0.0a0"
+  ],
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "libgomp >=7.5.0"
+  ],
+  "license": "BSD-3-Clause",
+  "name": "_openmp_mutex",
+  "platform": "linux",
+  "subdir": "linux-64",
+  "timestamp": 1770939786096,
+  "version": "4.5"
+}

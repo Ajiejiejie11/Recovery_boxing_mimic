@@ -1,0 +1,4 @@
+{
+  "python": "3.13.* *_cp313",
+  "channel_targets": "conda-forge main"
+}

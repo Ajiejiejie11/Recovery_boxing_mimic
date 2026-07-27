@@ -1,0 +1,22 @@
+{
+  "name": "setuptools",
+  "version": "83.0.0",
+  "build": "pyh332efcf_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/conda-forge/noarch",
+  "subdir": "noarch",
+  "fn": "setuptools-83.0.0-pyh332efcf_0.conda",
+  "md5": "6bf6acbab2499830180ec88c3aff2fa4",
+  "url": "https://conda.anaconda.org/conda-forge/noarch/setuptools-83.0.0-pyh332efcf_0.conda",
+  "sha256": "48a9f96016505debadfc67f06de7ac548decbc38d327409b24b0432ef6f16335",
+  "depends": [
+    "python >=3.10"
+  ],
+  "constrains": [],
+  "noarch": "python",
+  "license": "MIT",
+  "license_family": "MIT",
+  "package_type": "noarch_python",
+  "timestamp": 1783619174976,
+  "size": 642081
+}

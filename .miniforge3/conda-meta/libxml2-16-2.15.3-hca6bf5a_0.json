@@ -1,0 +1,66 @@
+{
+    "arch": "x86_64",
+    "build": "hca6bf5a_0",
+    "build_number": 0,
+    "channel": "https://conda.anaconda.org/conda-forge",
+    "constrains": [
+        "libxml2 2.15.3"
+    ],
+    "depends": [
+        "__glibc >=2.17,<3.0.a0",
+        "icu >=78.3,<79.0a0",
+        "libgcc >=14",
+        "libiconv >=1.18,<2.0a0",
+        "liblzma >=5.8.3,<6.0a0",
+        "libzlib >=1.3.2,<2.0a0"
+    ],
+    "extracted_package_dir": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libxml2-16-2.15.3-hca6bf5a_0",
+    "files": [
+        "etc/conda/activate.d/libxml2-split_activate.sh",
+        "lib/libxml2.so.16",
+        "lib/libxml2.so.16.1.3"
+    ],
+    "fn": "libxml2-16-2.15.3-hca6bf5a_0.conda",
+    "license": "MIT",
+    "license_family": "MIT",
+    "link": {
+        "source": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libxml2-16-2.15.3-hca6bf5a_0",
+        "type": 1
+    },
+    "md5": "e79d2c2f24b027aa8d5ab1b1ba3061e7",
+    "name": "libxml2-16",
+    "package_tarball_full_path": "/home/alan/Project/walking-boxing/magicbot-mimic/.miniforge3/pkgs/libxml2-16-2.15.3-hca6bf5a_0.tar.bz2",
+    "paths_data": {
+        "paths": [
+            {
+                "_path": "etc/conda/activate.d/libxml2-split_activate.sh",
+                "path_type": "hardlink",
+                "sha256": "631478a9cfbd337b86ee1df94497c21821cd561312c94892d156e43f499cf5c4",
+                "sha256_in_prefix": "631478a9cfbd337b86ee1df94497c21821cd561312c94892d156e43f499cf5c4",
+                "size_in_bytes": 872
+            },
+            {
+                "_path": "lib/libxml2.so.16",
+                "path_type": "softlink",
+                "sha256_in_prefix": "505bba515ffb4c4e346b0a402ee46f739eb7330460c78cf1fe0db099657313d6",
+                "size_in_bytes": 1448936
+            },
+            {
+                "_path": "lib/libxml2.so.16.1.3",
+                "path_type": "hardlink",
+                "sha256": "2dcb5bcf766064f1438e239dc343eda4bc64cb1ba7605a1602487877f4523c2d",
+                "sha256_in_prefix": "505bba515ffb4c4e346b0a402ee46f739eb7330460c78cf1fe0db099657313d6",
+                "size_in_bytes": 1448936
+            }
+        ],
+        "paths_version": 1
+    },
+    "platform": "linux",
+    "requested_spec": "libxml2-16==2.15.3=hca6bf5a_0",
+    "sha256": "3d44f737c5ae52d5af32682cc1530df433f401f8e58a7533926536244127572a",
+    "size": 559775,
+    "subdir": "linux-64",
+    "timestamp": 1776376739004,
+    "url": "https://conda.anaconda.org/conda-forge/linux-64/libxml2-16-2.15.3-hca6bf5a_0.conda",
+    "version": "2.15.3"
+}
