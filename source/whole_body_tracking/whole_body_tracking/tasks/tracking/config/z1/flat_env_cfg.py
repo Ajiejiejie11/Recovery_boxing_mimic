@@ -30,6 +30,44 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
             "right_wrist_yaw_link",
         ]
 
+        # Mild stage-1 randomization: enough variation for robustness without strong pushes/COM shifts.
+        self.commands.motion.debug_vis = False
+        self.commands.motion.pose_range = {
+            "x": (-0.02, 0.02),
+            "y": (-0.02, 0.02),
+            "z": (-0.01, 0.01),
+            "roll": (-0.05, 0.05),
+            "pitch": (-0.05, 0.05),
+            "yaw": (-0.05, 0.05),
+        }
+        self.commands.motion.velocity_range = {
+            "x": (-0.10, 0.10),
+            "y": (-0.10, 0.10),
+            "z": (-0.05, 0.05),
+            "roll": (-0.10, 0.10),
+            "pitch": (-0.10, 0.10),
+            "yaw": (-0.10, 0.10),
+        }
+        self.commands.motion.joint_position_range = (-0.03, 0.03)
+        self.observations.policy.enable_corruption = True
+
+        self.events.physics_material.params["static_friction_range"] = (0.6, 1.2)
+        self.events.physics_material.params["dynamic_friction_range"] = (0.5, 1.0)
+        self.events.hand_physics_material.params["static_friction_range"] = (0.6, 1.2)
+        self.events.hand_physics_material.params["dynamic_friction_range"] = (0.5, 1.0)
+        self.events.add_joint_default_pos.params["pos_distribution_params"] = (-0.01, 0.01)
+        self.events.scale_link_mass.params["mass_distribution_params"] = (0.95, 1.05)
+        self.events.base_com = None
+        self.events.push_robot = None
+
+        # The longest source clip is about 14 s; allow continuous traversal across all of its bins.
+        self.episode_length_s = 20.0
+
+        # Hand/ankle tracking error is a soft failure. Hard failure is reserved for
+        # torso height/orientation loss (falling) and other true terminations.
+        self.terminations.ee_ankle_pos = None
+        self.terminations.ee_hand_pos = None
+
 
 @configclass
 class Z1FlatWoStateEstimationEnvCfg(Z1FlatEnvCfg):

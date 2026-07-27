@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import math
+import hashlib
 import numpy as np
-import os
 import torch
 from collections.abc import Sequence
 from dataclasses import MISSING
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from isaaclab.assets import Articulation
@@ -28,34 +28,170 @@ if TYPE_CHECKING:
 
 
 class MotionLoader:
-    def __init__(self, motion_file: str, body_indexes: Sequence[int], device: str = "cpu"):
-        assert os.path.isfile(motion_file), f"Invalid file path: {motion_file}"
-        data = np.load(motion_file)
-        self.fps = data["fps"]
-        self.joint_pos = torch.tensor(data["joint_pos"], dtype=torch.float32, device=device)
-        self.joint_vel = torch.tensor(data["joint_vel"], dtype=torch.float32, device=device)
-        self._body_pos_w = torch.tensor(data["body_pos_w"], dtype=torch.float32, device=device)
-        self._body_quat_w = torch.tensor(data["body_quat_w"], dtype=torch.float32, device=device)
-        self._body_lin_vel_w = torch.tensor(data["body_lin_vel_w"], dtype=torch.float32, device=device)
-        self._body_ang_vel_w = torch.tensor(data["body_ang_vel_w"], dtype=torch.float32, device=device)
-        self._body_indexes = body_indexes
+    """Load one motion file or a directory of motion files as one indexed dataset."""
+
+    _REQUIRED_KEYS = (
+        "joint_pos",
+        "joint_vel",
+        "body_pos_w",
+        "body_quat_w",
+        "body_lin_vel_w",
+        "body_ang_vel_w",
+    )
+
+    def __init__(
+        self,
+        motion_source: str,
+        joint_names: Sequence[str],
+        body_names: Sequence[str],
+        device: str = "cpu",
+        bin_duration_s: float = 1.0,
+        min_bin_duration_s: float = 0.5,
+    ):
+        source = Path(motion_source).expanduser().resolve()
+        if source.is_dir():
+            motion_files = sorted(source.glob("*.npz"))
+        elif source.is_file():
+            motion_files = [source]
+        else:
+            raise FileNotFoundError(f"Invalid motion source: {source}")
+        if not motion_files:
+            raise ValueError(f"No .npz motion files found in: {source}")
+
+        arrays: dict[str, list[np.ndarray]] = {key: [] for key in self._REQUIRED_KEYS}
+        motion_lengths: list[int] = []
+        motion_names: list[str] = []
+        motion_hashes: list[str] = []
+        fps: int | None = None
+        target_joint_names = list(joint_names)
+        target_body_names = list(body_names)
+        for motion_file in motion_files:
+            with np.load(motion_file, allow_pickle=False) as data:
+                missing = [
+                    key for key in ("fps", "joint_names", "body_names", *self._REQUIRED_KEYS) if key not in data
+                ]
+                if missing:
+                    raise ValueError(
+                        f"{motion_file} is missing fields: {missing}. Regenerate legacy motions with a converter "
+                        "that writes joint_names/body_names; index-only loading is unsafe."
+                    )
+                file_fps = int(np.asarray(data["fps"]).item())
+                if fps is None:
+                    fps = file_fps
+                elif file_fps != fps:
+                    raise ValueError(f"All motions must have the same FPS; {motion_file} has {file_fps}, expected {fps}")
+                frame_count = int(data["joint_pos"].shape[0])
+                file_joint_names = np.asarray(data["joint_names"]).astype(str).tolist()
+                file_body_names = np.asarray(data["body_names"]).astype(str).tolist()
+                if len(file_joint_names) != len(set(file_joint_names)):
+                    raise ValueError(f"{motion_file}: joint_names contains duplicates")
+                if len(file_body_names) != len(set(file_body_names)):
+                    raise ValueError(f"{motion_file}: body_names contains duplicates")
+                missing_joints = [name for name in target_joint_names if name not in file_joint_names]
+                missing_bodies = [name for name in target_body_names if name not in file_body_names]
+                if missing_joints or missing_bodies:
+                    raise ValueError(
+                        f"{motion_file}: names required by the robot are missing; "
+                        f"joints={missing_joints}, bodies={missing_bodies}"
+                    )
+                joint_indexes = [file_joint_names.index(name) for name in target_joint_names]
+                body_indexes = [file_body_names.index(name) for name in target_body_names]
+                if data["joint_pos"].shape != (frame_count, len(file_joint_names)) or data["joint_vel"].shape != (
+                    frame_count,
+                    len(file_joint_names),
+                ):
+                    raise ValueError(
+                        f"{motion_file}: joint arrays do not match its {len(file_joint_names)} joint_names"
+                    )
+                file_body_count = int(data["body_pos_w"].shape[1])
+                if file_body_count != len(file_body_names):
+                    raise ValueError(
+                        f"{motion_file}: body arrays contain {file_body_count} bodies but body_names has "
+                        f"{len(file_body_names)} entries"
+                    )
+                expected_shapes = {
+                    "body_pos_w": (frame_count, file_body_count, 3),
+                    "body_quat_w": (frame_count, file_body_count, 4),
+                    "body_lin_vel_w": (frame_count, file_body_count, 3),
+                    "body_ang_vel_w": (frame_count, file_body_count, 3),
+                }
+                for key in self._REQUIRED_KEYS:
+                    value = np.asarray(data[key], dtype=np.float32)
+                    if key in expected_shapes and value.shape != expected_shapes[key]:
+                        raise ValueError(f"{motion_file}: {key} has shape {value.shape}, expected {expected_shapes[key]}")
+                    if not np.isfinite(value).all():
+                        raise ValueError(f"{motion_file}: {key} contains NaN or Inf")
+                    if key in ("joint_pos", "joint_vel"):
+                        value = value[:, joint_indexes]
+                    elif key.startswith("body_"):
+                        value = value[:, body_indexes]
+                    arrays[key].append(value)
+            motion_names.append(motion_file.name)
+            motion_lengths.append(frame_count)
+            digest = hashlib.sha256()
+            with motion_file.open("rb") as file:
+                for chunk in iter(lambda: file.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            motion_hashes.append(digest.hexdigest())
+
+        assert fps is not None
+        self.fps = fps
+        self.motion_files = [str(path) for path in motion_files]
+        self.motion_names = motion_names
+        self.motion_hashes = motion_hashes
+        self.motion_lengths = torch.tensor(motion_lengths, dtype=torch.long, device=device)
+        starts = np.cumsum([0, *motion_lengths[:-1]], dtype=np.int64)
+        self.motion_starts = torch.tensor(starts, dtype=torch.long, device=device)
+        self.joint_pos = torch.tensor(np.concatenate(arrays["joint_pos"]), dtype=torch.float32, device=device)
+        self.joint_vel = torch.tensor(np.concatenate(arrays["joint_vel"]), dtype=torch.float32, device=device)
+        self._body_pos_w = torch.tensor(np.concatenate(arrays["body_pos_w"]), dtype=torch.float32, device=device)
+        self._body_quat_w = torch.tensor(np.concatenate(arrays["body_quat_w"]), dtype=torch.float32, device=device)
+        self._body_lin_vel_w = torch.tensor(
+            np.concatenate(arrays["body_lin_vel_w"]), dtype=torch.float32, device=device
+        )
+        self._body_ang_vel_w = torch.tensor(
+            np.concatenate(arrays["body_ang_vel_w"]), dtype=torch.float32, device=device
+        )
         self.time_step_total = self.joint_pos.shape[0]
+
+        bin_frames = max(1, round(self.fps * bin_duration_s))
+        min_bin_frames = max(1, round(self.fps * min_bin_duration_s))
+        bin_motion_ids: list[int] = []
+        bin_start_frames: list[int] = []
+        bin_end_frames: list[int] = []
+        for motion_id, (motion_start, motion_length) in enumerate(zip(starts, motion_lengths)):
+            local_starts = list(range(0, motion_length, bin_frames))
+            if len(local_starts) > 1 and motion_length - local_starts[-1] < min_bin_frames:
+                local_starts.pop()
+            for index, local_start in enumerate(local_starts):
+                local_end = local_starts[index + 1] if index + 1 < len(local_starts) else motion_length
+                bin_motion_ids.append(motion_id)
+                bin_start_frames.append(int(motion_start + local_start))
+                bin_end_frames.append(int(motion_start + local_end))
+        self.bin_motion_ids = torch.tensor(bin_motion_ids, dtype=torch.long, device=device)
+        self.bin_start_frames = torch.tensor(bin_start_frames, dtype=torch.long, device=device)
+        self.bin_end_frames = torch.tensor(bin_end_frames, dtype=torch.long, device=device)
+        self.bin_count = len(bin_start_frames)
+
+    @property
+    def signature(self) -> tuple[tuple[str, int, str], ...]:
+        return tuple(zip(self.motion_names, self.motion_lengths.cpu().tolist(), self.motion_hashes))
 
     @property
     def body_pos_w(self) -> torch.Tensor:
-        return self._body_pos_w[:, self._body_indexes]
+        return self._body_pos_w
 
     @property
     def body_quat_w(self) -> torch.Tensor:
-        return self._body_quat_w[:, self._body_indexes]
+        return self._body_quat_w
 
     @property
     def body_lin_vel_w(self) -> torch.Tensor:
-        return self._body_lin_vel_w[:, self._body_indexes]
+        return self._body_lin_vel_w
 
     @property
     def body_ang_vel_w(self) -> torch.Tensor:
-        return self._body_ang_vel_w[:, self._body_indexes]
+        return self._body_ang_vel_w
 
 
 class MotionCommand(CommandTerm):
@@ -71,19 +207,43 @@ class MotionCommand(CommandTerm):
             self.robot.find_bodies(self.cfg.body_names, preserve_order=True)[0], dtype=torch.long, device=self.device
         )
 
-        self.motion = MotionLoader(self.cfg.motion_file, self.body_indexes, device=self.device)
+        self.motion = MotionLoader(
+            self.cfg.motion_file,
+            self.robot.joint_names,
+            self.cfg.body_names,
+            device=self.device,
+            bin_duration_s=self.cfg.bin_duration_s,
+            min_bin_duration_s=self.cfg.min_bin_duration_s,
+        )
         self.time_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self.active_bin_ids = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self.active_bin_end = torch.ones(self.num_envs, dtype=torch.long, device=self.device)
+        self.motion_complete = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self._bin_needs_outcome = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self._has_active_bin = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self.body_pos_relative_w = torch.zeros(self.num_envs, len(cfg.body_names), 3, device=self.device)
         self.body_quat_relative_w = torch.zeros(self.num_envs, len(cfg.body_names), 4, device=self.device)
         self.body_quat_relative_w[:, :, 0] = 1.0
 
-        self.bin_count = int(self.motion.time_step_total // (1 / (env.cfg.decimation * env.cfg.sim.dt))) + 1
-        self.bin_failed_count = torch.zeros(self.bin_count, dtype=torch.float, device=self.device)
-        self._current_bin_failed = torch.zeros(self.bin_count, dtype=torch.float, device=self.device)
-        self.kernel = torch.tensor(
-            [self.cfg.adaptive_lambda**i for i in range(self.cfg.adaptive_kernel_size)], device=self.device
-        )
-        self.kernel = self.kernel / self.kernel.sum()
+        self.bin_count = self.motion.bin_count
+        # Continuous difficulty memory. Outcomes are reduced to one rate per bin
+        # before this EMA is updated, so its time scale does not depend on the
+        # number of parallel environments evaluating that bin.
+        self.bin_difficulty = torch.zeros(self.bin_count, dtype=torch.float, device=self.device)
+        self.bin_sample_count = torch.zeros(self.bin_count, dtype=torch.long, device=self.device)
+        self.coverage_order = torch.randperm(self.bin_count, device=self.device)
+        self.coverage_cursor = 0
+        self.coverage_epoch = 0
+
+        self._error_sample_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._anchor_pos_error_sum = torch.zeros(self.num_envs, device=self.device)
+        self._anchor_rot_error_sum = torch.zeros(self.num_envs, device=self.device)
+        self._body_pos_error_sum = torch.zeros(self.num_envs, device=self.device)
+        self._body_rot_error_sum = torch.zeros(self.num_envs, device=self.device)
+        self._episode_bin_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._episode_success_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._episode_soft_failure_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._episode_hard_failure_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
 
         self.metrics["error_anchor_pos"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["error_anchor_rot"] = torch.zeros(self.num_envs, device=self.device)
@@ -93,13 +253,29 @@ class MotionCommand(CommandTerm):
         self.metrics["error_body_rot"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["error_joint_pos"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["error_joint_vel"] = torch.zeros(self.num_envs, device=self.device)
-        self.metrics["sampling_entropy"] = torch.zeros(self.num_envs, device=self.device)
-        self.metrics["sampling_top1_prob"] = torch.zeros(self.num_envs, device=self.device)
-        self.metrics["sampling_top1_bin"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["difficulty_score_mean"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["difficulty_score_max"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["difficulty_sampling_entropy"] = torch.ones(self.num_envs, device=self.device)
+        self.metrics["difficulty_replay_ratio"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["coverage_epoch"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["bin_success"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["bin_soft_failure"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["bin_hard_failure"] = torch.zeros(self.num_envs, device=self.device)
 
     @property
     def command(self) -> torch.Tensor:  # TODO Consider again if this is the best observation
         return torch.cat([self.joint_pos, self.joint_vel], dim=1)
+
+    def reset(self, env_ids: Sequence[int] | None = None) -> dict[str, float]:
+        """Classify the final active bin before CommandTerm emits episode metrics and resamples."""
+        if env_ids is None:
+            ids = torch.arange(self.num_envs, dtype=torch.long, device=self.device)
+        elif isinstance(env_ids, slice):
+            ids = torch.arange(self.num_envs, dtype=torch.long, device=self.device)[env_ids]
+        else:
+            ids = torch.as_tensor(env_ids, dtype=torch.long, device=self.device)
+        self._classify_reset_bins(ids)
+        return super().reset(env_ids=ids)
 
     @property
     def joint_pos(self) -> torch.Tensor:
@@ -181,7 +357,21 @@ class MotionCommand(CommandTerm):
     def robot_anchor_ang_vel_w(self) -> torch.Tensor:
         return self.robot.data.body_ang_vel_w[:, self.robot_anchor_body_index]
 
+    def _update_reference_alignment(self) -> None:
+        """Align the reference horizontal pose to each robot while preserving reference height."""
+        anchor_pos_w_repeat = self.anchor_pos_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
+        anchor_quat_w_repeat = self.anchor_quat_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
+        robot_anchor_pos_w_repeat = self.robot_anchor_pos_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
+        robot_anchor_quat_w_repeat = self.robot_anchor_quat_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
+
+        delta_pos_w = robot_anchor_pos_w_repeat
+        delta_pos_w[..., 2] = anchor_pos_w_repeat[..., 2]
+        delta_ori_w = yaw_quat(quat_mul(robot_anchor_quat_w_repeat, quat_inv(anchor_quat_w_repeat)))
+        self.body_quat_relative_w = quat_mul(delta_ori_w, self.body_quat_w)
+        self.body_pos_relative_w = delta_pos_w + quat_apply(delta_ori_w, self.body_pos_w - anchor_pos_w_repeat)
+
     def _update_metrics(self):
+        self._update_reference_alignment()
         self.metrics["error_anchor_pos"] = torch.norm(self.anchor_pos_w - self.robot_anchor_pos_w, dim=-1)
         self.metrics["error_anchor_rot"] = quat_error_magnitude(self.anchor_quat_w, self.robot_anchor_quat_w)
         self.metrics["error_anchor_lin_vel"] = torch.norm(self.anchor_lin_vel_w - self.robot_anchor_lin_vel_w, dim=-1)
@@ -204,48 +394,179 @@ class MotionCommand(CommandTerm):
         self.metrics["error_joint_pos"] = torch.norm(self.joint_pos - self.robot_joint_pos, dim=-1)
         self.metrics["error_joint_vel"] = torch.norm(self.joint_vel - self.robot_joint_vel, dim=-1)
 
-    def _adaptive_sampling(self, env_ids: Sequence[int]):
-        episode_failed = self._env.termination_manager.terminated[env_ids]
-        if torch.any(episode_failed):
-            current_bin_index = torch.clamp(
-                (self.time_steps * self.bin_count) // max(self.motion.time_step_total, 1), 0, self.bin_count - 1
+        active = self._has_active_bin & self._bin_needs_outcome & ~self.motion_complete
+        self._error_sample_count[active] += 1
+        self._anchor_pos_error_sum[active] += self.metrics["error_anchor_pos"][active]
+        self._anchor_rot_error_sum[active] += self.metrics["error_anchor_rot"][active]
+        self._body_pos_error_sum[active] += self.metrics["error_body_pos"][active]
+        self._body_rot_error_sum[active] += self.metrics["error_body_rot"][active]
+
+        difficulty_probabilities = self._difficulty_sampling_probabilities()
+        self.metrics["difficulty_score_mean"][:] = self.bin_difficulty.mean()
+        self.metrics["difficulty_score_max"][:] = self.bin_difficulty.max()
+        if self.bin_count > 1:
+            entropy = -(difficulty_probabilities * (difficulty_probabilities + 1.0e-12).log()).sum()
+            self.metrics["difficulty_sampling_entropy"][:] = entropy / torch.log(
+                torch.tensor(float(self.bin_count), device=self.device)
             )
-            fail_bins = current_bin_index[env_ids][episode_failed]
-            self._current_bin_failed[:] = torch.bincount(fail_bins, minlength=self.bin_count)
+        else:
+            self.metrics["difficulty_sampling_entropy"][:] = 1.0
+        self.metrics["coverage_epoch"][:] = float(self.coverage_epoch)
 
-        # Sample
-        sampling_probabilities = self.bin_failed_count + self.cfg.adaptive_uniform_ratio / float(self.bin_count)
-        sampling_probabilities = torch.nn.functional.pad(
-            sampling_probabilities.unsqueeze(0).unsqueeze(0),
-            (0, self.cfg.adaptive_kernel_size - 1),  # Non-causal kernel
-            mode="replicate",
+    def _update_bin_outcomes(
+        self, bins: torch.Tensor, hard: torch.Tensor, soft: torch.Tensor, successful: torch.Tensor
+    ) -> None:
+        """Update one EMA target per bin from the current parallel outcome batch."""
+        if bins.numel() == 0:
+            return
+        unique_bins, inverse = torch.unique(bins, return_inverse=True)
+        outcome_count = torch.bincount(inverse, minlength=len(unique_bins)).float()
+        hard_count = torch.bincount(inverse, weights=hard.float(), minlength=len(unique_bins))
+        soft_count = torch.bincount(inverse, weights=soft.float(), minlength=len(unique_bins))
+        # hard=1, soft=configured intermediate difficulty, success=0
+        batch_difficulty = (
+            hard_count + self.cfg.soft_failure_difficulty * soft_count
+        ) / outcome_count.clamp_min(1.0)
+        old_difficulty = self.bin_difficulty[unique_bins]
+        self.bin_difficulty[unique_bins] = torch.lerp(
+            old_difficulty, batch_difficulty, self.cfg.difficulty_ema_alpha
+        ).clamp_(0.0, 1.0)
+
+    def _settle_tracking_bins(self, env_ids: torch.Tensor) -> None:
+        """Classify completed/timeout bins as successful or soft failures."""
+        valid = self._has_active_bin[env_ids] & self._bin_needs_outcome[env_ids]
+        if not torch.any(valid):
+            return
+        ids = env_ids[valid]
+        bins = self.active_bin_ids[ids]
+        counts = self._error_sample_count[ids].clamp_min(1).float()
+        successful = (
+            (self._anchor_pos_error_sum[ids] / counts <= self.cfg.success_anchor_pos_error)
+            & (self._anchor_rot_error_sum[ids] / counts <= self.cfg.success_anchor_rot_error)
+            & (self._body_pos_error_sum[ids] / counts <= self.cfg.success_body_pos_error)
+            & (self._body_rot_error_sum[ids] / counts <= self.cfg.success_body_rot_error)
         )
-        sampling_probabilities = torch.nn.functional.conv1d(sampling_probabilities, self.kernel.view(1, 1, -1)).view(-1)
+        soft = ~successful
+        hard = torch.zeros_like(successful)
+        self._episode_bin_count[ids] += 1
+        self._episode_success_count[ids] += successful.long()
+        self._episode_soft_failure_count[ids] += soft.long()
+        denominator = self._episode_bin_count[ids].float()
+        self.metrics["bin_success"][ids] = self._episode_success_count[ids] / denominator
+        self.metrics["bin_soft_failure"][ids] = self._episode_soft_failure_count[ids] / denominator
+        self.metrics["bin_hard_failure"][ids] = self._episode_hard_failure_count[ids] / denominator
+        self._update_bin_outcomes(bins, hard, soft, successful)
+        self._bin_needs_outcome[ids] = False
 
-        sampling_probabilities = sampling_probabilities / sampling_probabilities.sum()
+    def _classify_reset_bins(self, env_ids: torch.Tensor) -> None:
+        """Settle the current bin before an environment reset, prioritizing hard failure."""
+        valid = self._has_active_bin[env_ids] & self._bin_needs_outcome[env_ids]
+        if not torch.any(valid):
+            return
+        ids = env_ids[valid]
+        hard = self._env.termination_manager.terminated[ids]
+        successful = torch.zeros_like(hard)
+        non_hard = ~hard
+        if torch.any(non_hard):
+            non_hard_ids = ids[non_hard]
+            counts = self._error_sample_count[non_hard_ids].clamp_min(1).float()
+            successful[non_hard] = (
+                (self._anchor_pos_error_sum[non_hard_ids] / counts <= self.cfg.success_anchor_pos_error)
+                & (self._anchor_rot_error_sum[non_hard_ids] / counts <= self.cfg.success_anchor_rot_error)
+                & (self._body_pos_error_sum[non_hard_ids] / counts <= self.cfg.success_body_pos_error)
+                & (self._body_rot_error_sum[non_hard_ids] / counts <= self.cfg.success_body_rot_error)
+            )
+        soft = non_hard & ~successful
 
-        sampled_bins = torch.multinomial(sampling_probabilities, len(env_ids), replacement=True)
+        self._episode_bin_count[ids] += 1
+        self._episode_success_count[ids] += successful.long()
+        self._episode_soft_failure_count[ids] += soft.long()
+        self._episode_hard_failure_count[ids] += hard.long()
+        denominator = self._episode_bin_count[ids].float()
+        self.metrics["bin_success"][ids] = self._episode_success_count[ids] / denominator
+        self.metrics["bin_soft_failure"][ids] = self._episode_soft_failure_count[ids] / denominator
+        self.metrics["bin_hard_failure"][ids] = self._episode_hard_failure_count[ids] / denominator
+        self._update_bin_outcomes(self.active_bin_ids[ids], hard, soft, successful)
+        self._bin_needs_outcome[ids] = False
 
-        self.time_steps[env_ids] = (
-            (sampled_bins + sample_uniform(0.0, 1.0, (len(env_ids),), device=self.device))
-            / self.bin_count
-            * (self.motion.time_step_total - 1)
-        ).long()
-        self.time_steps[env_ids] = (sampled_bins / self.bin_count * (self.motion.time_step_total - 1)).long()
-        # self.time_steps[env_ids] = self.motion.time_step_total * 0.
+    def _reset_error_accumulators(self, env_ids: torch.Tensor) -> None:
+        self._error_sample_count[env_ids] = 0
+        self._anchor_pos_error_sum[env_ids] = 0.0
+        self._anchor_rot_error_sum[env_ids] = 0.0
+        self._body_pos_error_sum[env_ids] = 0.0
+        self._body_rot_error_sum[env_ids] = 0.0
 
-        # Metrics
-        H = -(sampling_probabilities * (sampling_probabilities + 1e-12).log()).sum()
-        H_norm = H / math.log(self.bin_count)
-        pmax, imax = sampling_probabilities.max(dim=0)
-        self.metrics["sampling_entropy"][:] = H_norm
-        self.metrics["sampling_top1_prob"][:] = pmax
-        self.metrics["sampling_top1_bin"][:] = imax.float() / self.bin_count
+    def _sample_coverage_bins(self, count: int) -> torch.Tensor:
+        if count <= 0:
+            return torch.empty(0, dtype=torch.long, device=self.device)
+        selected: list[torch.Tensor] = []
+        remaining = count
+
+        # Finish the currently active shuffled coverage epoch first.
+        take = min(remaining, self.bin_count - self.coverage_cursor)
+        selected.append(self.coverage_order[self.coverage_cursor : self.coverage_cursor + take])
+        self.coverage_cursor += take
+        remaining -= take
+        if self.coverage_cursor == self.bin_count:
+            self.coverage_epoch += 1
+            self.coverage_cursor = 0
+
+        # Generate all additional shuffled epochs in one GPU operation. This is
+        # important for a short single motion (few bins) with 8192 environments.
+        if remaining:
+            full_epochs, tail = divmod(remaining, self.bin_count)
+            order_count = full_epochs + int(tail > 0)
+            orders = torch.rand(order_count, self.bin_count, device=self.device).argsort(dim=1)
+            if full_epochs:
+                selected.append(orders[:full_epochs].reshape(-1))
+                self.coverage_epoch += full_epochs
+            if tail:
+                self.coverage_order = orders[-1]
+                selected.append(self.coverage_order[:tail])
+                self.coverage_cursor = tail
+            else:
+                self.coverage_order = torch.randperm(self.bin_count, device=self.device)
+        elif self.coverage_cursor == 0:
+            self.coverage_order = torch.randperm(self.bin_count, device=self.device)
+        return torch.cat(selected)
+
+    def _difficulty_sampling_probabilities(self) -> torch.Tensor:
+        """Return normalized EMA difficulty weights, uniform before evidence exists."""
+        weights = self.bin_difficulty.clamp_min(0.0) + self.cfg.difficulty_score_floor
+        return weights / weights.sum()
+
+    def _sample_bins(self, count: int) -> tuple[torch.Tensor, int]:
+        difficulty_count = int(round(count * self.cfg.difficulty_replay_fraction))
+        if difficulty_count:
+            difficulty_bins = torch.multinomial(
+                self._difficulty_sampling_probabilities(), difficulty_count, replacement=True
+            )
+        else:
+            difficulty_bins = torch.empty(0, dtype=torch.long, device=self.device)
+        coverage_bins = self._sample_coverage_bins(count - difficulty_count)
+        bins = torch.cat((coverage_bins, difficulty_bins))
+        bins = bins[torch.randperm(len(bins), device=self.device)]
+        return bins, difficulty_count
 
     def _resample_command(self, env_ids: Sequence[int]):
         if len(env_ids) == 0:
             return
-        self._adaptive_sampling(env_ids)
+        env_ids = torch.as_tensor(env_ids, dtype=torch.long, device=self.device)
+        sampled_bins, difficulty_count = self._sample_bins(len(env_ids))
+        self.active_bin_ids[env_ids] = sampled_bins
+        self.time_steps[env_ids] = self.motion.bin_start_frames[sampled_bins]
+        self.active_bin_end[env_ids] = self.motion.bin_end_frames[sampled_bins]
+        self.motion_complete[env_ids] = False
+        self._bin_needs_outcome[env_ids] = True
+        self._has_active_bin[env_ids] = True
+        self.bin_sample_count += torch.bincount(sampled_bins, minlength=self.bin_count)
+        self.metrics["difficulty_replay_ratio"][env_ids] = difficulty_count / max(len(env_ids), 1)
+
+        self._reset_error_accumulators(env_ids)
+        self._episode_bin_count[env_ids] = 0
+        self._episode_success_count[env_ids] = 0
+        self._episode_soft_failure_count[env_ids] = 0
+        self._episode_hard_failure_count[env_ids] = 0
 
         root_pos = self.body_pos_w[:, 0].clone()
         root_ori = self.body_quat_w[:, 0].clone()
@@ -279,27 +600,66 @@ class MotionCommand(CommandTerm):
         )
 
     def _update_command(self):
-        self.time_steps += 1
-        # print(self.time_steps)
-        env_ids = torch.where(self.time_steps >= self.motion.time_step_total)[0]
-        self._resample_command(env_ids)
+        active_ids = torch.where(self._has_active_bin & ~self.motion_complete)[0]
+        if len(active_ids):
+            next_frames = self.time_steps[active_ids] + 1
+            crossed = next_frames >= self.active_bin_end[active_ids]
+            continuing_ids = active_ids[~crossed]
+            self.time_steps[continuing_ids] += 1
 
-        anchor_pos_w_repeat = self.anchor_pos_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
-        anchor_quat_w_repeat = self.anchor_quat_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
-        robot_anchor_pos_w_repeat = self.robot_anchor_pos_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
-        robot_anchor_quat_w_repeat = self.robot_anchor_quat_w[:, None, :].repeat(1, len(self.cfg.body_names), 1)
+            crossed_ids = active_ids[crossed]
+            if len(crossed_ids):
+                self._settle_tracking_bins(crossed_ids)
+                current_bins = self.active_bin_ids[crossed_ids]
+                candidate_bins = torch.clamp(current_bins + 1, max=self.bin_count - 1)
+                has_next_bin = (current_bins + 1 < self.bin_count) & (
+                    self.motion.bin_motion_ids[candidate_bins] == self.motion.bin_motion_ids[current_bins]
+                )
 
-        delta_pos_w = robot_anchor_pos_w_repeat
-        delta_pos_w[..., 2] = anchor_pos_w_repeat[..., 2]
-        delta_ori_w = yaw_quat(quat_mul(robot_anchor_quat_w_repeat, quat_inv(anchor_quat_w_repeat)))
+                next_ids = crossed_ids[has_next_bin]
+                next_bins = candidate_bins[has_next_bin]
+                if len(next_ids):
+                    self.active_bin_ids[next_ids] = next_bins
+                    self.time_steps[next_ids] = self.motion.bin_start_frames[next_bins]
+                    self.active_bin_end[next_ids] = self.motion.bin_end_frames[next_bins]
+                    self._bin_needs_outcome[next_ids] = True
+                    self._reset_error_accumulators(next_ids)
 
-        self.body_quat_relative_w = quat_mul(delta_ori_w, self.body_quat_w)
-        self.body_pos_relative_w = delta_pos_w + quat_apply(delta_ori_w, self.body_pos_w - anchor_pos_w_repeat)
+                finished_ids = crossed_ids[~has_next_bin]
+                if len(finished_ids):
+                    self.motion_complete[finished_ids] = True
 
-        self.bin_failed_count = (
-            self.cfg.adaptive_alpha * self._current_bin_failed + (1 - self.cfg.adaptive_alpha) * self.bin_failed_count
+        self._update_reference_alignment()
+
+    def get_curriculum_state(self) -> dict:
+        """Return CPU curriculum state suitable for inclusion in a model checkpoint."""
+        return {
+            "motion_signature": self.motion.signature,
+            "bin_difficulty": self.bin_difficulty.cpu(),
+            "bin_sample_count": self.bin_sample_count.cpu(),
+            "coverage_order": self.coverage_order.cpu(),
+            "coverage_cursor": self.coverage_cursor,
+            "coverage_epoch": self.coverage_epoch,
+        }
+
+    def load_curriculum_state(self, state: dict) -> bool:
+        """Restore curriculum state when the motion file list and lengths still match."""
+        if state.get("motion_signature") != self.motion.signature:
+            print("[WARN] Motion dataset changed; starting with fresh difficulty scores and coverage order.")
+            return False
+        tensor_names = (
+            "bin_difficulty",
+            "bin_sample_count",
+            "coverage_order",
         )
-        self._current_bin_failed.zero_()
+        if any(name not in state or state[name].numel() != self.bin_count for name in tensor_names):
+            print("[WARN] Incompatible motion curriculum checkpoint; starting with a fresh EMA curriculum.")
+            return False
+        for name in tensor_names:
+            setattr(self, name, state[name].to(self.device))
+        self.coverage_cursor = int(state.get("coverage_cursor", 0))
+        self.coverage_epoch = int(state.get("coverage_epoch", 0))
+        return True
 
     def _set_debug_vis_impl(self, debug_vis: bool):
         if debug_vis:
@@ -368,10 +728,17 @@ class MotionCommandCfg(CommandTermCfg):
 
     joint_position_range: tuple[float, float] = (-0.52, 0.52)
 
-    adaptive_kernel_size: int = 3
-    adaptive_lambda: float = 0.8
-    adaptive_uniform_ratio: float = 0.1
-    adaptive_alpha: float = 0.001
+    bin_duration_s: float = 1.0
+    min_bin_duration_s: float = 0.5
+    difficulty_replay_fraction: float = 1.0 / 3.0
+    difficulty_ema_alpha: float = 0.02
+    soft_failure_difficulty: float = 0.4
+    difficulty_score_floor: float = 1.0e-3
+
+    success_anchor_pos_error: float = 0.20
+    success_anchor_rot_error: float = 0.60
+    success_body_pos_error: float = 0.18
+    success_body_rot_error: float = 0.60
 
     anchor_visualizer_cfg: VisualizationMarkersCfg = FRAME_MARKER_CFG.replace(prim_path="/Visuals/Command/pose")
     anchor_visualizer_cfg.markers["frame"].scale = (0.2, 0.2, 0.2)
