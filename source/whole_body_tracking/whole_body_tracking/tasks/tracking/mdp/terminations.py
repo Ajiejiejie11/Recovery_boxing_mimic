@@ -15,6 +15,12 @@ from whole_body_tracking.tasks.tracking.mdp.commands import MotionCommand
 from whole_body_tracking.tasks.tracking.mdp.rewards import _get_body_indexes
 
 
+def motion_complete(env: ManagerBasedRLEnv, command_name: str) -> torch.Tensor:
+    """End an episode only after the sampled reference reaches its source motion boundary."""
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    return command.motion_complete
+
+
 def bad_anchor_pos(env: ManagerBasedRLEnv, command_name: str, threshold: float) -> torch.Tensor:
     command: MotionCommand = env.command_manager.get_term(command_name)
     return torch.norm(command.anchor_pos_w - command.robot_anchor_pos_w, dim=1) > threshold

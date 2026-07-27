@@ -27,6 +27,7 @@ parser.add_argument("--max_iterations", type=int, default=None, help="RL Policy 
 _motion_src = parser.add_mutually_exclusive_group(required=True)
 _motion_src.add_argument("--registry_name", type=str, default=None, help="The name of the wandb registry.")
 _motion_src.add_argument("--motion_file", type=str, default=None, help="Path to a local motion .npz file.")
+_motion_src.add_argument("--motion_dir", type=str, default=None, help="Directory containing local motion .npz files.")
 
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
@@ -67,6 +68,7 @@ from isaaclab_tasks.utils.hydra import hydra_task_config
 
 # Import extensions to set up environment tasks
 import whole_body_tracking.tasks  # noqa: F401
+from whole_body_tracking.utils.exporter import attach_onnx_metadata, export_motion_policy_as_onnx
 from whole_body_tracking.utils.my_on_policy_runner import MotionOnPolicyRunner as OnPolicyRunner
 
 torch.backends.cuda.matmul.allow_tf32 = True
@@ -89,13 +91,18 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # note: certain randomizations occur in the environment initialization so we set the seed here
     env_cfg.seed = agent_cfg.seed
     env_cfg.sim.device = args_cli.device if args_cli.device is not None else env_cfg.sim.device
+    agent_cfg.device = args_cli.device if args_cli.device is not None else agent_cfg.device
 
     # load the motion file: either from a local path or from the wandb registry
-    if args_cli.motion_file is not None:
+    if args_cli.motion_file is not None or args_cli.motion_dir is not None:
         import os
 
-        motion_path = os.path.abspath(args_cli.motion_file)
-        assert os.path.isfile(motion_path), f"motion_file not found: {motion_path}"
+        motion_path = os.path.abspath(args_cli.motion_file or args_cli.motion_dir)
+        if args_cli.motion_dir is not None:
+            assert os.path.isdir(motion_path), f"motion_dir not found: {motion_path}"
+            assert any(name.endswith(".npz") for name in os.listdir(motion_path)), f"no npz files in: {motion_path}"
+        else:
+            assert os.path.isfile(motion_path), f"motion_file not found: {motion_path}"
         env_cfg.commands.motion.motion_file = motion_path
         registry_name = None
     else:
@@ -145,8 +152,10 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     runner = OnPolicyRunner(
         env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device, registry_name=registry_name
     )
-    # write git state to logs
-    runner.add_git_repo_to_log(__file__)
+    # Do not register the working tree for RSL-RL's automatic full-diff dump.
+    # A dirty research workspace can contain large or non-UTF-8 artifacts, and
+    # upstream store_code_state treats an encoding failure as a training error.
+    # The resolved env/agent configs are still stored below for reproducibility.
     # save resume path before creating a new log_dir
     if agent_cfg.resume:
         # get path to previous checkpoint
@@ -162,7 +171,41 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     dump_pickle(os.path.join(log_dir, "params", "agent.pkl"), agent_cfg)
 
     # run training
-    runner.learn(num_learning_iterations=agent_cfg.max_iterations, init_at_random_ep_len=True)
+    runner.learn(num_learning_iterations=agent_cfg.max_iterations, init_at_random_ep_len=False)
+
+    # Resolve and reload the numerically latest checkpoint so ONNX provenance is exact.
+    checkpoint_names = [
+        name for name in os.listdir(log_dir) if name.startswith("model_") and name.endswith(".pt")
+    ]
+    if not checkpoint_names:
+        raise RuntimeError(f"Training finished without a model checkpoint in: {log_dir}")
+    final_checkpoint_name = max(checkpoint_names, key=lambda name: int(name[6:-3]))
+    final_checkpoint = os.path.join(log_dir, final_checkpoint_name)
+    # RSL-RL updates EmpiricalNormalization._std inside inference mode during
+    # rollouts, so that buffer itself is an inference tensor. Its load_state_dict
+    # copy must therefore also run in inference mode on recent PyTorch versions.
+    with torch.inference_mode():
+        runner.load(final_checkpoint, load_optimizer=False)
+
+    # Always leave a deployable policy next to the final TensorBoard/checkpoint logs.
+    export_dir = os.path.join(log_dir, "exported")
+    onnx_filename = f"{os.path.basename(os.path.normpath(log_dir))}.onnx"
+    export_motion_policy_as_onnx(
+        env.unwrapped,
+        runner.alg.policy,
+        normalizer=runner.obs_normalizer,
+        path=export_dir,
+        filename=onnx_filename,
+    )
+    attach_onnx_metadata(
+        env.unwrapped,
+        log_dir,
+        export_dir,
+        filename=onnx_filename,
+        checkpoint_path=final_checkpoint,
+    )
+    print(f"[INFO]: Final checkpoint used for ONNX: {final_checkpoint}")
+    print(f"[INFO]: Final ONNX policy exported to: {os.path.join(export_dir, onnx_filename)}")
 
     # close the simulator
     env.close()

@@ -89,7 +89,13 @@ def list_to_csv_str(arr, *, decimals: int = 3, delimiter: str = ",") -> str:
     )
 
 
-def attach_onnx_metadata(env: ManagerBasedRLEnv, run_path: str, path: str, filename="policy.onnx") -> None:
+def attach_onnx_metadata(
+    env: ManagerBasedRLEnv,
+    run_path: str,
+    path: str,
+    filename="policy.onnx",
+    checkpoint_path: str | None = None,
+) -> None:
     onnx_path = os.path.join(path, filename)
     # print(env.scene["robot"].data.joint_stiffness[0].cpu().tolist())
     # print(env.scene["robot"].data.joint_damping[0].cpu().tolist())
@@ -105,6 +111,9 @@ def attach_onnx_metadata(env: ManagerBasedRLEnv, run_path: str, path: str, filen
         "anchor_body_name": env.command_manager.get_term("motion").cfg.anchor_body_name,
         "body_names": env.command_manager.get_term("motion").cfg.body_names,
     }
+    if checkpoint_path is not None:
+        metadata["source_checkpoint"] = os.path.abspath(checkpoint_path)
+        metadata["source_checkpoint_file"] = os.path.basename(checkpoint_path)
 
     model = onnx.load(onnx_path)
 

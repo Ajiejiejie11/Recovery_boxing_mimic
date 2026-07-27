@@ -19,7 +19,9 @@ parser.add_argument(
 )
 parser.add_argument("--num_envs", type=int, default=None, help="Number of environments to simulate.")
 parser.add_argument("--task", type=str, default=None, help="Name of the task.")
-parser.add_argument("--motion_file", type=str, default=None, help="Path to the motion file.")
+_motion_src = parser.add_mutually_exclusive_group()
+_motion_src.add_argument("--motion_file", type=str, default=None, help="Path to the motion file.")
+_motion_src.add_argument("--motion_dir", type=str, default=None, help="Directory containing motion npz files.")
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
@@ -71,6 +73,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # specify directory for logging experiments
     log_root_path = os.path.join("logs", "rsl_rl", agent_cfg.experiment_name)
     log_root_path = os.path.abspath(log_root_path)
+    local_motion_source = args_cli.motion_file or args_cli.motion_dir
 
     if args_cli.wandb_path:
         import wandb
@@ -95,25 +98,26 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         print(f"[INFO]: Loading model checkpoint from: {run_path}/{file}")
         resume_path = f"./logs/rsl_rl/temp/{file}"
 
-        if args_cli.motion_file is not None:
-            print(f"[INFO]: Using motion file from CLI: {args_cli.motion_file}")
-            env_cfg.commands.motion.motion_file = args_cli.motion_file
+        if local_motion_source is not None:
+            print(f"[INFO]: Using motion source from CLI: {local_motion_source}")
+            env_cfg.commands.motion.motion_file = local_motion_source
 
-        art = next((a for a in wandb_run.used_artifacts() if a.type == "motions"), None)
-        if art is None:
-            print("[WARN] No model artifact found in the run.")
-        else:
-            env_cfg.commands.motion.motion_file = str(pathlib.Path(art.download()) / "motion.npz")
+        if local_motion_source is None:
+            art = next((a for a in wandb_run.used_artifacts() if a.type == "motions"), None)
+            if art is None:
+                print("[WARN] No motion artifact found in the run.")
+            else:
+                env_cfg.commands.motion.motion_file = str(pathlib.Path(art.download()) / "motion.npz")
 
     else:
         print(f"[INFO] Loading experiment from directory: {log_root_path}")
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
         print(f"[INFO]: Loading model checkpoint from: {resume_path}")
 
-        if args_cli.motion_file is not None:
-            motion_path = os.path.abspath(args_cli.motion_file)
-            assert os.path.isfile(motion_path), f"motion_file not found: {motion_path}"
-            print(f"[INFO]: Using motion file from CLI: {motion_path}")
+        if local_motion_source is not None:
+            motion_path = os.path.abspath(local_motion_source)
+            assert os.path.exists(motion_path), f"motion source not found: {motion_path}"
+            print(f"[INFO]: Using motion source from CLI: {motion_path}")
             env_cfg.commands.motion.motion_file = motion_path
 
     # create isaac environment

@@ -30,7 +30,10 @@ class MotionOnPolicyRunner(OnPolicyRunner):
 
     def save(self, path: str, infos=None):
         """Save the model and training information."""
-        super().save(path, infos)
+        checkpoint_infos = dict(infos) if isinstance(infos, dict) else {}
+        motion_command = self.env.unwrapped.command_manager.get_term("motion")
+        checkpoint_infos["motion_curriculum"] = motion_command.get_curriculum_state()
+        super().save(path, checkpoint_infos)
         if self.logger_type in ["wandb"]:
             policy_path = path.split("model")[0]
             filename = policy_path.split("/")[-2] + ".onnx"
@@ -44,3 +47,11 @@ class MotionOnPolicyRunner(OnPolicyRunner):
             if self.registry_name is not None:
                 wandb.run.use_artifact(self.registry_name)
                 self.registry_name = None
+
+    def load(self, path: str, load_optimizer: bool = True):
+        infos = super().load(path, load_optimizer=load_optimizer)
+        if isinstance(infos, dict) and "motion_curriculum" in infos:
+            self.env.unwrapped.command_manager.get_term("motion").load_curriculum_state(
+                infos["motion_curriculum"]
+            )
+        return infos

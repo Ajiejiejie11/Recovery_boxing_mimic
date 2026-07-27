@@ -247,11 +247,11 @@ class RewardsCfg:
         weight=1.0,
         params={"command_name": "motion", "std": 3.14},
     )
-    # joint_pos_track = RewTerm(
-    #     func=mdp.joint_pos_track_error_exp,
-    #     weight=0.5,
-    #     params={"command_name": "motion", "std": 0.2},
-    # )
+    joint_pos_track = RewTerm(
+        func=mdp.joint_pos_track_error_exp,
+        weight=0.5,
+        params={"command_name": "motion", "std": 0.2},
+    )
 
     action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1e-1)
     joint_limit = RewTerm(
@@ -328,6 +328,7 @@ class TerminationsCfg:
     """Termination terms for the MDP."""
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
+    motion_end = DoneTerm(func=mdp.motion_complete, params={"command_name": "motion"}, time_out=True)
     anchor_pos = DoneTerm(
         func=mdp.bad_anchor_pos_z_only,
         params={"command_name": "motion", "threshold": 0.25},

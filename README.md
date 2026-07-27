@@ -126,6 +126,32 @@ Available task variants:
 Logs are written to `logs/rsl_rl/z1_flat/{timestamp}_{run_name}/`. Checkpoints are saved every 500 iterations (see
 `Z1FlatPPORunnerCfg.save_interval`).
 
+#### Multi-motion boxing training
+
+Pass a directory to train one policy on every `.npz` file in it. Motions remain separate; each motion is divided into
+approximately one-second bins for sampling and difficulty scoring; a final segment shorter than half a second is
+merged into the preceding bin. Rollouts continue across adjacent bins in the same motion and reset only on a hard
+failure, source-motion end, or episode timeout, so inter-bin transitions are trained.
+Two thirds of reset environments traverse a shuffled full-coverage queue, while one third sample bins according to an
+EMA difficulty score. A parallel outcome batch is reduced to one target per bin (hard failure `1.0`, soft failure
+`0.4`, success `0.0`) before the EMA update, so curriculum speed is independent of the environment count. The
+difficulty scores and coverage state are stored in checkpoints. The Z1 task starts with mild friction, mass,
+reset-state, and observation randomization; COM shifts and external pushes remain disabled for this first stage.
+Motion files must include `joint_names` and `body_names`. The loader maps data by name into the active Isaac robot
+order and deliberately rejects legacy index-only files, preventing MuJoCo/Isaac articulation-order mismatches.
+
+```bash
+python scripts/rsl_rl/train.py \
+  --task=Tracking-Flat-Z1-v0 \
+  --motion_dir source/whole_body_tracking/whole_body_tracking/datasets/boxing-dataset-magiclab-z1/train_npz \
+  --num_envs 256 --max_iterations 30000 --headless \
+  --logger tensorboard --run_name boxing_multi_v1
+```
+
+TensorBoard event files are written into the run directory. When training finishes normally, the numerically latest
+`model_*.pt` is reloaded and exported to `<run>/exported/<run-name>.onnx`; its checkpoint path is embedded in the
+ONNX metadata as `source_checkpoint`.
+
 ### 4. Policy Evaluation
 
 Play a trained checkpoint and (optionally) export it to ONNX:

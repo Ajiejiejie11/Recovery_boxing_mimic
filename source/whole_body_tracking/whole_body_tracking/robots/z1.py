@@ -1,6 +1,7 @@
+import os
+
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg
-# from whole_body_tracking.robots.actuator import DelayedImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 
 from whole_body_tracking.assets import ASSET_DIR
@@ -16,12 +17,21 @@ STIFFNESS_60 = ARMATURE_60 * NATURAL_FREQ**2
 
 DAMPING_90 = 2.0 * DAMPING_RATIO * ARMATURE_90 * NATURAL_FREQ
 DAMPING_60 = 2.0 * DAMPING_RATIO * ARMATURE_60 * NATURAL_FREQ
+DAMPING_HIP_PITCH_KNEE = 5.19741
+DAMPING_ANKLE = 2.5549
+
+# Isaac Lab otherwise writes converted URDF assets to the shared
+# /tmp/IsaacLab directory, which may be owned by another server user.
+Z1_USD_DIR = os.environ.get(
+    "WBT_USD_DIR", os.path.join("/tmp", f"magicbot-mimic-{os.getuid()}", "z1_urdf")
+)
 
 Z1_CYLINDER_CFG = ArticulationCfg(
     spawn=sim_utils.UrdfFileCfg(
         fix_base=False,
         replace_cylinders_with_capsules=True,
         asset_path=f"{ASSET_DIR}/magicbot-z1_description/urdf/MagicBotZ1_23dof.urdf",
+        usd_dir=Z1_USD_DIR,
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -100,10 +110,10 @@ Z1_CYLINDER_CFG = ArticulationCfg(
                 ".*_knee_joint": STIFFNESS_90,
             },
             damping={
-                ".*_hip_pitch_joint": DAMPING_90,
+                ".*_hip_pitch_joint": DAMPING_HIP_PITCH_KNEE,
                 ".*_hip_roll_joint": DAMPING_90,
                 ".*_hip_yaw_joint": DAMPING_90,
-                ".*_knee_joint": DAMPING_90,
+                ".*_knee_joint": DAMPING_HIP_PITCH_KNEE,
             },
             armature={
                 ".*_hip_pitch_joint": ARMATURE_90 * 2,
@@ -135,7 +145,7 @@ Z1_CYLINDER_CFG = ArticulationCfg(
             velocity_limit_sim=18.0,
             joint_names_expr=[".*_ankle_pitch_joint"],
             stiffness=2.0 * STIFFNESS_60,
-            damping=2.0 * DAMPING_60,
+            damping=DAMPING_ANKLE,
             armature=2.0 * ARMATURE_60,
             # friction = 0.2,
             # min_delay = 0,
@@ -147,7 +157,7 @@ Z1_CYLINDER_CFG = ArticulationCfg(
             velocity_limit_sim=18.0,
             joint_names_expr=[".*_ankle_roll_joint"],
             stiffness=2.0 * STIFFNESS_60,
-            damping=2.0 * DAMPING_60,
+            damping=DAMPING_ANKLE,
             armature=2.0 * ARMATURE_60,
             # friction = 0.2,
             # min_delay = 0,
