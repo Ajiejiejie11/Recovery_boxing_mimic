@@ -30,7 +30,7 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
             "right_wrist_yaw_link",
         ]
 
-        # Mild stage-1 randomization: enough variation for robustness without strong pushes/COM shifts.
+        # Stage-2 randomization for robustness and sim-to-real transfer.
         self.commands.motion.debug_vis = False
         self.commands.motion.pose_range = {
             "x": (-0.02, 0.02),
@@ -57,8 +57,21 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         self.events.hand_physics_material.params["dynamic_friction_range"] = (0.5, 1.0)
         self.events.add_joint_default_pos.params["pos_distribution_params"] = (-0.01, 0.01)
         self.events.scale_link_mass.params["mass_distribution_params"] = (0.95, 1.05)
-        self.events.base_com = None
-        self.events.push_robot = None
+        self.events.actuator_gains.params["stiffness_distribution_params"] = (0.7, 1.3)
+        self.events.actuator_gains.params["damping_distribution_params"] = (0.7, 1.3)
+        self.events.base_com.params["com_range"] = {
+            "x": (-0.3, 0.3),
+            "y": (-0.2, 0.2),
+            "z": (-0.1, 0.1),
+        }
+        self.events.push_robot.params["velocity_range"] = {
+            "x": (-0.5, 0.5),
+            "y": (-0.5, 0.5),
+            "z": (-0.2, 0.2),
+            "roll": (-0.52, 0.52),
+            "pitch": (-0.52, 0.52),
+            "yaw": (-0.78, 0.78),
+        }
 
         # The longest source clip is about 14 s; allow continuous traversal across all of its bins.
         self.episode_length_s = 20.0

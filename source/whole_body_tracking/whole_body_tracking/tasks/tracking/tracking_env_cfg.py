@@ -185,6 +185,18 @@ class EventCfg:
         },
     )
 
+    actuator_gains = EventTerm(
+        func=mdp.randomize_actuator_gains,
+        mode="startup",
+        params={
+            "asset_cfg": SceneEntityCfg("robot", joint_names=[".*"]),
+            "stiffness_distribution_params": (0.7, 1.3),
+            "damping_distribution_params": (0.7, 1.3),
+            "operation": "scale",
+            "distribution": "uniform",
+        },
+    )
+
     base_com = EventTerm(
         func=mdp.randomize_rigid_body_com,
         mode="startup",
@@ -247,12 +259,8 @@ class RewardsCfg:
         weight=1.0,
         params={"command_name": "motion", "std": 3.14},
     )
-    joint_pos_track = RewTerm(
-        func=mdp.joint_pos_track_error_exp,
-        weight=0.5,
-        params={"command_name": "motion", "std": 0.2},
-    )
-
+    # Do not force exact per-joint pose matching: a kinematic reference frame may
+    # not be dynamically feasible. Whole-body pose and velocity terms remain.
     action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1e-1)
     joint_limit = RewTerm(
         func=mdp.joint_pos_limits,
