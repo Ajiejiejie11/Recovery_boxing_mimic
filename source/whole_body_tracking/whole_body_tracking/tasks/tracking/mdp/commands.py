@@ -215,6 +215,13 @@ class MotionCommand(CommandTerm):
             bin_duration_s=self.cfg.bin_duration_s,
             min_bin_duration_s=self.cfg.min_bin_duration_s,
         )
+        sampling_fractions = (
+            self.cfg.coverage_sampling_fraction,
+            self.cfg.hard_failure_replay_fraction,
+            self.cfg.tracking_error_replay_fraction,
+        )
+        if any(fraction < 0.0 for fraction in sampling_fractions) or not np.isclose(sum(sampling_fractions), 1.0):
+            raise ValueError(f"Motion sampling fractions must be non-negative and sum to 1.0, got {sampling_fractions}")
         self.time_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.active_bin_ids = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.active_bin_end = torch.ones(self.num_envs, dtype=torch.long, device=self.device)
@@ -226,10 +233,10 @@ class MotionCommand(CommandTerm):
         self.body_quat_relative_w[:, :, 0] = 1.0
 
         self.bin_count = self.motion.bin_count
-        # Continuous difficulty memory. Outcomes are reduced to one rate per bin
-        # before this EMA is updated, so its time scale does not depend on the
-        # number of parallel environments evaluating that bin.
-        self.bin_difficulty = torch.zeros(self.bin_count, dtype=torch.float, device=self.device)
+        # Keep falling risk separate from non-terminal tracking error so rare
+        # hard failures cannot be diluted by the more common soft outcomes.
+        self.hard_failure_score = torch.zeros(self.bin_count, dtype=torch.float, device=self.device)
+        self.tracking_error_score = torch.zeros(self.bin_count, dtype=torch.float, device=self.device)
         self.bin_sample_count = torch.zeros(self.bin_count, dtype=torch.long, device=self.device)
         self.coverage_order = torch.randperm(self.bin_count, device=self.device)
         self.coverage_cursor = 0
@@ -257,6 +264,15 @@ class MotionCommand(CommandTerm):
         self.metrics["difficulty_score_max"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["difficulty_sampling_entropy"] = torch.ones(self.num_envs, device=self.device)
         self.metrics["difficulty_replay_ratio"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["hard_failure_score_mean"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["hard_failure_score_max"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["hard_failure_sampling_entropy"] = torch.ones(self.num_envs, device=self.device)
+        self.metrics["tracking_error_score_mean"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["tracking_error_score_max"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["tracking_error_sampling_entropy"] = torch.ones(self.num_envs, device=self.device)
+        self.metrics["coverage_sampling_ratio"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["hard_failure_replay_ratio"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["tracking_error_replay_ratio"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["coverage_epoch"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["bin_success"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["bin_soft_failure"] = torch.zeros(self.num_envs, device=self.device)
@@ -401,35 +417,48 @@ class MotionCommand(CommandTerm):
         self._body_pos_error_sum[active] += self.metrics["error_body_pos"][active]
         self._body_rot_error_sum[active] += self.metrics["error_body_rot"][active]
 
-        difficulty_probabilities = self._difficulty_sampling_probabilities()
-        self.metrics["difficulty_score_mean"][:] = self.bin_difficulty.mean()
-        self.metrics["difficulty_score_max"][:] = self.bin_difficulty.max()
+        hard_probabilities = self._score_sampling_probabilities(self.hard_failure_score)
+        tracking_probabilities = self._score_sampling_probabilities(self.tracking_error_score)
+        combined_score = self.hard_failure_score + self.tracking_error_score
+        difficulty_probabilities = self._score_sampling_probabilities(combined_score)
+        self.metrics["difficulty_score_mean"][:] = combined_score.mean()
+        self.metrics["difficulty_score_max"][:] = combined_score.max()
+        self.metrics["hard_failure_score_mean"][:] = self.hard_failure_score.mean()
+        self.metrics["hard_failure_score_max"][:] = self.hard_failure_score.max()
+        self.metrics["tracking_error_score_mean"][:] = self.tracking_error_score.mean()
+        self.metrics["tracking_error_score_max"][:] = self.tracking_error_score.max()
         if self.bin_count > 1:
-            entropy = -(difficulty_probabilities * (difficulty_probabilities + 1.0e-12).log()).sum()
-            self.metrics["difficulty_sampling_entropy"][:] = entropy / torch.log(
-                torch.tensor(float(self.bin_count), device=self.device)
-            )
+            entropy_scale = torch.log(torch.tensor(float(self.bin_count), device=self.device))
+            difficulty_entropy = -(difficulty_probabilities * (difficulty_probabilities + 1.0e-12).log()).sum()
+            hard_entropy = -(hard_probabilities * (hard_probabilities + 1.0e-12).log()).sum()
+            tracking_entropy = -(tracking_probabilities * (tracking_probabilities + 1.0e-12).log()).sum()
+            self.metrics["difficulty_sampling_entropy"][:] = difficulty_entropy / entropy_scale
+            self.metrics["hard_failure_sampling_entropy"][:] = hard_entropy / entropy_scale
+            self.metrics["tracking_error_sampling_entropy"][:] = tracking_entropy / entropy_scale
         else:
             self.metrics["difficulty_sampling_entropy"][:] = 1.0
+            self.metrics["hard_failure_sampling_entropy"][:] = 1.0
+            self.metrics["tracking_error_sampling_entropy"][:] = 1.0
         self.metrics["coverage_epoch"][:] = float(self.coverage_epoch)
 
     def _update_bin_outcomes(
         self, bins: torch.Tensor, hard: torch.Tensor, soft: torch.Tensor, successful: torch.Tensor
     ) -> None:
-        """Update one EMA target per bin from the current parallel outcome batch."""
+        """Update independent hard-failure and tracking-error EMA targets per bin."""
         if bins.numel() == 0:
             return
         unique_bins, inverse = torch.unique(bins, return_inverse=True)
         outcome_count = torch.bincount(inverse, minlength=len(unique_bins)).float()
         hard_count = torch.bincount(inverse, weights=hard.float(), minlength=len(unique_bins))
         soft_count = torch.bincount(inverse, weights=soft.float(), minlength=len(unique_bins))
-        # hard=1, soft=configured intermediate difficulty, success=0
-        batch_difficulty = (
-            hard_count + self.cfg.soft_failure_difficulty * soft_count
-        ) / outcome_count.clamp_min(1.0)
-        old_difficulty = self.bin_difficulty[unique_bins]
-        self.bin_difficulty[unique_bins] = torch.lerp(
-            old_difficulty, batch_difficulty, self.cfg.difficulty_ema_alpha
+        denominator = outcome_count.clamp_min(1.0)
+        hard_target = hard_count / denominator
+        tracking_target = soft_count / denominator
+        self.hard_failure_score[unique_bins] = torch.lerp(
+            self.hard_failure_score[unique_bins], hard_target, self.cfg.hard_failure_ema_alpha
+        ).clamp_(0.0, 1.0)
+        self.tracking_error_score[unique_bins] = torch.lerp(
+            self.tracking_error_score[unique_bins], tracking_target, self.cfg.tracking_error_ema_alpha
         ).clamp_(0.0, 1.0)
 
     def _settle_tracking_bins(self, env_ids: torch.Tensor) -> None:
@@ -530,29 +559,37 @@ class MotionCommand(CommandTerm):
             self.coverage_order = torch.randperm(self.bin_count, device=self.device)
         return torch.cat(selected)
 
-    def _difficulty_sampling_probabilities(self) -> torch.Tensor:
-        """Return normalized EMA difficulty weights, uniform before evidence exists."""
-        weights = self.bin_difficulty.clamp_min(0.0) + self.cfg.difficulty_score_floor
+    def _score_sampling_probabilities(self, score: torch.Tensor) -> torch.Tensor:
+        """Return normalized EMA score weights, uniform before evidence exists."""
+        weights = score.clamp_min(0.0) + self.cfg.difficulty_score_floor
         return weights / weights.sum()
 
-    def _sample_bins(self, count: int) -> tuple[torch.Tensor, int]:
-        difficulty_count = int(round(count * self.cfg.difficulty_replay_fraction))
-        if difficulty_count:
-            difficulty_bins = torch.multinomial(
-                self._difficulty_sampling_probabilities(), difficulty_count, replacement=True
+    def _sample_bins(self, count: int) -> tuple[torch.Tensor, int, int, int]:
+        hard_count = int(round(count * self.cfg.hard_failure_replay_fraction))
+        tracking_count = int(round(count * self.cfg.tracking_error_replay_fraction))
+        coverage_count = count - hard_count - tracking_count
+        if hard_count:
+            hard_bins = torch.multinomial(
+                self._score_sampling_probabilities(self.hard_failure_score), hard_count, replacement=True
             )
         else:
-            difficulty_bins = torch.empty(0, dtype=torch.long, device=self.device)
-        coverage_bins = self._sample_coverage_bins(count - difficulty_count)
-        bins = torch.cat((coverage_bins, difficulty_bins))
+            hard_bins = torch.empty(0, dtype=torch.long, device=self.device)
+        if tracking_count:
+            tracking_bins = torch.multinomial(
+                self._score_sampling_probabilities(self.tracking_error_score), tracking_count, replacement=True
+            )
+        else:
+            tracking_bins = torch.empty(0, dtype=torch.long, device=self.device)
+        coverage_bins = self._sample_coverage_bins(coverage_count)
+        bins = torch.cat((coverage_bins, hard_bins, tracking_bins))
         bins = bins[torch.randperm(len(bins), device=self.device)]
-        return bins, difficulty_count
+        return bins, coverage_count, hard_count, tracking_count
 
     def _resample_command(self, env_ids: Sequence[int]):
         if len(env_ids) == 0:
             return
         env_ids = torch.as_tensor(env_ids, dtype=torch.long, device=self.device)
-        sampled_bins, difficulty_count = self._sample_bins(len(env_ids))
+        sampled_bins, coverage_count, hard_count, tracking_count = self._sample_bins(len(env_ids))
         self.active_bin_ids[env_ids] = sampled_bins
         self.time_steps[env_ids] = self.motion.bin_start_frames[sampled_bins]
         self.active_bin_end[env_ids] = self.motion.bin_end_frames[sampled_bins]
@@ -560,7 +597,11 @@ class MotionCommand(CommandTerm):
         self._bin_needs_outcome[env_ids] = True
         self._has_active_bin[env_ids] = True
         self.bin_sample_count += torch.bincount(sampled_bins, minlength=self.bin_count)
-        self.metrics["difficulty_replay_ratio"][env_ids] = difficulty_count / max(len(env_ids), 1)
+        denominator = max(len(env_ids), 1)
+        self.metrics["coverage_sampling_ratio"][env_ids] = coverage_count / denominator
+        self.metrics["hard_failure_replay_ratio"][env_ids] = hard_count / denominator
+        self.metrics["tracking_error_replay_ratio"][env_ids] = tracking_count / denominator
+        self.metrics["difficulty_replay_ratio"][env_ids] = (hard_count + tracking_count) / denominator
 
         self._reset_error_accumulators(env_ids)
         self._episode_bin_count[env_ids] = 0
@@ -634,8 +675,10 @@ class MotionCommand(CommandTerm):
     def get_curriculum_state(self) -> dict:
         """Return CPU curriculum state suitable for inclusion in a model checkpoint."""
         return {
+            "curriculum_version": 2,
             "motion_signature": self.motion.signature,
-            "bin_difficulty": self.bin_difficulty.cpu(),
+            "hard_failure_score": self.hard_failure_score.cpu(),
+            "tracking_error_score": self.tracking_error_score.cpu(),
             "bin_sample_count": self.bin_sample_count.cpu(),
             "coverage_order": self.coverage_order.cpu(),
             "coverage_cursor": self.coverage_cursor,
@@ -647,16 +690,27 @@ class MotionCommand(CommandTerm):
         if state.get("motion_signature") != self.motion.signature:
             print("[WARN] Motion dataset changed; starting with fresh difficulty scores and coverage order.")
             return False
-        tensor_names = (
-            "bin_difficulty",
-            "bin_sample_count",
-            "coverage_order",
-        )
-        if any(name not in state or state[name].numel() != self.bin_count for name in tensor_names):
+        common_tensor_names = ("bin_sample_count", "coverage_order")
+        if any(name not in state or state[name].numel() != self.bin_count for name in common_tensor_names):
             print("[WARN] Incompatible motion curriculum checkpoint; starting with a fresh EMA curriculum.")
             return False
-        for name in tensor_names:
+        for name in common_tensor_names:
             setattr(self, name, state[name].to(self.device))
+        new_score_names = ("hard_failure_score", "tracking_error_score")
+        if all(name in state and state[name].numel() == self.bin_count for name in new_score_names):
+            for name in new_score_names:
+                setattr(self, name, state[name].to(self.device))
+        elif "bin_difficulty" in state and state["bin_difficulty"].numel() == self.bin_count:
+            # Legacy single-channel scores mixed hard failures with 0.4-weighted
+            # soft failures. Preserve that useful ordering as the initial
+            # tracking-error curriculum; hard-failure evidence is relearned.
+            self.hard_failure_score.zero_()
+            self.tracking_error_score.copy_(state["bin_difficulty"].to(self.device).clamp(0.0, 1.0))
+            print("[INFO] Migrated legacy single-channel EMA into tracking_error_score; hard score starts fresh.")
+        else:
+            print("[WARN] Incompatible motion curriculum scores; starting with fresh dual-channel EMA scores.")
+            self.hard_failure_score.zero_()
+            self.tracking_error_score.zero_()
         self.coverage_cursor = int(state.get("coverage_cursor", 0))
         self.coverage_epoch = int(state.get("coverage_epoch", 0))
         return True
@@ -730,9 +784,11 @@ class MotionCommandCfg(CommandTermCfg):
 
     bin_duration_s: float = 1.0
     min_bin_duration_s: float = 0.5
-    difficulty_replay_fraction: float = 1.0 / 3.0
-    difficulty_ema_alpha: float = 0.02
-    soft_failure_difficulty: float = 0.4
+    coverage_sampling_fraction: float = 0.70
+    hard_failure_replay_fraction: float = 0.10
+    tracking_error_replay_fraction: float = 0.20
+    hard_failure_ema_alpha: float = 0.02
+    tracking_error_ema_alpha: float = 0.02
     difficulty_score_floor: float = 1.0e-3
 
     success_anchor_pos_error: float = 0.20

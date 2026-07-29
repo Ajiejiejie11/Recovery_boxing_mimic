@@ -132,11 +132,12 @@ Pass a directory to train one policy on every `.npz` file in it. Motions remain 
 approximately one-second bins for sampling and difficulty scoring; a final segment shorter than half a second is
 merged into the preceding bin. Rollouts continue across adjacent bins in the same motion and reset only on a hard
 failure, source-motion end, or episode timeout, so inter-bin transitions are trained.
-Two thirds of reset environments traverse a shuffled full-coverage queue, while one third sample bins according to an
-EMA difficulty score. A parallel outcome batch is reduced to one target per bin (hard failure `1.0`, soft failure
-`0.4`, success `0.0`) before the EMA update, so curriculum speed is independent of the environment count. The
-difficulty scores and coverage state are stored in checkpoints. The Z1 task starts with mild friction, mass,
-reset-state, and observation randomization; COM shifts and external pushes remain disabled for this first stage.
+Seventy percent of reset environments traverse a shuffled full-coverage queue. Ten percent replay bins using a hard
+failure EMA, while twenty percent replay bins using a separate non-terminal tracking-error EMA. Parallel outcomes are
+reduced to hard/soft rates per bin before each EMA update, so curriculum speed is independent of the environment count.
+Both scores and the coverage state are stored in checkpoints; legacy single-score checkpoints migrate their score into
+the tracking-error channel. The stage-2 Z1 task randomizes Kp/Kd by +/-30%, torso COM, friction, mass, reset state, and
+observations, and applies periodic root-velocity pushes.
 Motion files must include `joint_names` and `body_names`. The loader maps data by name into the active Isaac robot
 order and deliberately rejects legacy index-only files, preventing MuJoCo/Isaac articulation-order mismatches.
 
