@@ -8,7 +8,7 @@ from . import agents, flat_env_cfg
 
 gym.register(
     id="Tracking-Flat-Z1-v0",
-    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    entry_point="whole_body_tracking.tasks.tracking.tracking_env:TrackingRLEnv",
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": flat_env_cfg.Z1FlatEnvCfg,
@@ -18,7 +18,7 @@ gym.register(
 
 gym.register(
     id="Tracking-Flat-Z1-Wo-State-Estimation-v0",
-    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    entry_point="whole_body_tracking.tasks.tracking.tracking_env:TrackingRLEnv",
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": flat_env_cfg.Z1FlatWoStateEstimationEnvCfg,
@@ -29,7 +29,7 @@ gym.register(
 
 gym.register(
     id="Tracking-Flat-Z1-Low-Freq-v0",
-    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    entry_point="whole_body_tracking.tasks.tracking.tracking_env:TrackingRLEnv",
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": flat_env_cfg.Z1FlatLowFreqEnvCfg,

@@ -17,16 +17,24 @@ def _get_body_indexes(command: MotionCommand, body_names: list[str] | None) -> l
     return [i for i, name in enumerate(command.cfg.body_names) if (body_names is None) or (name in body_names)]
 
 
+def _tracking_mask(command: MotionCommand) -> torch.Tensor:
+    return command.tracking_env_mask.float()
+
+
+def _recovery_mask(command: MotionCommand) -> torch.Tensor:
+    return command.recovery_active.float()
+
+
 def motion_global_anchor_position_error_exp(env: ManagerBasedRLEnv, command_name: str, std: float) -> torch.Tensor:
     command: MotionCommand = env.command_manager.get_term(command_name)
     error = torch.sum(torch.square(command.anchor_pos_w - command.robot_anchor_pos_w), dim=-1)
-    return torch.exp(-error / std**2)
+    return torch.exp(-error / std**2) * _tracking_mask(command)
 
 
 def motion_global_anchor_orientation_error_exp(env: ManagerBasedRLEnv, command_name: str, std: float) -> torch.Tensor:
     command: MotionCommand = env.command_manager.get_term(command_name)
     error = quat_error_magnitude(command.anchor_quat_w, command.robot_anchor_quat_w) ** 2
-    return torch.exp(-error / std**2)
+    return torch.exp(-error / std**2) * _tracking_mask(command)
 
 
 def motion_relative_body_position_error_exp(
@@ -37,7 +45,7 @@ def motion_relative_body_position_error_exp(
     error = torch.sum(
         torch.square(command.body_pos_relative_w[:, body_indexes] - command.robot_body_pos_w[:, body_indexes]), dim=-1
     )
-    return torch.exp(-error.mean(-1) / std**2)
+    return torch.exp(-error.mean(-1) / std**2) * _tracking_mask(command)
 
 def motion_relative_body_position_z_error_exp(
     env: ManagerBasedRLEnv, command_name: str, std: float, body_names: list[str] | None = None
@@ -45,7 +53,7 @@ def motion_relative_body_position_z_error_exp(
     command: MotionCommand = env.command_manager.get_term(command_name)
     body_indexes = _get_body_indexes(command, body_names)
     error = torch.square(command.body_pos_relative_w[:, body_indexes, -1] - command.robot_body_pos_w[:, body_indexes, -1])
-    return torch.exp(-error.mean(-1) / std**2)
+    return torch.exp(-error.mean(-1) / std**2) * _tracking_mask(command)
 
 
 def motion_relative_body_orientation_error_exp(
@@ -57,7 +65,7 @@ def motion_relative_body_orientation_error_exp(
         quat_error_magnitude(command.body_quat_relative_w[:, body_indexes], command.robot_body_quat_w[:, body_indexes])
         ** 2
     )
-    return torch.exp(-error.mean(-1) / std**2)
+    return torch.exp(-error.mean(-1) / std**2) * _tracking_mask(command)
 
 
 def motion_global_body_linear_velocity_error_exp(
@@ -68,7 +76,7 @@ def motion_global_body_linear_velocity_error_exp(
     error = torch.sum(
         torch.square(command.body_lin_vel_w[:, body_indexes] - command.robot_body_lin_vel_w[:, body_indexes]), dim=-1
     )
-    return torch.exp(-error.mean(-1) / std**2)
+    return torch.exp(-error.mean(-1) / std**2) * _tracking_mask(command)
 
 
 def motion_global_body_angular_velocity_error_exp(
@@ -79,7 +87,7 @@ def motion_global_body_angular_velocity_error_exp(
     error = torch.sum(
         torch.square(command.body_ang_vel_w[:, body_indexes] - command.robot_body_ang_vel_w[:, body_indexes]), dim=-1
     )
-    return torch.exp(-error.mean(-1) / std**2)
+    return torch.exp(-error.mean(-1) / std**2) * _tracking_mask(command)
 
 def feet_contact_time(env: ManagerBasedRLEnv, sensor_cfg: SceneEntityCfg, threshold: float) -> torch.Tensor:
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
@@ -97,7 +105,11 @@ def joint_pos_track_error_exp(
     return torch.exp(-error / std**2)
 
 def foot_slip_penalty(
-    env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg, sensor_cfg: SceneEntityCfg, threshold: float
+    env: ManagerBasedRLEnv,
+    asset_cfg: SceneEntityCfg,
+    sensor_cfg: SceneEntityCfg,
+    threshold: float,
+    command_name: str | None = None,
 ) -> torch.Tensor:
     """Penalize foot planar (xy) slip when in contact with the ground"""
     asset: RigidObject = env.scene[asset_cfg.name]
@@ -110,4 +122,84 @@ def foot_slip_penalty(
     foot_planar_velocity = torch.linalg.norm(asset.data.body_lin_vel_w[:, asset_cfg.body_ids, :2], dim=2)
 
     reward = is_contact * foot_planar_velocity
-    return torch.sum(reward, dim=1)
+    reward = torch.sum(reward, dim=1)
+    if command_name is not None:
+        command: MotionCommand = env.command_manager.get_term(command_name)
+        reward = reward * _tracking_mask(command)
+    return reward
+
+
+def tracking_undesired_contacts(
+    env: ManagerBasedRLEnv, sensor_cfg: SceneEntityCfg, threshold: float, command_name: str
+) -> torch.Tensor:
+    """Usual non-foot/non-hand contact penalty, disabled while using limbs to rise."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    forces = contact_sensor.data.net_forces_w_history[:, :, sensor_cfg.body_ids]
+    is_contact = torch.max(torch.norm(forces, dim=-1), dim=1)[0] > threshold
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    return torch.sum(is_contact, dim=-1) * _tracking_mask(command)
+
+
+def self_collision_penalty(
+    env: ManagerBasedRLEnv,
+    sensor_names: list[str],
+    force_threshold: float,
+    saturation_force: float,
+) -> torch.Tensor:
+    """Penalize filtered robot-on-robot contacts, bounded independently of pair count.
+
+    Each configured contact sensor has exactly one source body and filters only
+    non-adjacent robot bodies.  Taking the strongest contact instead of summing
+    all pairs keeps this shared regularizer in ``[0, 1]`` and prevents its scale
+    from changing when more collision pairs are monitored.
+    """
+    if saturation_force <= force_threshold:
+        raise ValueError("saturation_force must be greater than force_threshold")
+
+    penalty = torch.zeros(env.num_envs, device=env.device)
+    force_range = saturation_force - force_threshold
+    for sensor_name in sensor_names:
+        contact_sensor: ContactSensor = env.scene.sensors[sensor_name]
+        force_matrix = contact_sensor.data.force_matrix_w
+        if force_matrix is None:
+            raise RuntimeError(f"Contact sensor '{sensor_name}' must configure filter_prim_paths_expr")
+        pair_force = torch.linalg.norm(force_matrix, dim=-1)
+        pair_penalty = ((pair_force - force_threshold) / force_range).clamp(0.0, 1.0)
+        penalty = torch.maximum(penalty, pair_penalty.amax(dim=(1, 2)))
+    return penalty
+
+
+def recovery_upright_reward(env: ManagerBasedRLEnv, command_name: str) -> torch.Tensor:
+    """Dense uprightness reward in [0, 1] for the recovery-only task."""
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    uprightness = (command.recovery_torso_uprightness.clamp(-1.0, 1.0) + 1.0) * 0.5
+    return uprightness * _recovery_mask(command)
+
+
+def recovery_height_reward(env: ManagerBasedRLEnv, command_name: str, target_height: float) -> torch.Tensor:
+    """Dense torso-height reward, normalized to the standing threshold."""
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    return (command.recovery_torso_height / target_height).clamp(0.0, 1.0) * _recovery_mask(command)
+
+
+def _recovery_feet_stable(
+    env: ManagerBasedRLEnv,
+    asset_cfg: SceneEntityCfg,
+    sensor_cfg: SceneEntityCfg,
+    min_contact_time: float,
+    max_planar_speed: float,
+) -> torch.Tensor:
+    """Return true when both feet have sustained contact without sliding."""
+    asset = env.scene[asset_cfg.name]
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    contact_time = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids]
+    planar_speed = torch.linalg.norm(asset.data.body_lin_vel_w[:, asset_cfg.body_ids, :2], dim=-1)
+    return torch.all((contact_time >= min_contact_time) & (planar_speed <= max_planar_speed), dim=-1)
+
+
+def recovery_feet_stable_reward(
+    env: ManagerBasedRLEnv,
+    command_name: str,
+) -> torch.Tensor:
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    return command.recovery_feet_stable.float() * _recovery_mask(command)

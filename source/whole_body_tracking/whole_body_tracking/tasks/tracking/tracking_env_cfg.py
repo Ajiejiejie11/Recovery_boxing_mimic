@@ -71,6 +71,14 @@ class MySceneCfg(InteractiveSceneCfg):
     contact_forces = ContactSensorCfg(
         prim_path="{ENV_REGEX_NS}/Robot/.*", history_length=3, track_air_time=True, force_threshold=10.0, debug_vis=True
     )
+    # Robot-specific configs may enable one-to-many filtered sensors for true
+    # self-contact detection.  They stay disabled for robots without matching
+    # link names.
+    self_collision_left_wrist: ContactSensorCfg | None = None
+    self_collision_right_wrist: ContactSensorCfg | None = None
+    self_collision_left_elbow: ContactSensorCfg | None = None
+    self_collision_right_elbow: ContactSensorCfg | None = None
+    self_collision_left_knee: ContactSensorCfg | None = None
 
 
 ##
@@ -123,6 +131,9 @@ class ObservationsCfg:
         joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.02, n_max=0.02))
         joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-1., n_max=1.))
         actions = ObsTerm(func=mdp.last_action)
+        # Appended to preserve all 124 legacy actor columns.  This is derived
+        # from the base IMU orientation and is available on the real robot.
+        projected_gravity = ObsTerm(func=mdp.projected_gravity, noise=Unoise(n_min=-0.05, n_max=0.05))
 
         def __post_init__(self):
             self.enable_corruption = True
@@ -140,6 +151,9 @@ class ObservationsCfg:
         joint_pos = ObsTerm(func=mdp.joint_pos_rel)
         joint_vel = ObsTerm(func=mdp.joint_vel_rel)
         actions = ObsTerm(func=mdp.last_action)
+        # Appended after all 256 legacy critic features. Contact stability is
+        # cached by the robot-specific recovery-state termination term.
+        recovery_state = ObsTerm(func=mdp.recovery_state_privileged, params={"command_name": "motion"})
 
     # observation groups
     policy: PolicyCfg = PolicyCfg()
@@ -296,8 +310,10 @@ class RewardsCfg:
         },
     )
 
+    # Tracking-only: recovery may legitimately use knees, forearms, or torso as
+    # support. Hand slip below is gated for the same reason.
     undesired_contacts = RewTerm(
-        func=mdp.undesired_contacts,
+        func=mdp.tracking_undesired_contacts,
         weight=-10.0,
         params={
             "sensor_cfg": SceneEntityCfg(
@@ -307,6 +323,7 @@ class RewardsCfg:
                 ],
             ),
             "threshold": 1.0,
+            "command_name": "motion",
         },
     )
 
@@ -327,22 +344,38 @@ class RewardsCfg:
             "asset_cfg": SceneEntityCfg("robot", body_names=".*_wrist_yaw_link"),
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*_wrist_yaw_link"),
             "threshold": 5.0,
+            "command_name": "motion",
         },
     )
+
+    # Enabled by robot-specific configs. The raw term is bounded to [0, 1], so
+    # it remains a small shared regularizer beside either task reward.
+    self_collision: RewTerm | None = None
+
+    # Recovery-only positive group. Its 4.0 maximum is close to the 5.0 maximum
+    # of the mutually-exclusive tracking group, limiting critic scale mismatch.
+    recovery_upright: RewTerm | None = None
+    recovery_height: RewTerm | None = None
+    recovery_feet_stable: RewTerm | None = None
 
 
 @configclass
 class TerminationsCfg:
     """Termination terms for the MDP."""
 
-    time_out = DoneTerm(func=mdp.time_out, time_out=True)
-    motion_end = DoneTerm(func=mdp.motion_complete, params={"command_name": "motion"}, time_out=True)
+    # Tracking owns the usual episode budget; recovery owns an independent
+    # six-second terminated deadline and cannot be truncated by this timeout.
+    time_out = DoneTerm(func=mdp.tracking_phase_timeout, params={"command_name": "motion"}, time_out=True)
+    # Must run before every tracking-gated term: it opens the recovery gate on
+    # the same step that a delayed environment physically falls.
+    recovery_state: DoneTerm | None = None
+    motion_end = DoneTerm(func=mdp.tracking_motion_complete, params={"command_name": "motion"}, time_out=True)
     anchor_pos = DoneTerm(
-        func=mdp.bad_anchor_pos_z_only,
+        func=mdp.tracking_bad_anchor_pos_z_only,
         params={"command_name": "motion", "threshold": 0.25},
     )
     anchor_ori = DoneTerm(
-        func=mdp.bad_anchor_ori,
+        func=mdp.tracking_bad_anchor_ori,
         params={"asset_cfg": SceneEntityCfg("robot"), "command_name": "motion", "threshold": 0.8},
     )
     ee_ankle_pos = DoneTerm(
