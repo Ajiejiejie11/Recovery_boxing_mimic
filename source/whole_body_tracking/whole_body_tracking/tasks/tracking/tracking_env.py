@@ -30,7 +30,6 @@ class TrackingRLEnv(ManagerBasedRLEnv):
     _RECOVERY_REWARD_TERMS = (
         "recovery_upright",
         "recovery_height",
-        "recovery_feet_stable",
     )
     _SHARED_REWARD_TERMS = (
         "action_rate_l2",

@@ -95,11 +95,10 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
             "yaw": (-0.10, 0.10),
         }
         self.commands.motion.joint_position_range = (-0.03, 0.03)
-        # Global reset allocation: 20% recovery, then the remaining 80%
-        # reference environments are 50% coverage, 10% hard replay and 20%
-        # soft-error replay.  The three replay fractions are therefore relative
-        # to the reference subset, not the whole simulator batch.
-        self.commands.motion.recovery_fraction = 0.20
+        # Global reset allocation: 40% recovery and 60% reference tracking.
+        # Within the tracking subset, coverage/hard/soft remain
+        # 0.625/0.125/0.25, corresponding to 37.5%/7.5%/15% globally.
+        self.commands.motion.recovery_fraction = 0.40
         self.commands.motion.recovery_target_file = str(
             DATASET_DIR / "recovery_targets/boxing_walk_001_get_ready_370_530.npz"
         )
@@ -119,18 +118,16 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         self.commands.motion.tracking_error_replay_fraction = 0.25
 
         # Recovery-only positive group (max 4.0 versus tracking's max 5.0).
+        # Stable feet remain part of the success predicate and privileged
+        # critic state, but are deliberately not rewarded: the old binary term
+        # was sparse while rising and could also be collected while lying down.
         self.rewards.recovery_upright = RewTerm(
-            func=mdp.recovery_upright_reward, weight=1.5, params={"command_name": "motion"}
+            func=mdp.recovery_upright_reward, weight=1.0, params={"command_name": "motion"}
         )
         self.rewards.recovery_height = RewTerm(
             func=mdp.recovery_height_reward,
-            weight=1.5,
+            weight=3.0,
             params={"command_name": "motion", "target_height": 0.75},
-        )
-        self.rewards.recovery_feet_stable = RewTerm(
-            func=mdp.recovery_feet_stable_reward,
-            weight=1.0,
-            params={"command_name": "motion"},
         )
 
         # Entry: torso <0.50 m OR tilt >70 deg. Exit: torso >=0.75 m,

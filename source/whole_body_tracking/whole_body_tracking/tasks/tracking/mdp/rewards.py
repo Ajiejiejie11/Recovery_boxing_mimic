@@ -170,9 +170,15 @@ def self_collision_penalty(
 
 
 def recovery_upright_reward(env: ManagerBasedRLEnv, command_name: str) -> torch.Tensor:
-    """Dense uprightness reward in [0, 1] for the recovery-only task."""
+    """Reward only correct-direction verticality during recovery.
+
+    ``uprightness`` is one when the torso is upright, zero when its vertical
+    axis is horizontal, and negative when inverted. Clamping at zero makes
+    either face-up or face-down horizontal poses receive no reward and avoids
+    rewarding an upside-down torso merely for being vertically aligned.
+    """
     command: MotionCommand = env.command_manager.get_term(command_name)
-    uprightness = (command.recovery_torso_uprightness.clamp(-1.0, 1.0) + 1.0) * 0.5
+    uprightness = command.recovery_torso_uprightness.clamp(0.0, 1.0)
     return uprightness * _recovery_mask(command)
 
 
@@ -195,11 +201,3 @@ def _recovery_feet_stable(
     contact_time = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids]
     planar_speed = torch.linalg.norm(asset.data.body_lin_vel_w[:, asset_cfg.body_ids, :2], dim=-1)
     return torch.all((contact_time >= min_contact_time) & (planar_speed <= max_planar_speed), dim=-1)
-
-
-def recovery_feet_stable_reward(
-    env: ManagerBasedRLEnv,
-    command_name: str,
-) -> torch.Tensor:
-    command: MotionCommand = env.command_manager.get_term(command_name)
-    return command.recovery_feet_stable.float() * _recovery_mask(command)
