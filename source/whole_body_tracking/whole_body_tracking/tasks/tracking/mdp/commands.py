@@ -215,6 +215,47 @@ class MotionCommand(CommandTerm):
             bin_duration_s=self.cfg.bin_duration_s,
             min_bin_duration_s=self.cfg.min_bin_duration_s,
         )
+        if not 0.0 <= self.cfg.recovery_fraction <= 1.0:
+            raise ValueError(f"recovery_fraction must be in [0, 1], got {self.cfg.recovery_fraction}")
+        if self.cfg.recovery_duration_s <= 0.0:
+            raise ValueError(f"recovery_duration_s must be positive, got {self.cfg.recovery_duration_s}")
+        recovery_count = int(round(self.num_envs * self.cfg.recovery_fraction))
+        self.recovery_count = recovery_count
+        if recovery_count:
+            if self.cfg.recovery_target_file is None or self.cfg.recovery_reset_file is None:
+                raise ValueError("Recovery target/reset files are required when recovery_fraction is non-zero.")
+            self.recovery_target = MotionLoader(
+                self.cfg.recovery_target_file,
+                self.robot.joint_names,
+                self.cfg.body_names,
+                device=self.device,
+            )
+            if not 0 <= self.cfg.recovery_target_frame < self.recovery_target.time_step_total:
+                raise ValueError(
+                    f"recovery_target_frame={self.cfg.recovery_target_frame} is outside "
+                    f"[0, {self.recovery_target.time_step_total})."
+                )
+            self.recovery_reset = MotionLoader(
+                self.cfg.recovery_reset_file,
+                self.robot.joint_names,
+                self.robot.body_names,
+                device=self.device,
+            )
+            reset_anchor_index = self.robot.body_names.index(self.cfg.anchor_body_name)
+            reset_anchor_pos = self.recovery_reset.body_pos_w[:, reset_anchor_index]
+            reset_anchor_quat = self.recovery_reset.body_quat_w[:, reset_anchor_index]
+            reset_ground_z = self.recovery_reset.body_pos_w[..., 2].amin(dim=1)
+            reset_anchor_height = reset_anchor_pos[:, 2] - reset_ground_z
+            reset_uprightness = 1.0 - 2.0 * (reset_anchor_quat[:, 1].square() + reset_anchor_quat[:, 2].square())
+            fallen = (reset_anchor_height <= self.cfg.recovery_reset_max_height) & (
+                reset_uprightness <= self.cfg.recovery_reset_max_uprightness
+            )
+            self.recovery_reset_frames = torch.where(fallen)[0]
+            if len(self.recovery_reset_frames) == 0:
+                raise ValueError(
+                    "No fallen frames matched the recovery reset thresholds; "
+                    "relax recovery_reset_max_height/recovery_reset_max_uprightness."
+                )
         sampling_fractions = (
             self.cfg.coverage_sampling_fraction,
             self.cfg.hard_failure_replay_fraction,
@@ -222,10 +263,36 @@ class MotionCommand(CommandTerm):
         )
         if any(fraction < 0.0 for fraction in sampling_fractions) or not np.isclose(sum(sampling_fractions), 1.0):
             raise ValueError(f"Motion sampling fractions must be non-negative and sum to 1.0, got {sampling_fractions}")
+        # Long-run channel allocation is tracked across asynchronous reset
+        # batches.  Per-call rounding makes count=1/2 batches almost entirely
+        # coverage and silently starves hard/soft replay.
+        self._sampling_channel_fractions = np.asarray(sampling_fractions, dtype=np.float64)
+        self._sampling_channel_counts = np.zeros(3, dtype=np.int64)
+        self._actual_sampling_channel_counts = np.zeros(3, dtype=np.int64)
+        self._sampling_channel_total = 0
         self.time_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.active_bin_ids = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.active_bin_end = torch.ones(self.num_envs, dtype=torch.long, device=self.device)
         self.motion_complete = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        # Eligibility and phase are deliberately separate.  ``delay_env_mask``
+        # is a fixed allocation saying which slots may delay a physical-fall
+        # termination.  ``recovery_active`` is the dynamic reward/reference gate.
+        # Keeping the allocation fixed preserves the requested global 20/80 reset
+        # split under asynchronous resets.
+        self.delay_env_mask = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        if recovery_count:
+            recovery_slots = torch.randperm(self.num_envs, device=self.device)[:recovery_count]
+            self.delay_env_mask[recovery_slots] = True
+        self.recovery_active = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self.recovery_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self.tracking_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self.recovery_success_pending = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self.recovery_failure = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self.recovery_torso_height = torch.zeros(self.num_envs, device=self.device)
+        self.recovery_torso_uprightness = torch.zeros(self.num_envs, device=self.device)
+        self.recovery_feet_stable = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self._recovery_termination = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self._last_recovery_state_update_step = -1
         self._bin_needs_outcome = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self._has_active_bin = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self.body_pos_relative_w = torch.zeros(self.num_envs, len(cfg.body_names), 3, device=self.device)
@@ -251,6 +318,17 @@ class MotionCommand(CommandTerm):
         self._episode_success_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self._episode_soft_failure_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self._episode_hard_failure_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._episode_recovery_entry_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._episode_recovery_success_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._episode_recovery_failure_count = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._episode_recovery_duration_sum = torch.zeros(self.num_envs, device=self.device)
+        # Global recovery counters are logging-only and deliberately exclude
+        # ordinary tracking resets from their denominators.
+        self.total_recovery_entries = torch.zeros((), dtype=torch.long, device=self.device)
+        self.total_recovery_successes = torch.zeros((), dtype=torch.long, device=self.device)
+        self.total_recovery_failures = torch.zeros((), dtype=torch.long, device=self.device)
+        self.total_recovery_duration_s = torch.zeros((), device=self.device)
+        self.total_recovery_timeout_height = torch.zeros((), device=self.device)
 
         self.metrics["error_anchor_pos"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["error_anchor_rot"] = torch.zeros(self.num_envs, device=self.device)
@@ -273,6 +351,14 @@ class MotionCommand(CommandTerm):
         self.metrics["coverage_sampling_ratio"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["hard_failure_replay_ratio"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["tracking_error_replay_ratio"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["delay_env_ratio"] = self.delay_env_mask.float().clone()
+        self.metrics["recovery_active_ratio"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["recovery_success_rate"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["recovery_failure_rate"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["recovery_duration_s"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["torso_height"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["torso_uprightness"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["feet_stable"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["coverage_epoch"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["bin_success"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["bin_soft_failure"] = torch.zeros(self.num_envs, device=self.device)
@@ -294,44 +380,111 @@ class MotionCommand(CommandTerm):
         return super().reset(env_ids=ids)
 
     @property
+    def tracking_env_mask(self) -> torch.Tensor:
+        """Dynamic tracking phase mask; exactly complementary to recovery."""
+        return ~self.recovery_active
+
+    @property
+    def recovery_env_mask(self) -> torch.Tensor:
+        """Backward-compatible name for the dynamic recovery phase mask."""
+        return self.recovery_active
+
+    @property
+    def recovery_progress(self) -> torch.Tensor:
+        """Privileged normalized progress through the current recovery window."""
+        max_steps = max(1, round(self.cfg.recovery_duration_s / self._env.step_dt))
+        return (self.recovery_steps.float() / max_steps).clamp(0.0, 1.0)
+
+    def _validate_task_reward_masks(self, step_index: int) -> None:
+        """Periodically verify the two task-reward gates form an exact partition."""
+        interval = self.cfg.task_mask_assert_interval
+        if interval <= 0 or step_index % interval:
+            return
+        tracking_mask = self.tracking_env_mask
+        recovery_mask = self.recovery_active
+        if torch.any(tracking_mask & recovery_mask) or not torch.all(tracking_mask | recovery_mask):
+            raise RuntimeError("Tracking and recovery reward masks must be mutually exclusive and exhaustive.")
+
+    def _replace_recovery(self, reference: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        """Replace reference values only while the dynamic recovery gate is open."""
+        if self.recovery_count == 0:
+            return reference
+        result = reference.clone()
+        if target.shape == reference.shape:
+            result[self.recovery_active] = target[self.recovery_active]
+        else:
+            result[self.recovery_active] = target
+        return result
+
+    @property
     def joint_pos(self) -> torch.Tensor:
-        return self.motion.joint_pos[self.time_steps]
+        reference = self.motion.joint_pos[self.time_steps]
+        if self.recovery_count == 0:
+            return reference
+        target = self.recovery_target.joint_pos[self.cfg.recovery_target_frame]
+        return self._replace_recovery(reference, target)
 
     @property
     def joint_vel(self) -> torch.Tensor:
-        return self.motion.joint_vel[self.time_steps]
+        reference = self.motion.joint_vel[self.time_steps]
+        return self._replace_recovery(reference, torch.zeros_like(reference[0]))
 
     @property
     def body_pos_w(self) -> torch.Tensor:
-        return self.motion.body_pos_w[self.time_steps] + self._env.scene.env_origins[:, None, :]
+        reference = self.motion.body_pos_w[self.time_steps] + self._env.scene.env_origins[:, None, :]
+        if self.recovery_count == 0:
+            return reference
+        target = self.recovery_target.body_pos_w[self.cfg.recovery_target_frame].clone()
+        target[:, :2] -= target[self.motion_anchor_body_index, :2]
+        target = target + self._env.scene.env_origins[:, None, :]
+        return self._replace_recovery(reference, target)
 
     @property
     def body_quat_w(self) -> torch.Tensor:
-        return self.motion.body_quat_w[self.time_steps]
+        reference = self.motion.body_quat_w[self.time_steps]
+        if self.recovery_count == 0:
+            return reference
+        target = self.recovery_target.body_quat_w[self.cfg.recovery_target_frame]
+        return self._replace_recovery(reference, target)
 
     @property
     def body_lin_vel_w(self) -> torch.Tensor:
-        return self.motion.body_lin_vel_w[self.time_steps]
+        reference = self.motion.body_lin_vel_w[self.time_steps]
+        return self._replace_recovery(reference, torch.zeros_like(reference[0]))
 
     @property
     def body_ang_vel_w(self) -> torch.Tensor:
-        return self.motion.body_ang_vel_w[self.time_steps]
+        reference = self.motion.body_ang_vel_w[self.time_steps]
+        return self._replace_recovery(reference, torch.zeros_like(reference[0]))
 
     @property
     def anchor_pos_w(self) -> torch.Tensor:
-        return self.motion.body_pos_w[self.time_steps, self.motion_anchor_body_index] + self._env.scene.env_origins
+        reference = self.motion.body_pos_w[self.time_steps, self.motion_anchor_body_index] + self._env.scene.env_origins
+        if self.recovery_count == 0:
+            return reference
+        target_height = self.recovery_target.body_pos_w[
+            self.cfg.recovery_target_frame, self.motion_anchor_body_index, 2
+        ]
+        target = self.robot_anchor_pos_w.clone()
+        target[:, 2] = self._env.scene.env_origins[:, 2] + target_height
+        return self._replace_recovery(reference, target)
 
     @property
     def anchor_quat_w(self) -> torch.Tensor:
-        return self.motion.body_quat_w[self.time_steps, self.motion_anchor_body_index]
+        reference = self.motion.body_quat_w[self.time_steps, self.motion_anchor_body_index]
+        # Recovery should stand upright without being forced to turn toward the
+        # source clip's global yaw.
+        return self._replace_recovery(reference, yaw_quat(self.robot_anchor_quat_w))
 
     @property
     def anchor_lin_vel_w(self) -> torch.Tensor:
-        return self.motion.body_lin_vel_w[self.time_steps, self.motion_anchor_body_index]
+        reference = self.motion.body_lin_vel_w[self.time_steps, self.motion_anchor_body_index]
+        return self._replace_recovery(reference, torch.zeros_like(reference[0]))
 
     @property
     def anchor_ang_vel_w(self) -> torch.Tensor:
-        return self.motion.body_ang_vel_w[self.time_steps, self.motion_anchor_body_index]
+        reference = self.motion.body_ang_vel_w[self.time_steps, self.motion_anchor_body_index]
+        return self._replace_recovery(reference, torch.zeros_like(reference[0]))
 
     @property
     def robot_joint_pos(self) -> torch.Tensor:
@@ -487,8 +640,29 @@ class MotionCommand(CommandTerm):
         self._update_bin_outcomes(bins, hard, soft, successful)
         self._bin_needs_outcome[ids] = False
 
+    def _settle_tracking_bins_as_hard(self, env_ids: torch.Tensor) -> None:
+        """Settle tracking bins that physically fell before entering recovery."""
+        valid = self._has_active_bin[env_ids] & self._bin_needs_outcome[env_ids]
+        if not torch.any(valid):
+            return
+        ids = env_ids[valid]
+        hard = torch.ones(len(ids), dtype=torch.bool, device=self.device)
+        soft = torch.zeros_like(hard)
+        successful = torch.zeros_like(hard)
+        self._episode_bin_count[ids] += 1
+        self._episode_hard_failure_count[ids] += 1
+        denominator = self._episode_bin_count[ids].float()
+        self.metrics["bin_success"][ids] = self._episode_success_count[ids] / denominator
+        self.metrics["bin_soft_failure"][ids] = self._episode_soft_failure_count[ids] / denominator
+        self.metrics["bin_hard_failure"][ids] = self._episode_hard_failure_count[ids] / denominator
+        self._update_bin_outcomes(self.active_bin_ids[ids], hard, soft, successful)
+        self._bin_needs_outcome[ids] = False
+        self._has_active_bin[ids] = False
+
     def _classify_reset_bins(self, env_ids: torch.Tensor) -> None:
         """Settle the current bin before an environment reset, prioritizing hard failure."""
+        # A recovery phase has no active reference bin.  Delayed slots that have
+        # already recovered and returned to tracking are classified normally.
         valid = self._has_active_bin[env_ids] & self._bin_needs_outcome[env_ids]
         if not torch.any(valid):
             return
@@ -517,6 +691,98 @@ class MotionCommand(CommandTerm):
         self.metrics["bin_hard_failure"][ids] = self._episode_hard_failure_count[ids] / denominator
         self._update_bin_outcomes(self.active_bin_ids[ids], hard, soft, successful)
         self._bin_needs_outcome[ids] = False
+
+    def update_recovery_state(
+        self,
+        fallen: torch.Tensor,
+        standing: torch.Tensor,
+        torso_height: torch.Tensor,
+        torso_uprightness: torch.Tensor,
+        feet_stable: torch.Tensor,
+    ) -> torch.Tensor:
+        """Advance the delayed-termination state machine once per environment step.
+
+        This method is called by the first non-timeout termination term.  Doing
+        the transition before reward evaluation guarantees that tracking and
+        recovery rewards are mutually exclusive on the fall-triggering step.
+        A successful recovery is committed by :meth:`_update_command` after that
+        step's recovery reward has been evaluated, then a fresh boxing reference
+        is visible in the next policy observation.
+        """
+        step_index = int(self._env.common_step_counter)
+        if self._last_recovery_state_update_step == step_index:
+            return self._recovery_termination
+        self._last_recovery_state_update_step = step_index
+
+        fallen = fallen.to(device=self.device, dtype=torch.bool)
+        standing = standing.to(device=self.device, dtype=torch.bool)
+        self.recovery_torso_height.copy_(torso_height)
+        self.recovery_torso_uprightness.copy_(torso_uprightness)
+        self.recovery_feet_stable.copy_(feet_stable)
+        self.recovery_failure.zero_()
+        termination = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+
+        # Count only time spent in tracking. Recovery owns a separate 300-step
+        # deadline and therefore cannot be pre-empted by a global episode clock.
+        tracking_at_start = ~self.recovery_active
+        self.tracking_steps[tracking_at_start] += 1
+
+        # Ordinary tracking slots never receive a delayed window.
+        termination |= fallen & ~self.delay_env_mask
+
+        active_at_start = self.recovery_active & ~self.recovery_success_pending
+        if torch.any(active_at_start):
+            self.recovery_steps[active_at_start] += 1
+            successful = active_at_start & standing
+            if torch.any(successful):
+                self.recovery_success_pending[successful] = True
+                self._episode_recovery_success_count[successful] += 1
+                duration = self.recovery_steps[successful].float() * self._env.step_dt
+                self._episode_recovery_duration_sum[successful] += duration
+                self.total_recovery_successes += successful.sum()
+                self.total_recovery_duration_s += duration.sum()
+
+            max_steps = max(1, round(self.cfg.recovery_duration_s / self._env.step_dt))
+            failed = active_at_start & ~successful & (self.recovery_steps >= max_steps)
+            if torch.any(failed):
+                self.recovery_failure[failed] = True
+                self._episode_recovery_failure_count[failed] += 1
+                duration = self.recovery_steps[failed].float() * self._env.step_dt
+                self._episode_recovery_duration_sum[failed] += duration
+                self.total_recovery_failures += failed.sum()
+                self.total_recovery_duration_s += duration.sum()
+                self.total_recovery_timeout_height += torso_height[failed].sum()
+                termination |= failed
+
+        # A delayed slot in tracking enters recovery only after a physical fall.
+        # Its current reference bin is recorded as a hard failure exactly once.
+        entering = self.delay_env_mask & ~self.recovery_active & fallen
+        if torch.any(entering):
+            entering_ids = torch.where(entering)[0]
+            self._settle_tracking_bins_as_hard(entering_ids)
+            self.recovery_active[entering_ids] = True
+            self.recovery_steps[entering_ids] = 1
+            self.recovery_success_pending[entering_ids] = False
+            self.motion_complete[entering_ids] = False
+            self.time_steps[entering_ids] = 0
+            self.active_bin_end[entering_ids] = 1
+            self._bin_needs_outcome[entering_ids] = False
+            self._has_active_bin[entering_ids] = False
+            self._episode_recovery_entry_count[entering_ids] += 1
+            self.total_recovery_entries += len(entering_ids)
+
+        completed = self._episode_recovery_success_count + self._episode_recovery_failure_count
+        entries = self._episode_recovery_entry_count.clamp_min(1).float()
+        self.metrics["recovery_active_ratio"][:] = self.recovery_active.float()
+        self.metrics["recovery_success_rate"][:] = self._episode_recovery_success_count / entries
+        self.metrics["recovery_failure_rate"][:] = self._episode_recovery_failure_count / entries
+        self.metrics["recovery_duration_s"][:] = self._episode_recovery_duration_sum / completed.clamp_min(1)
+        self.metrics["torso_height"][:] = self.recovery_torso_height
+        self.metrics["torso_uprightness"][:] = self.recovery_torso_uprightness
+        self.metrics["feet_stable"][:] = self.recovery_feet_stable.float()
+        self._validate_task_reward_masks(step_index)
+        self._recovery_termination = termination
+        return termination
 
     def _reset_error_accumulators(self, env_ids: torch.Tensor) -> None:
         self._error_sample_count[env_ids] = 0
@@ -564,10 +830,41 @@ class MotionCommand(CommandTerm):
         weights = score.clamp_min(0.0) + self.cfg.difficulty_score_floor
         return weights / weights.sum()
 
+    def _allocate_sampling_channels(self, count: int) -> tuple[int, int, int]:
+        """Allocate coverage/hard/soft channels with bounded long-run ratio error.
+
+        The running deficit is global to the command term, so even a sequence
+        of single-environment asynchronous resets converges to the configured
+        fractions. This scheduler never labels an outcome: hard and soft bin
+        scores are still learned exclusively from completed tracking rollouts.
+        """
+        if count < 0:
+            raise ValueError(f"Sampling count must be non-negative, got {count}")
+        before = self._sampling_channel_counts.copy()
+        for _ in range(count):
+            next_total = self._sampling_channel_total + 1
+            target = self._sampling_channel_fractions * next_total
+            deficit = target - self._sampling_channel_counts
+            channel = int(np.argmax(deficit))
+            self._sampling_channel_counts[channel] += 1
+            self._sampling_channel_total = next_total
+        allocated = self._sampling_channel_counts - before
+        return int(allocated[0]), int(allocated[1]), int(allocated[2])
+
     def _sample_bins(self, count: int) -> tuple[torch.Tensor, int, int, int]:
-        hard_count = int(round(count * self.cfg.hard_failure_replay_fraction))
-        tracking_count = int(round(count * self.cfg.tracking_error_replay_fraction))
-        coverage_count = count - hard_count - tracking_count
+        coverage_requested, hard_requested, tracking_requested = self._allocate_sampling_channels(count)
+
+        # Before a replay channel has observed a real failure, route its slots
+        # through coverage. Do not manufacture hard/soft labels from a uniform
+        # distribution merely to satisfy a quota.
+        has_hard_evidence = bool(torch.any(self.hard_failure_score > 0.0).item())
+        has_tracking_evidence = bool(torch.any(self.tracking_error_score > 0.0).item())
+        hard_count = hard_requested if has_hard_evidence else 0
+        tracking_count = tracking_requested if has_tracking_evidence else 0
+        coverage_count = coverage_requested + (hard_requested - hard_count) + (tracking_requested - tracking_count)
+        self._actual_sampling_channel_counts += np.asarray(
+            (coverage_count, hard_count, tracking_count), dtype=np.int64
+        )
         if hard_count:
             hard_bins = torch.multinomial(
                 self._score_sampling_probabilities(self.hard_failure_score), hard_count, replacement=True
@@ -585,10 +882,10 @@ class MotionCommand(CommandTerm):
         bins = bins[torch.randperm(len(bins), device=self.device)]
         return bins, coverage_count, hard_count, tracking_count
 
-    def _resample_command(self, env_ids: Sequence[int]):
+    def _assign_tracking_reference(self, env_ids: torch.Tensor) -> None:
+        """Assign fresh boxing bins without changing the robot's physical state."""
         if len(env_ids) == 0:
             return
-        env_ids = torch.as_tensor(env_ids, dtype=torch.long, device=self.device)
         sampled_bins, coverage_count, hard_count, tracking_count = self._sample_bins(len(env_ids))
         self.active_bin_ids[env_ids] = sampled_bins
         self.time_steps[env_ids] = self.motion.bin_start_frames[sampled_bins]
@@ -597,17 +894,53 @@ class MotionCommand(CommandTerm):
         self._bin_needs_outcome[env_ids] = True
         self._has_active_bin[env_ids] = True
         self.bin_sample_count += torch.bincount(sampled_bins, minlength=self.bin_count)
-        denominator = max(len(env_ids), 1)
+        denominator = len(env_ids)
         self.metrics["coverage_sampling_ratio"][env_ids] = coverage_count / denominator
         self.metrics["hard_failure_replay_ratio"][env_ids] = hard_count / denominator
         self.metrics["tracking_error_replay_ratio"][env_ids] = tracking_count / denominator
         self.metrics["difficulty_replay_ratio"][env_ids] = (hard_count + tracking_count) / denominator
+        self._reset_error_accumulators(env_ids)
+
+    def _resample_command(self, env_ids: Sequence[int]):
+        if len(env_ids) == 0:
+            return
+        env_ids = torch.as_tensor(env_ids, dtype=torch.long, device=self.device)
+        # Every delayed slot resets into a fallen recovery pose.  It can later
+        # leave this phase without resetting and receive a fresh boxing reference.
+        recovery_ids = env_ids[self.delay_env_mask[env_ids]]
+        tracking_ids = env_ids[~self.delay_env_mask[env_ids]]
+        self.recovery_active[env_ids] = False
+        self.recovery_active[recovery_ids] = True
+        self.recovery_steps[env_ids] = 0
+        self.tracking_steps[env_ids] = 0
+        self.recovery_success_pending[env_ids] = False
+        self.recovery_failure[env_ids] = False
+        self.recovery_feet_stable[env_ids] = False
+        self._recovery_termination[env_ids] = False
+
+        self._assign_tracking_reference(tracking_ids)
+        self.time_steps[recovery_ids] = 0
+        self.active_bin_end[recovery_ids] = 1
+        self.motion_complete[env_ids] = False
+        self._bin_needs_outcome[recovery_ids] = False
+        self._has_active_bin[recovery_ids] = False
+        self.metrics["coverage_sampling_ratio"][recovery_ids] = 0.0
+        self.metrics["hard_failure_replay_ratio"][recovery_ids] = 0.0
+        self.metrics["tracking_error_replay_ratio"][recovery_ids] = 0.0
+        self.metrics["difficulty_replay_ratio"][recovery_ids] = 0.0
+        self.metrics["recovery_active_ratio"][env_ids] = self.recovery_active[env_ids].float()
 
         self._reset_error_accumulators(env_ids)
         self._episode_bin_count[env_ids] = 0
         self._episode_success_count[env_ids] = 0
         self._episode_soft_failure_count[env_ids] = 0
         self._episode_hard_failure_count[env_ids] = 0
+        self._episode_recovery_entry_count[env_ids] = 0
+        self._episode_recovery_entry_count[recovery_ids] = 1
+        self.total_recovery_entries += len(recovery_ids)
+        self._episode_recovery_success_count[env_ids] = 0
+        self._episode_recovery_failure_count[env_ids] = 0
+        self._episode_recovery_duration_sum[env_ids] = 0.0
 
         root_pos = self.body_pos_w[:, 0].clone()
         root_ori = self.body_quat_w[:, 0].clone()
@@ -616,24 +949,47 @@ class MotionCommand(CommandTerm):
 
         range_list = [self.cfg.pose_range.get(key, (0.0, 0.0)) for key in ["x", "y", "z", "roll", "pitch", "yaw"]]
         ranges = torch.tensor(range_list, device=self.device)
-        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(env_ids), 6), device=self.device)
-        root_pos[env_ids] += rand_samples[:, 0:3]
+        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(tracking_ids), 6), device=self.device)
+        root_pos[tracking_ids] += rand_samples[:, 0:3]
         orientations_delta = quat_from_euler_xyz(rand_samples[:, 3], rand_samples[:, 4], rand_samples[:, 5])
-        root_ori[env_ids] = quat_mul(orientations_delta, root_ori[env_ids])
+        root_ori[tracking_ids] = quat_mul(orientations_delta, root_ori[tracking_ids])
         range_list = [self.cfg.velocity_range.get(key, (0.0, 0.0)) for key in ["x", "y", "z", "roll", "pitch", "yaw"]]
         ranges = torch.tensor(range_list, device=self.device)
-        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(env_ids), 6), device=self.device)
-        root_lin_vel[env_ids] += rand_samples[:, :3]
-        root_ang_vel[env_ids] += rand_samples[:, 3:]
+        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(tracking_ids), 6), device=self.device)
+        root_lin_vel[tracking_ids] += rand_samples[:, :3]
+        root_ang_vel[tracking_ids] += rand_samples[:, 3:]
 
         joint_pos = self.joint_pos.clone()
         joint_vel = self.joint_vel.clone()
 
-        joint_pos += sample_uniform(*self.cfg.joint_position_range, joint_pos.shape, joint_pos.device)
-        soft_joint_pos_limits = self.robot.data.soft_joint_pos_limits[env_ids]
-        joint_pos[env_ids] = torch.clip(
-            joint_pos[env_ids], soft_joint_pos_limits[:, :, 0], soft_joint_pos_limits[:, :, 1]
+        joint_pos[tracking_ids] += sample_uniform(
+            *self.cfg.joint_position_range, (len(tracking_ids), joint_pos.shape[1]), self.device
         )
+
+        if len(recovery_ids):
+            # Sample real fallen poses from the converted fall/get-up capture.
+            reset_indexes = torch.randint(
+                len(self.recovery_reset_frames), (len(recovery_ids),), device=self.device
+            )
+            reset_frames = self.recovery_reset_frames[reset_indexes]
+            joint_pos[recovery_ids] = self.recovery_reset.joint_pos[reset_frames]
+            joint_vel[recovery_ids] = 0.0
+            reset_root_pos = self.recovery_reset.body_pos_w[reset_frames, 0].clone()
+            reset_ground_z = self.recovery_reset.body_pos_w[reset_frames, :, 2].amin(dim=1)
+            root_pos[recovery_ids, :2] = self._env.scene.env_origins[recovery_ids, :2]
+            root_pos[recovery_ids, 2] = (
+                self._env.scene.env_origins[recovery_ids, 2]
+                + reset_root_pos[:, 2]
+                - reset_ground_z
+                + self.cfg.recovery_reset_ground_clearance
+            )
+            root_ori[recovery_ids] = self.recovery_reset.body_quat_w[reset_frames, 0]
+            root_lin_vel[recovery_ids] = 0.0
+            root_ang_vel[recovery_ids] = 0.0
+
+        soft_joint_pos_limits = self.robot.data.soft_joint_pos_limits[env_ids]
+        joint_pos[env_ids] = torch.clip(joint_pos[env_ids], soft_joint_pos_limits[:, :, 0], soft_joint_pos_limits[:, :, 1])
+
         self.robot.write_joint_state_to_sim(joint_pos[env_ids], joint_vel[env_ids], env_ids=env_ids)
         self.robot.write_root_state_to_sim(
             torch.cat([root_pos[env_ids], root_ori[env_ids], root_lin_vel[env_ids], root_ang_vel[env_ids]], dim=-1),
@@ -641,7 +997,24 @@ class MotionCommand(CommandTerm):
         )
 
     def _update_command(self):
-        active_ids = torch.where(self._has_active_bin & ~self.motion_complete)[0]
+        # The termination manager marks success before rewards are evaluated.
+        # Commit it here, after that reward step, so the next observation exposes
+        # a fresh boxing reference and tracking rewards resume on the next step.
+        recovered_ids = torch.where(self.recovery_success_pending)[0]
+        just_recovered = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        if len(recovered_ids):
+            self.recovery_active[recovered_ids] = False
+            self.recovery_steps[recovered_ids] = 0
+            self.tracking_steps[recovered_ids] = 0
+            self.recovery_success_pending[recovered_ids] = False
+            self.recovery_failure[recovered_ids] = False
+            self._assign_tracking_reference(recovered_ids)
+            just_recovered[recovered_ids] = True
+            self.metrics["recovery_active_ratio"][recovered_ids] = 0.0
+
+        active_ids = torch.where(
+            self._has_active_bin & ~self.motion_complete & ~self.recovery_active & ~just_recovered
+        )[0]
         if len(active_ids):
             next_frames = self.time_steps[active_ids] + 1
             crossed = next_frames >= self.active_bin_end[active_ids]
@@ -675,7 +1048,7 @@ class MotionCommand(CommandTerm):
     def get_curriculum_state(self) -> dict:
         """Return CPU curriculum state suitable for inclusion in a model checkpoint."""
         return {
-            "curriculum_version": 2,
+            "curriculum_version": 3,
             "motion_signature": self.motion.signature,
             "hard_failure_score": self.hard_failure_score.cpu(),
             "tracking_error_score": self.tracking_error_score.cpu(),
@@ -683,6 +1056,9 @@ class MotionCommand(CommandTerm):
             "coverage_order": self.coverage_order.cpu(),
             "coverage_cursor": self.coverage_cursor,
             "coverage_epoch": self.coverage_epoch,
+            "sampling_channel_counts": torch.as_tensor(self._sampling_channel_counts.copy()),
+            "actual_sampling_channel_counts": torch.as_tensor(self._actual_sampling_channel_counts.copy()),
+            "sampling_channel_total": self._sampling_channel_total,
         }
 
     def load_curriculum_state(self, state: dict) -> bool:
@@ -713,6 +1089,13 @@ class MotionCommand(CommandTerm):
             self.tracking_error_score.zero_()
         self.coverage_cursor = int(state.get("coverage_cursor", 0))
         self.coverage_epoch = int(state.get("coverage_epoch", 0))
+        channel_counts = state.get("sampling_channel_counts")
+        if channel_counts is not None and channel_counts.numel() == 3:
+            self._sampling_channel_counts = channel_counts.cpu().numpy().astype(np.int64, copy=True)
+            self._sampling_channel_total = int(state.get("sampling_channel_total", self._sampling_channel_counts.sum()))
+        actual_channel_counts = state.get("actual_sampling_channel_counts")
+        if actual_channel_counts is not None and actual_channel_counts.numel() == 3:
+            self._actual_sampling_channel_counts = actual_channel_counts.cpu().numpy().astype(np.int64, copy=True)
         return True
 
     def _set_debug_vis_impl(self, debug_vis: bool):
@@ -787,6 +1170,20 @@ class MotionCommandCfg(CommandTermCfg):
     coverage_sampling_fraction: float = 0.70
     hard_failure_replay_fraction: float = 0.10
     tracking_error_replay_fraction: float = 0.20
+    # This fraction is split off before reference-bin sampling.  The selected
+    # slots have delayed-fall eligibility and reset from fallen poses; eligibility
+    # remains fixed while their active phase changes dynamically.
+    recovery_fraction: float = 0.0
+    recovery_target_file: str | None = None
+    recovery_target_frame: int = 0
+    recovery_reset_file: str | None = None
+    recovery_reset_max_height: float = 0.45
+    recovery_reset_max_uprightness: float = 0.65
+    recovery_reset_ground_clearance: float = 0.02
+    recovery_duration_s: float = 6.0
+    # Set to zero to disable. The check runs sparsely to avoid synchronizing the
+    # GPU on every control step during large-scale training.
+    task_mask_assert_interval: int = 100
     hard_failure_ema_alpha: float = 0.02
     tracking_error_ema_alpha: float = 0.02
     difficulty_score_floor: float = 1.0e-3

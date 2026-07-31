@@ -81,3 +81,27 @@ def motion_anchor_ori_b(env: ManagerBasedEnv, command_name: str) -> torch.Tensor
     )
     mat = matrix_from_quat(ori)
     return mat[..., :2].reshape(mat.shape[0], -1)
+
+
+def recovery_state_privileged(
+    env: ManagerBasedEnv,
+    command_name: str,
+) -> torch.Tensor:
+    """Training-only recovery state for the shared critic (four scalars).
+
+    The actor deliberately does not receive these values.  It distinguishes a
+    fall from deployable proprioception and projected gravity, while the critic
+    may use exact phase, window progress, torso-link height, and stable-feet
+    state to reduce value aliasing between the two reward regimes.
+    """
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    torso_height = command.robot_anchor_pos_w[:, 2] - env.scene.env_origins[:, 2]
+    return torch.stack(
+        (
+            command.recovery_active.float(),
+            command.recovery_progress,
+            torso_height,
+            command.recovery_feet_stable.float(),
+        ),
+        dim=-1,
+    )

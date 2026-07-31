@@ -2,8 +2,9 @@
 
 The script reproduces the same observation layout exported from Isaac Lab:
 
-    obs (124,) = [ command (46) | motion_anchor_ori_b (6) | base_ang_vel (3) |
-                   joint_pos_rel (23) | joint_vel (23) | actions (23) ]
+    obs (127,) = [ command (46) | motion_anchor_ori_b (6) | base_ang_vel (3) |
+                   joint_pos_rel (23) | joint_vel (23) | actions (23) |
+                   projected_gravity (3) ]
 
 It then turns the policy output into joint torques via an emulated PD controller
 that matches `Z1FlatPPORunnerCfg`'s implicit actuator gains, applies them through
@@ -275,11 +276,18 @@ class MuJoCoZ1Sim2Sim:
         # joint_pos_rel = joint_pos - default_joint_pos
         joint_pos_rel = q - self.default_q
 
+        # Deployable IMU feature: world gravity expressed in the floating-base
+        # (pelvis) frame, matching Isaac Lab's mdp.projected_gravity term.
+        base_quat = self.data.xquat[self.pelvis_bid].astype(np.float32)
+        projected_gravity = quat_rotate_inverse(
+            base_quat, np.array([0.0, 0.0, -1.0], dtype=np.float32)
+        ).astype(np.float32)
+
         obs = np.concatenate(
-            [command, motion_anchor_ori_b, base_ang_vel_b, joint_pos_rel, qd, self.last_action],
+            [command, motion_anchor_ori_b, base_ang_vel_b, joint_pos_rel, qd, self.last_action, projected_gravity],
             axis=0,
         ).astype(np.float32)
-        assert obs.shape == (124,), f"got obs.shape={obs.shape}"
+        assert obs.shape == (127,), f"got obs.shape={obs.shape}"
         return obs
 
     # ------------------------------------------------------------------ act ---
@@ -316,6 +324,7 @@ class MuJoCoZ1Sim2Sim:
         jp_rel = obs[55:78]
         jv = obs[78:101]
         last_act = obs[101:124]
+        projected_gravity = obs[124:127]
         q_real = self.data.qpos[self.qpos_addrs]
         qd_real = self.data.qvel[self.qvel_addrs]
         print(f"\n========== step {step}  motion_t={self.motion_t} ==========")
@@ -333,6 +342,7 @@ class MuJoCoZ1Sim2Sim:
         print(f"joint_pos_rel  : {jp_rel}")
         print(f"joint_vel      : {jv}")
         print(f"last_action    : {last_act}")
+        print(f"projected_grav : {projected_gravity}")
         print(f"--- io ---")
         print(f"action (new)   : {action}")
         print(f"action |max|   : {np.abs(action).max():.3f}  joint={self.policy_joint_names[int(np.argmax(np.abs(action)))]}")
@@ -378,7 +388,7 @@ class MuJoCoZ1Sim2Sim:
             while True:
                 # ---- policy step -----------------------------------------------
                 if self.hold_default:
-                    obs = np.zeros(124, dtype=np.float32)
+                    obs = np.zeros(127, dtype=np.float32)
                     action = np.zeros(23, dtype=np.float32)
                 else:
                     obs = self.build_obs()
