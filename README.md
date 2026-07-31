@@ -132,10 +132,10 @@ Pass a directory to train one policy on every `.npz` file in it. Motions remain 
 approximately one-second bins for sampling and difficulty scoring; a final segment shorter than half a second is
 merged into the preceding bin. Rollouts continue across adjacent bins in the same motion and reset only on a hard
 failure, source-motion end, or episode timeout, so inter-bin transitions are trained.
-The Z1 task reserves a fixed 20% of slots for delayed-fall eligibility and fallen-pose resets. Eligibility is separate
+The Z1 task reserves a fixed 40% of slots for delayed-fall eligibility and fallen-pose resets. Eligibility is separate
 from the dynamic recovery phase: after a stable get-up the same environment samples a fresh boxing reference and
-returns to tracking without reset; if it falls again, a new six-second recovery window opens. The remaining 80% start
-as pure reference tracking (50% global coverage, 10% hard replay, 20% soft-error replay globally). Tracking and
+returns to tracking without reset; if it falls again, a new six-second recovery window opens. The remaining 60% start
+as pure reference tracking (37.5% global coverage, 7.5% hard replay, 15% soft-error replay globally). Tracking and
 recovery rewards are mutually exclusive, with only regularizers shared; there is no success/failure terminal bonus.
 The Actor has no task flag or privileged height and appends only deployable projected gravity to the legacy input.
 A single privileged Critic receives phase/progress/torso-height/stable-feet state. See

@@ -15,10 +15,10 @@ Actor 不接收 `recovery flag`、task token、躯干高度或接触真值。它
 
 并行环境初始化时固定划分：
 
-- 20%：`delay_env_mask=True`，具备延迟终止资格，并在每次 reset 时从跌倒数据初始化，首先训练 recovery。
-- 80%：`delay_env_mask=False`，从拳击 reference 初始化，只训练正常 tracking；物理跌倒后立即终止。
+- 40%：`delay_env_mask=True`，具备延迟终止资格，并在每次 reset 时从跌倒数据初始化，首先训练 recovery。
+- 60%：`delay_env_mask=False`，从拳击 reference 初始化，只训练正常 tracking；物理跌倒后立即终止。
 
-20% 只是固定的“延迟资格”，不等于环境始终处于 recovery。动态阶段由另一个变量表示：
+40% 只是固定的“延迟资格”，不等于环境始终处于 recovery。动态阶段由另一个变量表示：
 
 ```text
 is_recovering = recovery_active
@@ -27,13 +27,13 @@ is_tracking   = not recovery_active
 
 具备延迟资格的环境成功站起后不会 reset，而是关闭 `recovery_active`，采样一条新的拳击 reference，并在下一控制步进入正常 tracking。它以后若再次物理跌倒，会再次打开 recovery 窗口。
 
-80% tracking 环境内部继续按全局目标分配：
+60% tracking 环境内部按 `0.625 / 0.125 / 0.25` 分配，对全部环境的全局占比为：
 
-- 50% 全局覆盖采样；
-- 10% hard-failure replay；
-- 20% tracking-error/soft-failure replay。
+- 37.5% 全局覆盖采样；
+- 7.5% hard-failure replay；
+- 15% tracking-error/soft-failure replay。
 
-换算成 tracking 子集内部的比例为 `0.625 / 0.125 / 0.25`。
+Recovery 成功后 delayed 环境会动态转入 tracking，因此运行时实际 tracking 比例通常高于固定的 60% reset 比例。
 
 异步 reset 时不能对当前小批次数量分别四舍五入，否则 `count=1` 会永远落到 coverage。当前实现维护跨 reset 的长期通道配额，使连续单环境 reset 也收敛到上述比例。该调度器只选择 coverage/hard/soft 采样通道，不判定失败类型：hard/soft 标签和 EMA score 仍完全来自实际 tracking rollout。冷启动尚无对应失败证据时，hard/soft 配额临时回退到 coverage，观察到真实失败后才按 score replay。
 
@@ -41,8 +41,8 @@ is_tracking   = not recovery_active
 
 ```text
 reset
-├── 普通 80% ──> TRACKING
-└── 延迟 20% ──> FALLEN RESET ──> RECOVERY
+├── 普通 60% ──> TRACKING
+└── 延迟 40% ──> FALLEN RESET ──> RECOVERY
 
 TRACKING
 ├── 普通环境发生物理跌倒 ──> terminate/reset
@@ -75,7 +75,7 @@ fallen = torso_height < 0.50 m
 
 低高度入口采用 `0.50 m` 而不是 `0.55 m`：现有拳击 reference 中合法深蹲姿态的最低 `torso_link` 高度约为 `0.546 m`，并且 reset 还会叠加高度噪声。`0.50 m` 能避免把合法低姿态误判为跌倒；明显侧倒、仰倒仍会由倾角条件立即触发。
 
-Delayed 环境向下塌落时，reference-relative anchor 高度误差不会提前终止；它必须由上述绝对高度/倾角判据进入 recovery。普通 80% tracking 环境以及 delayed 环境向上偏差仍保留原 anchor 高度终止。这避免高位 reference 在机器人尚未降到 `0.50 m` 前先把 delayed 环境 reset，同时不放松普通 tracking 的失败条件。
+Delayed 环境向下塌落时，reference-relative anchor 高度误差不会提前终止；它必须由上述绝对高度/倾角判据进入 recovery。普通 60% tracking 环境以及 delayed 环境向上偏差仍保留原 anchor 高度终止。这避免高位 reference 在机器人尚未降到 `0.50 m` 前先把 delayed 环境 reset，同时不放松普通 tracking 的失败条件。
 
 ### 退出 recovery
 
@@ -139,11 +139,10 @@ RECOVERY: r = r_recovery + r_shared
 
 ### Recovery-only 组
 
-- `recovery_upright`：权重 `1.5`
-- `recovery_height`：权重 `1.5`，在 `0.75 m` 饱和
-- `recovery_feet_stable`：权重 `1.0`
+- `recovery_upright`：权重 `1.0`；使用 `clamp(uprightness, 0, 1)`，平躺和倒置均为零，只有朝正确站立方向越竖直奖励越大。
+- `recovery_height`：权重 `3.0`，在 `0.75 m` 饱和。
 
-Recovery 正向奖励的理论最大和为 `4.0`，与 tracking 的 `5.0` 接近。这里没有 reference 跟踪奖励、成功 bonus、失败 penalty 或提前成功 bonus。
+Recovery 正向奖励的理论最大和仍为 `4.0`，与 tracking 的 `5.0` 接近。`both_feet_stable` 不再产生奖励，只保留为成功退出条件、Critic 特权信息和日志指标，避免策略躺着稳定双脚刷奖励。这里没有 reference 跟踪奖励、成功 bonus、失败 penalty 或提前成功 bonus。
 
 ### 两个任务共享的正则项
 
@@ -252,7 +251,7 @@ python scripts/rsl_rl/train.py \
   --run_name boxing_dynamic_recovery_3000
 ```
 
-如果指定 GPU，再增加例如 `--device cuda:0`。开始完整 3000 轮前，建议先跑 1–5 轮并确认：Actor/critic 维度为 `127/260`、20% reset 为 recovery、普通环境跌倒立即 reset、延迟环境跌倒不 reset、成功环境切回 tracking、两组 reward 不同时非零。
+如果指定 GPU，再增加例如 `--device cuda:0`。开始完整训练前，建议先跑 1–5 轮并确认：Actor/critic 维度为 `127/260`、40% reset 为 recovery、普通环境跌倒立即 reset、延迟环境跌倒不 reset、成功环境切回 tracking、两组 reward 不同时非零。
 
 ## 11. RB 真机部署建议
 
