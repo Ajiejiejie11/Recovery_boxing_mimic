@@ -170,15 +170,14 @@ def self_collision_penalty(
 
 
 def recovery_upright_reward(env: ManagerBasedRLEnv, command_name: str) -> torch.Tensor:
-    """Reward only correct-direction verticality during recovery.
+    """Signed torso-uprightness reward for the recovery-only task.
 
     ``uprightness`` is one when the torso is upright, zero when its vertical
-    axis is horizontal, and negative when inverted. Clamping at zero makes
-    either face-up or face-down horizontal poses receive no reward and avoids
-    rewarding an upside-down torso merely for being vertically aligned.
+    axis is horizontal, and negative when inverted. Keeping the negative half
+    gives the policy a gradient away from head-down/inverted local optima.
     """
     command: MotionCommand = env.command_manager.get_term(command_name)
-    uprightness = command.recovery_torso_uprightness.clamp(0.0, 1.0)
+    uprightness = command.recovery_torso_uprightness.clamp(-1.0, 1.0)
     return uprightness * _recovery_mask(command)
 
 
@@ -201,3 +200,93 @@ def _recovery_feet_stable(
     contact_time = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids]
     planar_speed = torch.linalg.norm(asset.data.body_lin_vel_w[:, asset_cfg.body_ids, :2], dim=-1)
     return torch.all((contact_time >= min_contact_time) & (planar_speed <= max_planar_speed), dim=-1)
+
+
+def _smoothstep(value: torch.Tensor, lower: float, upper: float) -> torch.Tensor:
+    """Smoothly map ``[lower, upper]`` to ``[0, 1]`` with zero endpoint slopes."""
+    if upper <= lower:
+        raise ValueError(f"smoothstep upper bound ({upper}) must exceed lower bound ({lower})")
+    phase = ((value - lower) / (upper - lower)).clamp(0.0, 1.0)
+    return phase.square() * (3.0 - 2.0 * phase)
+
+
+def _late_recovery_gate(
+    command: MotionCommand,
+    min_height: float,
+    full_height: float,
+    min_uprightness: float,
+    full_uprightness: float,
+) -> torch.Tensor:
+    """Enable terminal-shaping terms only after meaningful get-up progress."""
+    height_gate = _smoothstep(command.recovery_torso_height, min_height, full_height)
+    upright_gate = _smoothstep(command.recovery_torso_uprightness, min_uprightness, full_uprightness)
+    return height_gate * upright_gate * _recovery_mask(command)
+
+
+def recovery_feet_stable_reward(
+    env: ManagerBasedRLEnv,
+    command_name: str,
+    min_height: float,
+    full_height: float,
+    min_uprightness: float,
+    full_uprightness: float,
+) -> torch.Tensor:
+    """Reward stable feet near standing without rewarding stable feet while lying."""
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    gate = _late_recovery_gate(command, min_height, full_height, min_uprightness, full_uprightness)
+    return command.recovery_feet_stable.float() * gate
+
+
+def recovery_lower_body_reference_reward(
+    env: ManagerBasedRLEnv,
+    command_name: str,
+    asset_cfg: SceneEntityCfg,
+    std: float,
+    min_height: float,
+    full_height: float,
+    min_uprightness: float,
+    full_uprightness: float,
+) -> torch.Tensor:
+    """Track the recovery stand command with the lower body near standing.
+
+    The configured joint subset deliberately excludes the arms so hand support
+    remains available during get-up. The exponential similarity is in ``(0, 1]``
+    and is smoothly suppressed before the late recovery stage.
+    """
+    if std <= 0.0:
+        raise ValueError("recovery lower-body reference std must be positive")
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    joint_error = (
+        command.robot_joint_pos[:, asset_cfg.joint_ids] - command.joint_pos[:, asset_cfg.joint_ids]
+    )
+    # Use the shortest angular distance for yaw-like joints.
+    joint_error = torch.atan2(torch.sin(joint_error), torch.cos(joint_error))
+    mean_square_error = joint_error.square().mean(dim=-1)
+    similarity = torch.exp(-mean_square_error / std**2)
+    gate = _late_recovery_gate(command, min_height, full_height, min_uprightness, full_uprightness)
+    return similarity * gate
+
+
+def recovery_torso_reference_reward(
+    env: ManagerBasedRLEnv,
+    command_name: str,
+    std: float,
+    min_height: float,
+    full_height: float,
+    min_uprightness: float,
+    full_uprightness: float,
+) -> torch.Tensor:
+    """Track the default-stand torso orientation only in late recovery.
+
+    The aligned target preserves the reference roll/pitch while matching the
+    robot's current global yaw, so this term cannot make the robot turn toward
+    the source clip or constrain its horizontal position and velocity.
+    """
+    if std <= 0.0:
+        raise ValueError("recovery torso reference std must be positive")
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    target_quat_w = command.body_quat_relative_w[:, command.motion_anchor_body_index]
+    orientation_error = quat_error_magnitude(target_quat_w, command.robot_anchor_quat_w).square()
+    similarity = torch.exp(-orientation_error / std**2)
+    gate = _late_recovery_gate(command, min_height, full_height, min_uprightness, full_uprightness)
+    return similarity * gate

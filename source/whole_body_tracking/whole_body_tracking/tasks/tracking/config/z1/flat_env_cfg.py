@@ -117,17 +117,51 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         self.commands.motion.hard_failure_replay_fraction = 0.125
         self.commands.motion.tracking_error_replay_fraction = 0.25
 
-        # Recovery-only positive group (max 4.0 versus tracking's max 5.0).
-        # Stable feet remain part of the success predicate and privileged
-        # critic state, but are deliberately not rewarded: the old binary term
-        # was sparse while rising and could also be collected while lying down.
+        # Recovery task group: uprightness is signed, so inverted poses are
+        # penalized rather than entering a zero-gradient region. Feet and the
+        # two reference bridges are smoothly enabled only near standing to
+        # preserve valid get-up motions.
         self.rewards.recovery_upright = RewTerm(
-            func=mdp.recovery_upright_reward, weight=1.0, params={"command_name": "motion"}
+            func=mdp.recovery_upright_reward, weight=1.5, params={"command_name": "motion"}
         )
         self.rewards.recovery_height = RewTerm(
             func=mdp.recovery_height_reward,
-            weight=3.0,
+            weight=3.5,
             params={"command_name": "motion", "target_height": 0.75},
+        )
+        late_recovery_gate = {
+            "min_height": 0.55,
+            "full_height": 0.70,
+            "min_uprightness": 0.30,
+            "full_uprightness": 0.80,
+        }
+        self.rewards.recovery_feet_stable = RewTerm(
+            func=mdp.recovery_feet_stable_reward,
+            weight=0.10,
+            params={"command_name": "motion", **late_recovery_gate},
+        )
+        self.rewards.recovery_lower_body_reference = RewTerm(
+            func=mdp.recovery_lower_body_reference_reward,
+            weight=0.15,
+            params={
+                "command_name": "motion",
+                "asset_cfg": SceneEntityCfg(
+                    "robot",
+                    joint_names=[
+                        ".*_hip_.*_joint",
+                        ".*_knee_joint",
+                        ".*_ankle_.*_joint",
+                        "waist_yaw_joint",
+                    ],
+                ),
+                "std": 0.50,
+                **late_recovery_gate,
+            },
+        )
+        self.rewards.recovery_torso_reference = RewTerm(
+            func=mdp.recovery_torso_reference_reward,
+            weight=0.15,
+            params={"command_name": "motion", "std": 0.40, **late_recovery_gate},
         )
 
         # Entry: torso <0.50 m OR tilt >70 deg. Exit: torso >=0.75 m,
