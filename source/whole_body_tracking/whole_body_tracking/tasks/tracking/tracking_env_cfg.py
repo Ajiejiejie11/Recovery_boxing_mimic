@@ -352,10 +352,13 @@ class RewardsCfg:
     # it remains a small shared regularizer beside either task reward.
     self_collision: RewTerm | None = None
 
-    # Recovery-only positive group. Robot-specific configs keep its maximum
-    # close to tracking while stable feet remain an audit signal, not a reward.
+    # Recovery-only task group. Robot-specific configs keep its bounded scale
+    # close to tracking and gate terminal shaping until the robot is near stand.
     recovery_upright: RewTerm | None = None
     recovery_height: RewTerm | None = None
+    recovery_feet_stable: RewTerm | None = None
+    recovery_lower_body_reference: RewTerm | None = None
+    recovery_torso_reference: RewTerm | None = None
 
 
 @configclass

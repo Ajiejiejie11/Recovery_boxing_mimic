@@ -139,10 +139,15 @@ RECOVERY: r = r_recovery + r_shared
 
 ### Recovery-only 组
 
-- `recovery_upright`：权重 `1.0`；使用 `clamp(uprightness, 0, 1)`，平躺和倒置均为零，只有朝正确站立方向越竖直奖励越大。
-- `recovery_height`：权重 `3.0`，在 `0.75 m` 饱和。
+- `recovery_upright`：权重 `1.5`；使用 `clamp(uprightness, -1, 1)`。正确竖直为 `+1`，水平为 `0`，头朝下的反向竖直为 `-1`，从而避免错误方向进入零梯度区。
+- `recovery_height`：权重 `3.5`，在 `0.75 m` 饱和。
+- `recovery_feet_stable`：权重 `0.10`。它仍使用“左右脚接触持续至少 `0.15 s` 且平面速度不超过 `0.20 m/s`”的判定，但额外乘以晚期 recovery 门控，不能在躺倒时刷取。
+- `recovery_lower_body_reference`：权重 `0.15`，使用 `exp(-MSE/0.5²)` 比较髋、膝、踝及腰部与默认双手交叉站姿 reference 的关节角；手臂不参与，避免妨碍撑地起身。
+- `recovery_torso_reference`：权重 `0.15`，使用 `exp(-orientation_error²/0.4²)` 对齐默认站姿的 torso roll/pitch。目标 yaw 始终跟随机器人当前 yaw，不约束全局朝向、位置或速度。
 
-Recovery 正向奖励的理论最大和仍为 `4.0`，与 tracking 的 `5.0` 接近。`both_feet_stable` 不再产生奖励，只保留为成功退出条件、Critic 特权信息和日志指标，避免策略躺着稳定双脚刷奖励。这里没有 reference 跟踪奖励、成功 bonus、失败 penalty 或提前成功 bonus。
+`recovery_feet_stable` 和两个 reference bridge 共用平滑晚期门控：torso 高度从 `0.55 m` 到 `0.70 m` 由 0 增至 1，uprightness 从 `0.30` 到 `0.80` 由 0 增至 1，最终门值是两者乘积。这样起身早期主要由高度和方向引导，接近站稳后才整理双脚、下肢和 torso 姿态。
+
+Recovery 正向奖励的理论最大和为 `3.5 + 1.5 + 0.10 + 0.15 + 0.15 = 5.40/s`。其中后 `0.40/s` 只在 late recovery 生效，而且满足成功条件后 recovery 会立即退出，不能长期停留刷取。`both_feet_stable` 同时继续作为成功退出条件、Critic 特权信息和日志指标。这里没有成功 bonus、失败 penalty 或提前成功 bonus。
 
 ### 两个任务共享的正则项
 
