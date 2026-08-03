@@ -237,7 +237,7 @@ def recovery_feet_stable_reward(
     return command.recovery_feet_stable.float() * gate
 
 
-def recovery_lower_body_reference_reward(
+def recovery_full_body_reference_reward(
     env: ManagerBasedRLEnv,
     command_name: str,
     asset_cfg: SceneEntityCfg,
@@ -247,14 +247,13 @@ def recovery_lower_body_reference_reward(
     min_uprightness: float,
     full_uprightness: float,
 ) -> torch.Tensor:
-    """Track the recovery stand command with the lower body near standing.
+    """Track the recovery stand command with every joint near standing.
 
-    The configured joint subset deliberately excludes the arms so hand support
-    remains available during get-up. The exponential similarity is in ``(0, 1]``
-    and is smoothly suppressed before the late recovery stage.
+    The exponential similarity is in ``(0, 1]`` and is smoothly suppressed
+    before the late recovery stage, leaving the early support phase unconstrained.
     """
     if std <= 0.0:
-        raise ValueError("recovery lower-body reference std must be positive")
+        raise ValueError("recovery full-body reference std must be positive")
     command: MotionCommand = env.command_manager.get_term(command_name)
     joint_error = (
         command.robot_joint_pos[:, asset_cfg.joint_ids] - command.joint_pos[:, asset_cfg.joint_ids]
