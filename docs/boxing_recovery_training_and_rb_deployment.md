@@ -300,3 +300,5 @@ RB 侧也维护一个简单的 `TRACKING/RECOVERY` 状态，但不把这个状�
 - Actor/Critic 观测布局与通用 reward/termination 项：`tasks/tracking/tracking_env_cfg.py`
 - Z1 比例、阈值、数据路径、奖励尺度、push 和碰撞传感器：`tasks/tracking/config/z1/flat_env_cfg.py`
 - MuJoCo 127 维部署观测：`scripts/sim2sim_mujoco.py`
+- MuJoCo recovery/tracking 统一状态机与量化评估：`scripts/evaluate_recovery_tracking_mujoco.py`
+- MuJoCo sim2sim 完整命令、指标和故障排查：`docs/mujoco_recovery_tracking_sim2sim.md`

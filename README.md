@@ -198,16 +198,78 @@ The MJCF model (`MagicBotZ1_23dof.xml`) is tuned to match Isaac Lab's `Z1_CYLIND
 - Contact `solref="0.005 1.0"` (5ms time constant) approximating PhysX's stiff contact response.
 - Floor `friction="1.0 0.05 0.01"` with `condim="6"` so feet don't slip or pivot.
 
-The script reproduces Isaac Lab's exact observation layout (`obs ∈ R^124`):
+The playback script reproduces the current Isaac Lab actor observation layout (`obs ∈ R^127`):
 
 ```
 command (46) | motion_anchor_ori_b (6) | base_ang_vel (3) |
-joint_pos_rel (23) | joint_vel (23) | actions (23)
+joint_pos_rel (23) | joint_vel (23) | actions (23) | projected_gravity (3)
 ```
 
 PD torques are computed at every MuJoCo sim step (not just at policy rate) to mirror PhysX's
 `ImplicitActuator`, using `joint_stiffness` / `joint_damping` / `action_scale` / `default_joint_pos`
 pulled directly from the ONNX metadata.
+
+#### Joint recovery + tracking evaluation
+
+Use the dedicated evaluator for the shared recovery/tracking policy. Its default paths point to the
+`2026-07-31_20-55-24_boxing_recovery_height35_refbridge_feet01_resume_6000` run. In `combined` mode it samples an
+eligible captured fallen pose from the same 19-file reset dataset used in training, sends recovery target frame 64,
+and switches to a boxing reference without resetting MuJoCo after the policy stands up:
+
+Complete Chinese usage, metrics, reproducibility, and troubleshooting documentation is available in
+[`docs/mujoco_recovery_tracking_sim2sim.md`](docs/mujoco_recovery_tracking_sim2sim.md).
+
+For a newer training run, pass its directory instead of manually spelling the exported ONNX path:
+
+```bash
+./scripts/run_mujoco_recovery_tracking.sh \
+  --run-dir logs/rsl_rl/z1_flat/<run-directory> --mode combined
+```
+
+```bash
+python scripts/evaluate_recovery_tracking_mujoco.py --mode combined
+```
+
+After recovery, the evaluator rotates each fresh tracking reference's global yaw to the robot's current yaw. This
+keeps the recovery-to-tracking command continuous without changing reference joint poses, motion phase, or Actor
+inputs. Use `--no-align-tracking-yaw-after-recovery` only when reproducing the original raw-source-yaw behavior.
+
+To watch several different captured fallen poses recover and then execute different boxing references, run:
+
+```bash
+python scripts/evaluate_recovery_tracking_mujoco.py \
+  --mode combined --trials 8 --tracking-seconds 8 \
+  --cycle-fall-files --render-all-trials
+```
+
+With a motion directory, trials cycle through its sorted `*_clip.npz` files by default, excluding `boxing_walk_*.npz`.
+Use `--motion-glob '*.npz'` to include every NPZ. `--cycle-fall-files` also cycles through the recovery NPZ files,
+sampling one eligible frame from each; all frame choices are reproducible using `--seed`.
+
+For operator-controlled playback, `--mode interactive` recovers first, holds the recovery standing target indefinitely,
+and starts tracking only after the terminal or MuJoCo viewer receives a digit key 1-8. Terminal digits do not require
+Enter. Each selected clip plays once, returns to the standard standing target, and waits for another 1-8 command, so
+the operator can run any number of reference rounds without restarting MuJoCo. The complete key map is documented in the
+Chinese Sim2Sim guide linked above.
+
+For quantitative headless tests:
+
+```bash
+# Recovery success rate and successful recovery time over 20 fallen poses.
+python scripts/evaluate_recovery_tracking_mujoco.py \
+  --mode recovery --trials 20 --no-render --no-real-time
+
+# Cycle through all eight boxing clips (one clip per trial).
+python scripts/evaluate_recovery_tracking_mujoco.py \
+  --mode tracking --trials 8 --tracking-seconds 8 \
+  --no-render --no-real-time
+```
+
+Each run writes a per-step CSV for every trial and an aggregate `summary.json` under a timestamped, mode-specific
+directory such as `outputs/mujoco_recovery_tracking/20260801_120000_recovery/`. Recovery uses the training audit
+thresholds (torso height/uprightness, continuous two-foot contact, and foot planar speed). Tracking reports joint
+RMSE, torso height/orientation error, aligned body position/orientation error, falls, and a threshold-based pass
+result. NPZ joints and bodies are resolved by name, so the evaluator does not rely on the legacy fixed anchor index.
 
 #### Useful flags
 
