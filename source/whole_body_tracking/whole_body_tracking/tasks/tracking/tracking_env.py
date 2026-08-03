@@ -31,7 +31,7 @@ class TrackingRLEnv(ManagerBasedRLEnv):
         "recovery_upright",
         "recovery_height",
         "recovery_feet_stable",
-        "recovery_lower_body_reference",
+        "recovery_full_body_reference",
         "recovery_torso_reference",
     )
     _SHARED_REWARD_TERMS = (

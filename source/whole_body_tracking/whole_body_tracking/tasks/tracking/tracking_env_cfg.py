@@ -357,7 +357,7 @@ class RewardsCfg:
     recovery_upright: RewTerm | None = None
     recovery_height: RewTerm | None = None
     recovery_feet_stable: RewTerm | None = None
-    recovery_lower_body_reference: RewTerm | None = None
+    recovery_full_body_reference: RewTerm | None = None
     recovery_torso_reference: RewTerm | None = None
 
 

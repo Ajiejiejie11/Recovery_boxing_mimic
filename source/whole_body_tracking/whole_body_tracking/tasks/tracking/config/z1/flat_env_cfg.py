@@ -122,11 +122,11 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         # two reference bridges are smoothly enabled only near standing to
         # preserve valid get-up motions.
         self.rewards.recovery_upright = RewTerm(
-            func=mdp.recovery_upright_reward, weight=1.5, params={"command_name": "motion"}
+            func=mdp.recovery_upright_reward, weight=1.1, params={"command_name": "motion"}
         )
         self.rewards.recovery_height = RewTerm(
             func=mdp.recovery_height_reward,
-            weight=3.5,
+            weight=3.2,
             params={"command_name": "motion", "target_height": 0.75},
         )
         late_recovery_gate = {
@@ -140,27 +140,19 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
             weight=0.10,
             params={"command_name": "motion", **late_recovery_gate},
         )
-        self.rewards.recovery_lower_body_reference = RewTerm(
-            func=mdp.recovery_lower_body_reference_reward,
+        self.rewards.recovery_full_body_reference = RewTerm(
+            func=mdp.recovery_full_body_reference_reward,
             weight=0.15,
             params={
                 "command_name": "motion",
-                "asset_cfg": SceneEntityCfg(
-                    "robot",
-                    joint_names=[
-                        ".*_hip_.*_joint",
-                        ".*_knee_joint",
-                        ".*_ankle_.*_joint",
-                        "waist_yaw_joint",
-                    ],
-                ),
+                "asset_cfg": SceneEntityCfg("robot", joint_names=[".*"]),
                 "std": 0.50,
                 **late_recovery_gate,
             },
         )
         self.rewards.recovery_torso_reference = RewTerm(
             func=mdp.recovery_torso_reference_reward,
-            weight=0.15,
+            weight=0.10,
             params={"command_name": "motion", "std": 0.40, **late_recovery_gate},
         )
 
