@@ -9,7 +9,7 @@ from isaaclab.utils import configclass
 import whole_body_tracking.tasks.tracking.mdp as mdp
 from whole_body_tracking.robots.z1 import Z1_ACTION_SCALE, Z1_CYLINDER_CFG
 from whole_body_tracking.tasks.tracking.config.z1.agents.rsl_rl_ppo_cfg import LOW_FREQ_SCALE
-from whole_body_tracking.tasks.tracking.tracking_env_cfg import TrackingEnvCfg
+from whole_body_tracking.tasks.tracking.tracking_env_cfg import ObservationsCfg, TrackingEnvCfg
 
 
 DATASET_DIR = Path(__file__).resolve().parents[4] / "datasets"
@@ -241,6 +241,15 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
                 "saturation_force": 40.0,
             },
         )
+
+
+@configclass
+class Z1FlatRecoveryAmpEnvCfg(Z1FlatEnvCfg):
+    """The existing Z1 task plus a sidecar-only AMP observation group."""
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.observations.amp = ObservationsCfg.AmpCfg()
 
 
 @configclass

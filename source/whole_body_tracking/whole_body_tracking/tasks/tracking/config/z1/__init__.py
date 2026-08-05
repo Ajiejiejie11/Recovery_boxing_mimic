@@ -17,6 +17,16 @@ gym.register(
 )
 
 gym.register(
+    id="Tracking-Flat-Z1-Recovery-AMP-v0",
+    entry_point="whole_body_tracking.tasks.tracking.tracking_env:TrackingRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg.Z1FlatRecoveryAmpEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:Z1FlatRecoveryAmpPPORunnerCfg",
+    },
+)
+
+gym.register(
     id="Tracking-Flat-Z1-Wo-State-Estimation-v0",
     entry_point="whole_body_tracking.tasks.tracking.tracking_env:TrackingRLEnv",
     disable_env_checker=True,

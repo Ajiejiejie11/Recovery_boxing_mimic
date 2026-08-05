@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from isaaclab.utils.math import matrix_from_quat, subtract_frame_transforms
 
+from whole_body_tracking.amp.features import build_amp_state
 from whole_body_tracking.tasks.tracking.mdp.commands import MotionCommand
 
 if TYPE_CHECKING:
@@ -104,4 +105,29 @@ def recovery_state_privileged(
             command.recovery_feet_stable.float(),
         ),
         dim=-1,
+    )
+
+
+def robot_amp_state(env: ManagerBasedEnv, command_name: str) -> torch.Tensor:
+    """Whole-body state used only by the external recovery AMP sidecar.
+
+    The term is a separate observation group, so it never changes the Actor or
+    critic input dimensions.  Body selection and ordering come from the motion
+    command and are reused by the expert loader in the runner.
+    """
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    body_indices = [
+        index
+        for index, body_name in enumerate(command.cfg.body_names)
+        if body_name != command.cfg.anchor_body_name
+    ]
+    if not body_indices:
+        raise ValueError("AMP requires at least one command body other than the anchor body.")
+    return build_amp_state(
+        command.robot_body_pos_w[:, body_indices],
+        command.robot_body_quat_w[:, body_indices],
+        command.robot_body_lin_vel_w[:, body_indices],
+        command.robot_body_ang_vel_w[:, body_indices],
+        command.robot_anchor_pos_w,
+        command.robot_anchor_quat_w,
     )

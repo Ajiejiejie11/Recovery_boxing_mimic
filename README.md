@@ -122,6 +122,7 @@ python scripts/rsl_rl/train.py \
 
 Available task variants:
 - `Tracking-Flat-Z1-v0` — default
+- `Tracking-Flat-Z1-Recovery-AMP-v0` — the same task with recovery-only AMP reward shaping
 
 Logs are written to `logs/rsl_rl/z1_flat/{timestamp}_{run_name}/`. Checkpoints are saved every 500 iterations (see
 `Z1FlatPPORunnerCfg.save_interval`).
@@ -141,6 +142,9 @@ The Actor has no task flag or privileged height and appends only deployable proj
 A single privileged Critic receives phase/progress/torso-height/stable-feet state. See
 [the complete training and RB deployment design](docs/boxing_recovery_training_and_rb_deployment.md) for thresholds,
 reward scales, data, from-scratch training commands, and the real-robot reference switch.
+The optional recovery-only AMP sidecar is documented in
+[the AMP implementation report](docs/recovery_amp_sidecar_implementation_report.md); the default task remains the
+non-AMP baseline.
 Motion files must include `joint_names` and `body_names`. The loader maps data by name into the active Isaac robot
 order and deliberately rejects legacy index-only files, preventing MuJoCo/Isaac articulation-order mismatches.
 

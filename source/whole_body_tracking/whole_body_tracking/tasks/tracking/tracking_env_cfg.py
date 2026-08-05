@@ -155,9 +155,20 @@ class ObservationsCfg:
         # cached by the robot-specific recovery-state termination term.
         recovery_state = ObsTerm(func=mdp.recovery_state_privileged, params={"command_name": "motion"})
 
+    @configclass
+    class AmpCfg(ObsGroup):
+        """Discriminator-only state; deliberately absent from Actor and critic."""
+
+        state = ObsTerm(func=mdp.robot_amp_state, params={"command_name": "motion"})
+
+        def __post_init__(self):
+            self.enable_corruption = False
+            self.concatenate_terms = True
+
     # observation groups
     policy: PolicyCfg = PolicyCfg()
     critic: PrivilegedCfg = PrivilegedCfg()
+    amp: AmpCfg | None = None
 
 
 @configclass

@@ -69,7 +69,7 @@ from isaaclab_tasks.utils.hydra import hydra_task_config
 # Import extensions to set up environment tasks
 import whole_body_tracking.tasks  # noqa: F401
 from whole_body_tracking.utils.exporter import attach_onnx_metadata, export_motion_policy_as_onnx
-from whole_body_tracking.utils.my_on_policy_runner import MotionOnPolicyRunner as OnPolicyRunner
+from whole_body_tracking.utils.my_on_policy_runner import MotionOnPolicyRunner, RecoveryAmpOnPolicyRunner
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
@@ -149,8 +149,13 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     env = RslRlVecEnvWrapper(env)
 
     # create runner from rsl-rl
-    runner = OnPolicyRunner(
-        env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device, registry_name=registry_name
+    agent_cfg_dict = agent_cfg.to_dict()
+    recovery_amp_cfg = agent_cfg_dict.get("recovery_amp", {})
+    runner_class = (
+        RecoveryAmpOnPolicyRunner if recovery_amp_cfg.get("enabled", False) else MotionOnPolicyRunner
+    )
+    runner = runner_class(
+        env, agent_cfg_dict, log_dir=log_dir, device=agent_cfg.device, registry_name=registry_name
     )
     # Do not register the working tree for RSL-RL's automatic full-diff dump.
     # A dirty research workspace can contain large or non-UTF-8 artifacts, and
