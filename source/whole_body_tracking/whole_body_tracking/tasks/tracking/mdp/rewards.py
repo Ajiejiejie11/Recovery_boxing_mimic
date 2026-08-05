@@ -104,6 +104,42 @@ def joint_pos_track_error_exp(
     )
     return torch.exp(-error / std**2)
 
+
+def soft_joint_torque_limits(
+    env: ManagerBasedRLEnv,
+    soft_ratio: float,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """Penalize per-joint torque demand above a fraction of its motor limit.
+
+    The robot uses implicit PD actuators, so ``computed_torque`` is the best
+    available estimate of the motor torque requested by the controller before
+    the simulator clips it at the physical effort limit.  Each joint is
+    normalized by its own limit so 120 Nm leg/waist motors, 80/20 Nm ankle
+    motors, and 50 Nm arm motors all enter the soft region at the same 85%
+    utilization when ``soft_ratio=0.85``.
+
+    The normalized penalty is quadratic from the soft threshold to the hard
+    limit, then continues linearly with a matching slope for requests above the
+    hard limit.  This keeps the penalty smooth and increasingly costly without
+    allowing extreme clipped torque requests to dominate the entire reward.
+    """
+    if not 0.0 < soft_ratio < 1.0:
+        raise ValueError(f"soft torque ratio must lie in (0, 1), got {soft_ratio}")
+
+    asset = env.scene[asset_cfg.name]
+    torque = torch.abs(asset.data.computed_torque[:, asset_cfg.joint_ids])
+    effort_limit = asset.data.joint_effort_limits[:, asset_cfg.joint_ids]
+    utilization = torque / effort_limit.clamp_min(torch.finfo(torque.dtype).eps)
+
+    normalized_excess = ((utilization - soft_ratio) / (1.0 - soft_ratio)).clamp_min(0.0)
+    penalty = torch.where(
+        normalized_excess <= 1.0,
+        normalized_excess.square(),
+        2.0 * normalized_excess - 1.0,
+    )
+    return penalty.sum(dim=-1)
+
 def foot_slip_penalty(
     env: ManagerBasedRLEnv,
     asset_cfg: SceneEntityCfg,
@@ -181,10 +217,22 @@ def recovery_upright_reward(env: ManagerBasedRLEnv, command_name: str) -> torch.
     return uprightness * _recovery_mask(command)
 
 
-def recovery_height_reward(env: ManagerBasedRLEnv, command_name: str, target_height: float) -> torch.Tensor:
-    """Dense torso-height reward, normalized to the standing threshold."""
+def recovery_height_reward(
+    env: ManagerBasedRLEnv,
+    command_name: str,
+    min_height: float,
+    target_height: float,
+) -> torch.Tensor:
+    """Dense recovery progress from the fallen-height floor to standing."""
+    if target_height <= min_height:
+        raise ValueError(
+            f"recovery target height ({target_height}) must exceed minimum height ({min_height})"
+        )
     command: MotionCommand = env.command_manager.get_term(command_name)
-    return (command.recovery_torso_height / target_height).clamp(0.0, 1.0) * _recovery_mask(command)
+    height_progress = (
+        (command.recovery_torso_height - min_height) / (target_height - min_height)
+    ).clamp(0.0, 1.0)
+    return height_progress * _recovery_mask(command)
 
 
 def _recovery_feet_stable(
