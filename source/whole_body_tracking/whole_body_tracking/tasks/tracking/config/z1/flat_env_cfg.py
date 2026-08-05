@@ -127,7 +127,7 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         self.rewards.recovery_height = RewTerm(
             func=mdp.recovery_height_reward,
             weight=3.2,
-            params={"command_name": "motion", "target_height": 0.75},
+            params={"command_name": "motion", "min_height": 0.50, "target_height": 0.75},
         )
         late_recovery_gate = {
             "min_height": 0.55,
@@ -142,7 +142,7 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         )
         self.rewards.recovery_full_body_reference = RewTerm(
             func=mdp.recovery_full_body_reference_reward,
-            weight=0.15,
+            weight=0.45,
             params={
                 "command_name": "motion",
                 "asset_cfg": SceneEntityCfg("robot", joint_names=[".*"]),
@@ -157,8 +157,9 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         )
 
         # Entry: torso <0.50 m OR tilt >70 deg. Exit: torso >=0.75 m,
-        # uprightness >=0.85, and both feet stable. The command term owns the
-        # six-second phase-local counter and returns only failure/immediate done.
+        # uprightness >=0.85, and both feet stable. Full-body pose alignment is
+        # reward guidance rather than an additional termination gate. The command
+        # term owns the six-second phase-local counter.
         self.terminations.recovery_state = DoneTerm(
             func=mdp.update_recovery_state_and_check_termination,
             params={
