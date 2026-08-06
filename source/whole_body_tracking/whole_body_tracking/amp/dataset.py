@@ -41,6 +41,7 @@ class AmpExpertDataset:
         anchor_body_name: str,
         step_dt: float,
         device: str | torch.device,
+        required_clip_name: str | None = None,
     ):
         self.device = torch.device(device)
         paths = self._resolve_paths(Path(motion_path))
@@ -53,6 +54,10 @@ class AmpExpertDataset:
         if not body_names:
             raise ValueError("AMP body_names must contain at least one body.")
 
+        required_states: torch.Tensor | None = None
+        required_next_states: torch.Tensor | None = None
+        random_states: list[torch.Tensor] = []
+        random_next_states: list[torch.Tensor] = []
         for path in paths:
             state, next_state, info = self._load_clip(
                 path, body_names, anchor_body_name, step_dt, self.device
@@ -60,11 +65,35 @@ class AmpExpertDataset:
             states.append(state)
             next_states.append(next_state)
             clip_infos.append(info)
+            if required_clip_name is not None and path.name == required_clip_name:
+                if required_states is not None:
+                    raise ValueError(
+                        f"Required AMP expert clip name is ambiguous: {required_clip_name}"
+                    )
+                required_states = state
+                required_next_states = next_state
+            else:
+                random_states.append(state)
+                random_next_states.append(next_state)
+
+        if required_clip_name is not None and required_states is None:
+            raise FileNotFoundError(
+                f"Required AMP expert clip was not found in {motion_path}: {required_clip_name}"
+            )
+        if required_clip_name is not None and not random_states:
+            raise ValueError("AMP expert sampling requires at least one non-required clip.")
 
         self.states = torch.cat(states, dim=0).contiguous()
         self.next_states = torch.cat(next_states, dim=0).contiguous()
         self.clip_infos = tuple(clip_infos)
         self.state_dim = self.states.shape[1]
+        self.required_clip_name = required_clip_name
+        self.required_states = required_states
+        self.required_next_states = required_next_states
+        self.random_states = torch.cat(random_states, dim=0).contiguous() if random_states else self.states
+        self.random_next_states = (
+            torch.cat(random_next_states, dim=0).contiguous() if random_next_states else self.next_states
+        )
 
     @staticmethod
     def _resolve_paths(motion_path: Path) -> list[Path]:
@@ -144,7 +173,45 @@ class AmpExpertDataset:
         return self.states.shape[0]
 
     def sample(self, batch_size: int) -> tuple[torch.Tensor, torch.Tensor]:
+        """Sample one expert batch, including every required-clip transition once.
+
+        The remaining entries are sampled with replacement from all other
+        clips.  The final permutation prevents the required transitions from
+        occupying fixed locations in an effective or micro batch.
+        """
         if batch_size <= 0:
             raise ValueError(f"batch_size must be positive, got {batch_size}")
-        indices = torch.randint(len(self), (batch_size,), device=self.device)
-        return self.states[indices], self.next_states[indices]
+        if self.required_states is None:
+            indices = torch.randint(len(self), (batch_size,), device=self.device)
+            return self.states[indices], self.next_states[indices]
+
+        required_count = self.required_transition_count
+        if batch_size < required_count:
+            raise ValueError(
+                f"AMP expert batch_size={batch_size} cannot contain all {required_count} "
+                f"transitions from required clip {self.required_clip_name}."
+            )
+        random_count = batch_size - required_count
+        if random_count:
+            indices = torch.randint(
+                self.random_states.shape[0], (random_count,), device=self.device
+            )
+            states = torch.cat((self.required_states, self.random_states[indices]), dim=0)
+            next_states = torch.cat(
+                (self.required_next_states, self.random_next_states[indices]), dim=0
+            )
+        else:
+            states = self.required_states
+            next_states = self.required_next_states
+        permutation = torch.randperm(batch_size, device=self.device)
+        return states[permutation], next_states[permutation]
+
+    @property
+    def required_transition_count(self) -> int:
+        if self.required_states is None:
+            return 0
+        return int(self.required_states.shape[0])
+
+    @property
+    def random_transition_count(self) -> int:
+        return int(self.random_states.shape[0])

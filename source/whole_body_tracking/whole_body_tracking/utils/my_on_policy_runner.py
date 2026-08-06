@@ -80,6 +80,19 @@ class RecoveryAmpOnPolicyRunner(MotionOnPolicyRunner):
                 "must be added before multi-GPU training."
             )
 
+        ppo_mini_batches = int(self.alg_cfg["num_mini_batches"])
+        ppo_learning_epochs = int(self.alg_cfg["num_learning_epochs"])
+        rollout_transitions = self.env.num_envs * self.num_steps_per_env
+        if rollout_transitions % ppo_mini_batches != 0:
+            raise ValueError(
+                f"AMP-mjlab batch derivation requires {rollout_transitions} rollout transitions "
+                f"to be divisible by {ppo_mini_batches} PPO mini-batches."
+            )
+        if int(amp_cfg.get("batch_size", 0)) <= 0:
+            amp_cfg["batch_size"] = rollout_transitions // ppo_mini_batches
+        if int(amp_cfg.get("updates_per_iteration", 0)) <= 0:
+            amp_cfg["updates_per_iteration"] = ppo_learning_epochs * ppo_mini_batches
+
         _, extras = self.env.get_observations()
         amp_observation = extras["observations"].get("amp")
         if amp_observation is None:
@@ -104,10 +117,19 @@ class RecoveryAmpOnPolicyRunner(MotionOnPolicyRunner):
             f"expert_transitions={len(self.recovery_amp.expert_dataset)} ({clip_summary})"
         )
         print(
+            "[INFO] Recovery AMP sampling: "
+            f"replay_capacity={self.recovery_amp.replay.capacity}, "
+            f"effective_batch={self.recovery_amp.batch_size}, "
+            f"micro_batch={self.recovery_amp.micro_batch_size}, "
+            f"updates_per_iteration={self.recovery_amp.updates_per_iteration}, "
+            f"required_expert_per_batch="
+            f"{self.recovery_amp.expert_dataset.required_transition_count}"
+        )
+        print(
             "[INFO] Recovery reward mix: "
             f"{self.recovery_amp.task_reward_lerp:.2f} * task + "
             f"{1.0 - self.recovery_amp.task_reward_lerp:.2f} * "
-            f"({self.recovery_amp.amp_reward_coef:.3f} * raw AMP), "
+            f"({self.recovery_amp.amp_reward_coef:.3f} * centered-softplus AMP), "
             f"max AMP component="
             f"{(1.0 - self.recovery_amp.task_reward_lerp) * self.recovery_amp.amp_reward_coef:.6f}"
         )
@@ -165,10 +187,13 @@ class RecoveryAmpOnPolicyRunner(MotionOnPolicyRunner):
             amp_rollout_sums = {
                 "valid_transitions": 0.0,
                 "task_abs_sum": 0.0,
-                "raw_reward_sum": 0.0,
+                "style_reward_sum": 0.0,
+                "style_reward_abs_sum": 0.0,
+                "negative_style_transitions": 0.0,
                 "scaled_discriminator_reward_sum": 0.0,
                 "task_component_abs_sum": 0.0,
                 "amp_component_sum": 0.0,
+                "amp_component_abs_sum": 0.0,
             }
             with torch.inference_mode():
                 for _ in range(self.num_steps_per_env):
@@ -232,6 +257,7 @@ class RecoveryAmpOnPolicyRunner(MotionOnPolicyRunner):
             denominator = max(valid_count, 1.0)
             task_component_abs = amp_rollout_sums["task_component_abs_sum"]
             amp_component = amp_rollout_sums["amp_component_sum"]
+            amp_component_abs = amp_rollout_sums["amp_component_abs_sum"]
             amp_metrics.update(self.recovery_amp.training_metrics())
             amp_metrics.update(
                 {
@@ -239,14 +265,21 @@ class RecoveryAmpOnPolicyRunner(MotionOnPolicyRunner):
                     / (self.num_steps_per_env * self.env.num_envs),
                     "mean_recovery_task_abs": amp_rollout_sums["task_abs_sum"] / denominator,
                     "mean_task_component_abs": task_component_abs / denominator,
-                    "mean_raw_reward": amp_rollout_sums["raw_reward_sum"] / denominator,
+                    "mean_style_reward": amp_rollout_sums["style_reward_sum"] / denominator,
+                    "mean_style_reward_abs": amp_rollout_sums["style_reward_abs_sum"]
+                    / denominator,
+                    "rollout_negative_style_fraction": amp_rollout_sums[
+                        "negative_style_transitions"
+                    ]
+                    / denominator,
                     "mean_scaled_discriminator_reward": amp_rollout_sums[
                         "scaled_discriminator_reward_sum"
                     ]
                     / denominator,
                     "mean_amp_component": amp_component / denominator,
-                    "observed_amp_fraction": amp_component
-                    / max(task_component_abs + amp_component, 1.0e-12),
+                    "mean_amp_component_abs": amp_component_abs / denominator,
+                    "observed_amp_fraction": amp_component_abs
+                    / max(task_component_abs + amp_component_abs, 1.0e-12),
                 }
             )
 

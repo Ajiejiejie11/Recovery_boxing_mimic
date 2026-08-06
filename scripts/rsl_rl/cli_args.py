@@ -65,6 +65,8 @@ def update_rsl_rl_cfg(agent_cfg: RslRlOnPolicyRunnerCfg, args_cli: argparse.Name
         The updated configuration for RSL-RL agent based on inputs.
     """
     # override the default configuration with CLI arguments
+    if args_cli.experiment_name is not None:
+        agent_cfg.experiment_name = args_cli.experiment_name
     if hasattr(args_cli, "seed") and args_cli.seed is not None:
         agent_cfg.seed = args_cli.seed
     if args_cli.resume is not None:

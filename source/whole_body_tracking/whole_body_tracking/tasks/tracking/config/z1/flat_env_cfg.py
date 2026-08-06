@@ -142,7 +142,7 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         )
         self.rewards.recovery_full_body_reference = RewTerm(
             func=mdp.recovery_full_body_reference_reward,
-            weight=0.15,
+            weight=0.45,
             params={
                 "command_name": "motion",
                 "asset_cfg": SceneEntityCfg("robot", joint_names=[".*"]),

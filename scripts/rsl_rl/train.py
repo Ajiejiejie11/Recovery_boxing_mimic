@@ -167,7 +167,10 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
         print(f"[INFO]: Loading model checkpoint from: {resume_path}")
         # load previously trained model
-        runner.load(resume_path)
+        load_optimizer = bool(recovery_amp_cfg.get("resume_ppo_optimizer", True))
+        if not load_optimizer:
+            print("[INFO]: Restoring policy/value weights without the baseline PPO optimizer state.")
+        runner.load(resume_path, load_optimizer=load_optimizer)
 
     # dump the configuration into log-directory
     dump_yaml(os.path.join(log_dir, "params", "env.yaml"), env_cfg)

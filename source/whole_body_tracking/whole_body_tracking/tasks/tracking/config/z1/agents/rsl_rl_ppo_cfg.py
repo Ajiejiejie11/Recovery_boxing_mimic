@@ -9,21 +9,29 @@ PROJECT_ROOT = Path(__file__).resolve().parents[8]
 
 @configclass
 class RecoveryAmpCfg:
-    """Independent recovery-style reward using AMP_mjlab-style interpolation."""
+    """Independent recovery-style reward for recovery-only policy transitions."""
 
     enabled: bool = True
     expert_motion_path: str = str(PROJECT_ROOT / "motion_data/data_npz/npz")
+    required_expert_clip_name: str = "boxing_walk_001_get_ready_370_530.npz"
     amp_reward_coef: float = 0.1
-    amp_task_reward_lerp: float = 0.85
-    hidden_dims: list[int] = [512, 256, 128]
+    amp_task_reward_lerp: float = 0.75
+    hidden_dims: list[int] = [256, 128]
     activation: str = "elu"
-    learning_rate: float = 1.0e-4
-    batch_size: int = 2048
-    updates_per_iteration: int = 4
+    learning_rate: float = 3.0e-5
+    # A 4096-env rollout contains 98,304 total transitions, but only recovery
+    # transitions enter AMP.  Keep the discriminator budget proportional to
+    # that smaller stream instead of deriving it from the full PPO rollout.
+    batch_size: int = 8_192
+    updates_per_iteration: int = 2
+    micro_batch_size: int = 2048
     replay_capacity: int = 50_000
-    min_replay_size: int = 4096
-    gradient_penalty: float = 10.0
-    max_grad_norm: float = 10.0
+    min_replay_size: int = 0
+    gradient_penalty: float = 5.0
+    max_grad_norm: float = 1.0
+    # The task reward changed when AMP was attached.  Restore Actor/Critic and
+    # curriculum from a baseline checkpoint, but start with a fresh optimizer.
+    resume_ppo_optimizer: bool = False
 
 
 @configclass

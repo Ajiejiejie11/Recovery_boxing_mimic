@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import torch
 from torch import nn
+from torch.nn import functional as F
 
 
 class RunningMeanStd(nn.Module):
@@ -74,5 +75,11 @@ class AmpDiscriminator(nn.Module):
 
     @staticmethod
     def style_reward(logits: torch.Tensor) -> torch.Tensor:
-        """Bounded AMP reward from the least-squares expert target of +1."""
-        return (1.0 - 0.25 * (logits - 1.0).square()).clamp_min(0.0)
+        """Smooth style score centered at the least-squares policy target.
+
+        ``softplus(1) - softplus(-1) == 1`` and a policy-target score of
+        ``-1`` maps to zero.  Scores below ``-1`` retain a bounded negative
+        ordering instead of entering the old hard-clamped zero-reward region.
+        """
+        policy_target_softplus = F.softplus(logits.new_tensor(-1.0))
+        return (F.softplus(logits) - policy_target_softplus).clamp_max(1.0)
