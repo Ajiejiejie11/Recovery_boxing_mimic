@@ -217,13 +217,23 @@ class MotionCommand(CommandTerm):
         )
         if not 0.0 <= self.cfg.recovery_fraction <= 1.0:
             raise ValueError(f"recovery_fraction must be in [0, 1], got {self.cfg.recovery_fraction}")
+        if not 0.0 <= self.cfg.task_fraction <= 1.0:
+            raise ValueError(f"task_fraction must be in [0, 1], got {self.cfg.task_fraction}")
+        if self.cfg.recovery_fraction + self.cfg.task_fraction > 1.0:
+            raise ValueError(
+                f"recovery_fraction + task_fraction must not exceed 1.0, got "
+                f"{self.cfg.recovery_fraction} + {self.cfg.task_fraction}."
+            )
         if self.cfg.recovery_duration_s <= 0.0:
             raise ValueError(f"recovery_duration_s must be positive, got {self.cfg.recovery_duration_s}")
         recovery_count = int(round(self.num_envs * self.cfg.recovery_fraction))
         self.recovery_count = recovery_count
-        if recovery_count:
-            if self.cfg.recovery_target_file is None or self.cfg.recovery_reset_file is None:
-                raise ValueError("Recovery target/reset files are required when recovery_fraction is non-zero.")
+        # The default stand pose is shared by BOTH the recovery phase and the
+        # task (walking) phase, so it is loaded as soon as either is enabled.
+        needs_stand_target = recovery_count > 0 or self.cfg.task_fraction > 0.0
+        if needs_stand_target:
+            if self.cfg.recovery_target_file is None:
+                raise ValueError("recovery_target_file is required when recovery or task is enabled.")
             self.recovery_target = MotionLoader(
                 self.cfg.recovery_target_file,
                 self.robot.joint_names,
@@ -235,6 +245,9 @@ class MotionCommand(CommandTerm):
                     f"recovery_target_frame={self.cfg.recovery_target_frame} is outside "
                     f"[0, {self.recovery_target.time_step_total})."
                 )
+        if recovery_count:
+            if self.cfg.recovery_reset_file is None:
+                raise ValueError("recovery_reset_file is required when recovery_fraction is non-zero.")
             self.recovery_reset = MotionLoader(
                 self.cfg.recovery_reset_file,
                 self.robot.joint_names,
@@ -256,6 +269,8 @@ class MotionCommand(CommandTerm):
                     "No fallen frames matched the recovery reset thresholds; "
                     "relax recovery_reset_max_height/recovery_reset_max_uprightness."
                 )
+        else:
+            self.recovery_reset_frames = torch.empty(0, dtype=torch.long, device=self.device)
         sampling_fractions = (
             self.cfg.coverage_sampling_fraction,
             self.cfg.hard_failure_replay_fraction,
@@ -286,6 +301,12 @@ class MotionCommand(CommandTerm):
         self.recovery_active = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self.recovery_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.tracking_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        # Task (velocity-command walking) phase. Mutually exclusive with both
+        # tracking and recovery, exactly like recovery is with tracking.
+        self.task_active = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self.task_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self.task_command = torch.zeros(self.num_envs, 3, device=self.device)
+        self._task_resample_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.recovery_success_pending = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self.recovery_failure = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self.recovery_torso_height = torch.zeros(self.num_envs, device=self.device)
@@ -353,6 +374,7 @@ class MotionCommand(CommandTerm):
         self.metrics["tracking_error_replay_ratio"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["delay_env_ratio"] = self.delay_env_mask.float().clone()
         self.metrics["recovery_active_ratio"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["task_active_ratio"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["recovery_success_rate"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["recovery_failure_rate"] = torch.zeros(self.num_envs, device=self.device)
         self.metrics["recovery_duration_s"] = torch.zeros(self.num_envs, device=self.device)
@@ -381,8 +403,13 @@ class MotionCommand(CommandTerm):
 
     @property
     def tracking_env_mask(self) -> torch.Tensor:
-        """Dynamic tracking phase mask; exactly complementary to recovery."""
-        return ~self.recovery_active
+        """Dynamic tracking (mimic) phase mask; complementary to task and recovery."""
+        return ~self.recovery_active & ~self.task_active
+
+    @property
+    def task_env_mask(self) -> torch.Tensor:
+        """Dynamic task (velocity-command walking) phase mask."""
+        return self.task_active
 
     @property
     def recovery_env_mask(self) -> torch.Tensor:
@@ -396,30 +423,40 @@ class MotionCommand(CommandTerm):
         return (self.recovery_steps.float() / max_steps).clamp(0.0, 1.0)
 
     def _validate_task_reward_masks(self, step_index: int) -> None:
-        """Periodically verify the two task-reward gates form an exact partition."""
+        """Periodically verify the three task-reward gates form an exact partition."""
         interval = self.cfg.task_mask_assert_interval
         if interval <= 0 or step_index % interval:
             return
         tracking_mask = self.tracking_env_mask
+        task_mask = self.task_active
         recovery_mask = self.recovery_active
-        if torch.any(tracking_mask & recovery_mask) or not torch.all(tracking_mask | recovery_mask):
-            raise RuntimeError("Tracking and recovery reward masks must be mutually exclusive and exhaustive.")
+        any_overlap = (tracking_mask & task_mask) | (task_mask & recovery_mask) | (tracking_mask & recovery_mask)
+        all_covered = tracking_mask | task_mask | recovery_mask
+        if torch.any(any_overlap) or not torch.all(all_covered):
+            raise RuntimeError("Tracking, task, and recovery reward masks must be mutually exclusive and exhaustive.")
 
     def _replace_recovery(self, reference: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        """Replace reference values only while the dynamic recovery gate is open."""
-        if self.recovery_count == 0:
+        """Replace reference values while a stand-pose phase (recovery OR task) is open.
+
+        Task walking and recovery share the same default stand reference, so a
+        single ``recovery_active | task_active`` gate serves both.  The policy
+        disambiguates the two phases from the task command (non-zero only in
+        task) and projected gravity (fallen only in recovery).
+        """
+        if not hasattr(self, "recovery_target"):
             return reference
         result = reference.clone()
+        mask = self.recovery_active | self.task_active
         if target.shape == reference.shape:
-            result[self.recovery_active] = target[self.recovery_active]
+            result[mask] = target[mask]
         else:
-            result[self.recovery_active] = target
+            result[mask] = target
         return result
 
     @property
     def joint_pos(self) -> torch.Tensor:
         reference = self.motion.joint_pos[self.time_steps]
-        if self.recovery_count == 0:
+        if not hasattr(self, "recovery_target"):
             return reference
         target = self.recovery_target.joint_pos[self.cfg.recovery_target_frame]
         return self._replace_recovery(reference, target)
@@ -432,7 +469,7 @@ class MotionCommand(CommandTerm):
     @property
     def body_pos_w(self) -> torch.Tensor:
         reference = self.motion.body_pos_w[self.time_steps] + self._env.scene.env_origins[:, None, :]
-        if self.recovery_count == 0:
+        if not hasattr(self, "recovery_target"):
             return reference
         target = self.recovery_target.body_pos_w[self.cfg.recovery_target_frame].clone()
         target[:, :2] -= target[self.motion_anchor_body_index, :2]
@@ -442,7 +479,7 @@ class MotionCommand(CommandTerm):
     @property
     def body_quat_w(self) -> torch.Tensor:
         reference = self.motion.body_quat_w[self.time_steps]
-        if self.recovery_count == 0:
+        if not hasattr(self, "recovery_target"):
             return reference
         target = self.recovery_target.body_quat_w[self.cfg.recovery_target_frame]
         return self._replace_recovery(reference, target)
@@ -460,7 +497,7 @@ class MotionCommand(CommandTerm):
     @property
     def anchor_pos_w(self) -> torch.Tensor:
         reference = self.motion.body_pos_w[self.time_steps, self.motion_anchor_body_index] + self._env.scene.env_origins
-        if self.recovery_count == 0:
+        if not hasattr(self, "recovery_target"):
             return reference
         target_height = self.recovery_target.body_pos_w[
             self.cfg.recovery_target_frame, self.motion_anchor_body_index, 2
@@ -722,10 +759,13 @@ class MotionCommand(CommandTerm):
         self.recovery_failure.zero_()
         termination = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
 
-        # Count only time spent in tracking. Recovery owns a separate 300-step
-        # deadline and therefore cannot be pre-empted by a global episode clock.
-        tracking_at_start = ~self.recovery_active
+        # Count only time spent in tracking or task. Recovery owns a separate
+        # 300-step deadline and therefore cannot be pre-empted by a global
+        # episode clock.
+        tracking_at_start = ~self.recovery_active & ~self.task_active
+        task_at_start = self.task_active & ~self.recovery_success_pending
         self.tracking_steps[tracking_at_start] += 1
+        self.task_steps[task_at_start] += 1
 
         # Ordinary tracking slots never receive a delayed window.
         termination |= fallen & ~self.delay_env_mask
@@ -759,8 +799,13 @@ class MotionCommand(CommandTerm):
         entering = self.delay_env_mask & ~self.recovery_active & fallen
         if torch.any(entering):
             entering_ids = torch.where(entering)[0]
+            # Settles a tracking bin as a hard failure; a task slot has no
+            # active bin, so this is a no-op for it.
             self._settle_tracking_bins_as_hard(entering_ids)
             self.recovery_active[entering_ids] = True
+            self.task_active[entering_ids] = False
+            self.task_command[entering_ids] = 0.0
+            self._task_resample_steps[entering_ids] = 0
             self.recovery_steps[entering_ids] = 1
             self.recovery_success_pending[entering_ids] = False
             self.motion_complete[entering_ids] = False
@@ -774,6 +819,7 @@ class MotionCommand(CommandTerm):
         completed = self._episode_recovery_success_count + self._episode_recovery_failure_count
         entries = self._episode_recovery_entry_count.clamp_min(1).float()
         self.metrics["recovery_active_ratio"][:] = self.recovery_active.float()
+        self.metrics["task_active_ratio"][:] = self.task_active.float()
         self.metrics["recovery_success_rate"][:] = self._episode_recovery_success_count / entries
         self.metrics["recovery_failure_rate"][:] = self._episode_recovery_failure_count / entries
         self.metrics["recovery_duration_s"][:] = self._episode_recovery_duration_sum / completed.clamp_min(1)
@@ -901,34 +947,74 @@ class MotionCommand(CommandTerm):
         self.metrics["difficulty_replay_ratio"][env_ids] = (hard_count + tracking_count) / denominator
         self._reset_error_accumulators(env_ids)
 
+    def _sample_task_command(self, env_ids: torch.Tensor) -> None:
+        """Sample a fresh velocity command and schedule its next resampling."""
+        if len(env_ids) == 0:
+            return
+        xy_range = self.cfg.task_lin_vel_xy_range
+        yaw_range = self.cfg.task_ang_vel_yaw_range
+        self.task_command[env_ids, 0] = sample_uniform(xy_range[0], xy_range[1], (len(env_ids),), self.device)
+        self.task_command[env_ids, 1] = sample_uniform(xy_range[0], xy_range[1], (len(env_ids),), self.device)
+        self.task_command[env_ids, 2] = sample_uniform(yaw_range[0], yaw_range[1], (len(env_ids),), self.device)
+        resample_range = self.cfg.task_resampling_time_range
+        seconds = sample_uniform(resample_range[0], resample_range[1], (len(env_ids),), self.device)
+        self._task_resample_steps[env_ids] = (seconds / self._env.step_dt).round().long().clamp_min(1)
+
+    def _assign_task_command(self, env_ids: torch.Tensor) -> None:
+        """Enter the task phase with a fresh velocity command and no reference bin."""
+        if len(env_ids) == 0:
+            return
+        self.task_active[env_ids] = True
+        self.task_steps[env_ids] = 0
+        self.time_steps[env_ids] = 0
+        self.motion_complete[env_ids] = False
+        self._bin_needs_outcome[env_ids] = False
+        self._has_active_bin[env_ids] = False
+        self._sample_task_command(env_ids)
+        self.metrics["task_active_ratio"][env_ids] = 1.0
+        self._reset_error_accumulators(env_ids)
+
     def _resample_command(self, env_ids: Sequence[int]):
         if len(env_ids) == 0:
             return
         env_ids = torch.as_tensor(env_ids, dtype=torch.long, device=self.device)
         # Every delayed slot resets into a fallen recovery pose.  It can later
         # leave this phase without resetting and receive a fresh boxing reference.
+        # Non-delayed slots split into velocity-command walking (task) and
+        # reference tracking (mimic) by an independent Bernoulli draw, which
+        # still converges to the configured ratio under asynchronous resets.
         recovery_ids = env_ids[self.delay_env_mask[env_ids]]
-        tracking_ids = env_ids[~self.delay_env_mask[env_ids]]
+        non_delayed_ids = env_ids[~self.delay_env_mask[env_ids]]
+        is_task = torch.rand(len(non_delayed_ids), device=self.device) < self.cfg.task_fraction
+        task_ids = non_delayed_ids[is_task]
+        mimic_ids = non_delayed_ids[~is_task]
         self.recovery_active[env_ids] = False
         self.recovery_active[recovery_ids] = True
+        self.task_active[env_ids] = False
+        self.task_command[env_ids] = 0.0
+        self._task_resample_steps[env_ids] = 0
         self.recovery_steps[env_ids] = 0
         self.tracking_steps[env_ids] = 0
+        self.task_steps[env_ids] = 0
         self.recovery_success_pending[env_ids] = False
         self.recovery_failure[env_ids] = False
         self.recovery_feet_stable[env_ids] = False
         self._recovery_termination[env_ids] = False
 
-        self._assign_tracking_reference(tracking_ids)
+        self._assign_tracking_reference(mimic_ids)
+        self._assign_task_command(task_ids)
         self.time_steps[recovery_ids] = 0
         self.active_bin_end[recovery_ids] = 1
         self.motion_complete[env_ids] = False
         self._bin_needs_outcome[recovery_ids] = False
         self._has_active_bin[recovery_ids] = False
-        self.metrics["coverage_sampling_ratio"][recovery_ids] = 0.0
-        self.metrics["hard_failure_replay_ratio"][recovery_ids] = 0.0
-        self.metrics["tracking_error_replay_ratio"][recovery_ids] = 0.0
-        self.metrics["difficulty_replay_ratio"][recovery_ids] = 0.0
+        stand_ids = torch.cat((recovery_ids, task_ids))
+        self.metrics["coverage_sampling_ratio"][stand_ids] = 0.0
+        self.metrics["hard_failure_replay_ratio"][stand_ids] = 0.0
+        self.metrics["tracking_error_replay_ratio"][stand_ids] = 0.0
+        self.metrics["difficulty_replay_ratio"][stand_ids] = 0.0
         self.metrics["recovery_active_ratio"][env_ids] = self.recovery_active[env_ids].float()
+        self.metrics["task_active_ratio"][env_ids] = self.task_active[env_ids].float()
 
         self._reset_error_accumulators(env_ids)
         self._episode_bin_count[env_ids] = 0
@@ -942,6 +1028,9 @@ class MotionCommand(CommandTerm):
         self._episode_recovery_failure_count[env_ids] = 0
         self._episode_recovery_duration_sum[env_ids] = 0.0
 
+        # Both mimic and task slots reset into an upright, roughly standing pose
+        # (the properties above already resolve to the stand pose inside task).
+        standing_ids = torch.cat((mimic_ids, task_ids))
         root_pos = self.body_pos_w[:, 0].clone()
         root_ori = self.body_quat_w[:, 0].clone()
         root_lin_vel = self.body_lin_vel_w[:, 0].clone()
@@ -949,21 +1038,21 @@ class MotionCommand(CommandTerm):
 
         range_list = [self.cfg.pose_range.get(key, (0.0, 0.0)) for key in ["x", "y", "z", "roll", "pitch", "yaw"]]
         ranges = torch.tensor(range_list, device=self.device)
-        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(tracking_ids), 6), device=self.device)
-        root_pos[tracking_ids] += rand_samples[:, 0:3]
+        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(standing_ids), 6), device=self.device)
+        root_pos[standing_ids] += rand_samples[:, 0:3]
         orientations_delta = quat_from_euler_xyz(rand_samples[:, 3], rand_samples[:, 4], rand_samples[:, 5])
-        root_ori[tracking_ids] = quat_mul(orientations_delta, root_ori[tracking_ids])
+        root_ori[standing_ids] = quat_mul(orientations_delta, root_ori[standing_ids])
         range_list = [self.cfg.velocity_range.get(key, (0.0, 0.0)) for key in ["x", "y", "z", "roll", "pitch", "yaw"]]
         ranges = torch.tensor(range_list, device=self.device)
-        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(tracking_ids), 6), device=self.device)
-        root_lin_vel[tracking_ids] += rand_samples[:, :3]
-        root_ang_vel[tracking_ids] += rand_samples[:, 3:]
+        rand_samples = sample_uniform(ranges[:, 0], ranges[:, 1], (len(standing_ids), 6), device=self.device)
+        root_lin_vel[standing_ids] += rand_samples[:, :3]
+        root_ang_vel[standing_ids] += rand_samples[:, 3:]
 
         joint_pos = self.joint_pos.clone()
         joint_vel = self.joint_vel.clone()
 
-        joint_pos[tracking_ids] += sample_uniform(
-            *self.cfg.joint_position_range, (len(tracking_ids), joint_pos.shape[1]), self.device
+        joint_pos[standing_ids] += sample_uniform(
+            *self.cfg.joint_position_range, (len(standing_ids), joint_pos.shape[1]), self.device
         )
 
         if len(recovery_ids):
@@ -1006,11 +1095,32 @@ class MotionCommand(CommandTerm):
             self.recovery_active[recovered_ids] = False
             self.recovery_steps[recovered_ids] = 0
             self.tracking_steps[recovered_ids] = 0
+            self.task_steps[recovered_ids] = 0
             self.recovery_success_pending[recovered_ids] = False
             self.recovery_failure[recovered_ids] = False
-            self._assign_tracking_reference(recovered_ids)
+            # After a successful get-up, randomly continue with either walking
+            # (task) or reference tracking (mimic).
+            to_task = torch.rand(len(recovered_ids), device=self.device) < self.cfg.task_after_recovery_prob
+            task_ids = recovered_ids[to_task]
+            mimic_ids = recovered_ids[~to_task]
+            self.task_active[mimic_ids] = False
+            self.task_command[mimic_ids] = 0.0
+            self._task_resample_steps[mimic_ids] = 0
+            self._assign_tracking_reference(mimic_ids)
+            self._assign_task_command(task_ids)
             just_recovered[recovered_ids] = True
             self.metrics["recovery_active_ratio"][recovered_ids] = 0.0
+            self.metrics["task_active_ratio"][recovered_ids] = self.task_active[recovered_ids].float()
+
+        # Resample the velocity command for ongoing task slots whose timer elapsed.
+        ongoing_task_ids = torch.where(
+            self.task_active & ~self.recovery_active & ~just_recovered
+        )[0]
+        if len(ongoing_task_ids):
+            self._task_resample_steps[ongoing_task_ids] -= 1
+            expired_ids = ongoing_task_ids[self._task_resample_steps[ongoing_task_ids] <= 0]
+            if len(expired_ids):
+                self._sample_task_command(expired_ids)
 
         active_ids = torch.where(
             self._has_active_bin & ~self.motion_complete & ~self.recovery_active & ~just_recovered
@@ -1181,6 +1291,15 @@ class MotionCommandCfg(CommandTermCfg):
     recovery_reset_max_uprightness: float = 0.65
     recovery_reset_ground_clearance: float = 0.02
     recovery_duration_s: float = 6.0
+    # Task (velocity-command walking) phase. ``task_fraction`` is the share of
+    # NON-delayed slots that reset into task; the remaining non-delayed slots
+    # reset into reference tracking. The velocity command is sampled in the
+    # robot root body frame as [vx, vy, yaw-rate].
+    task_fraction: float = 0.0
+    task_after_recovery_prob: float = 0.5
+    task_lin_vel_xy_range: tuple[float, float] = (-0.5, 0.5)
+    task_ang_vel_yaw_range: tuple[float, float] = (-0.5, 0.5)
+    task_resampling_time_range: tuple[float, float] = (2.0, 6.0)
     # Set to zero to disable. The check runs sparsely to avoid synchronizing the
     # GPU on every control step during large-scale training.
     task_mask_assert_interval: int = 100

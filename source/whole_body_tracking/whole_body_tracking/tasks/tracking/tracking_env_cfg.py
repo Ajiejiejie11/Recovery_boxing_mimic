@@ -134,6 +134,11 @@ class ObservationsCfg:
         # Appended to preserve all 124 legacy actor columns.  This is derived
         # from the base IMU orientation and is available on the real robot.
         projected_gravity = ObsTerm(func=mdp.projected_gravity, noise=Unoise(n_min=-0.05, n_max=0.05))
+        # Appended after the 127 legacy columns: base_lin_vel closes the velocity
+        # loop for the walking task, and task_command carries the [vx, vy, yaw]
+        # command (zero outside the task phase).
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1))
+        task_command = ObsTerm(func=mdp.task_command, params={"command_name": "motion"})
 
         def __post_init__(self):
             self.enable_corruption = True
@@ -151,9 +156,11 @@ class ObservationsCfg:
         joint_pos = ObsTerm(func=mdp.joint_pos_rel)
         joint_vel = ObsTerm(func=mdp.joint_vel_rel)
         actions = ObsTerm(func=mdp.last_action)
-        # Appended after all 256 legacy critic features. Contact stability is
-        # cached by the robot-specific recovery-state termination term.
-        recovery_state = ObsTerm(func=mdp.recovery_state_privileged, params={"command_name": "motion"})
+        # Appended after all 256 legacy critic features. Contact stability and
+        # the active phase are cached by the robot-specific recovery-state
+        # termination term; the velocity command is a non-privileged input.
+        phase_state = ObsTerm(func=mdp.phase_state_privileged, params={"command_name": "motion"})
+        task_command = ObsTerm(func=mdp.task_command, params={"command_name": "motion"})
 
     # observation groups
     policy: PolicyCfg = PolicyCfg()
@@ -359,6 +366,13 @@ class RewardsCfg:
     recovery_feet_stable: RewTerm | None = None
     recovery_full_body_reference: RewTerm | None = None
     recovery_torso_reference: RewTerm | None = None
+
+    # Task-only (velocity-command walking) group. Robot-specific configs set
+    # weights so the dense scale stays close to tracking/recovery.
+    task_lin_vel_xy_track: RewTerm | None = None
+    task_ang_vel_z_track: RewTerm | None = None
+    task_upright: RewTerm | None = None
+    task_upper_body_pose: RewTerm | None = None
 
 
 @configclass

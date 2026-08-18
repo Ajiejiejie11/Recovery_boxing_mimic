@@ -27,13 +27,16 @@ def tracking_motion_complete(env: ManagerBasedRLEnv, command_name: str) -> torch
 
 
 def tracking_phase_timeout(env: ManagerBasedRLEnv, command_name: str) -> torch.Tensor:
-    """Time out tracking without consuming its budget during recovery.
+    """Time out tracking and task without consuming their budget during recovery.
 
-    A freshly sampled boxing reference gets a fresh tracking budget. Recovery
-    has its own terminated six-second deadline in the state machine below.
+    A freshly sampled boxing reference or velocity command gets a fresh budget.
+    Tracking and task are mutually exclusive, so their summed step counters equal
+    the total non-recovery time. Recovery has its own terminated six-second
+    deadline in the state machine below.
     """
     command: MotionCommand = env.command_manager.get_term(command_name)
-    return command.tracking_env_mask & (command.tracking_steps >= env.max_episode_length)
+    non_recovery_steps = command.tracking_steps + command.task_steps
+    return ~command.recovery_active & (non_recovery_steps >= env.max_episode_length)
 
 
 def update_recovery_state_and_check_termination(

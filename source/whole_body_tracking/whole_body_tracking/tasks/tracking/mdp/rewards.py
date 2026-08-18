@@ -25,6 +25,10 @@ def _recovery_mask(command: MotionCommand) -> torch.Tensor:
     return command.recovery_active.float()
 
 
+def _task_mask(command: MotionCommand) -> torch.Tensor:
+    return command.task_active.float()
+
+
 def motion_global_anchor_position_error_exp(env: ManagerBasedRLEnv, command_name: str, std: float) -> torch.Tensor:
     command: MotionCommand = env.command_manager.get_term(command_name)
     error = torch.sum(torch.square(command.anchor_pos_w - command.robot_anchor_pos_w), dim=-1)
@@ -337,3 +341,51 @@ def recovery_torso_reference_reward(
     similarity = torch.exp(-orientation_error / std**2)
     gate = _late_recovery_gate(command, min_height, full_height, min_uprightness, full_uprightness)
     return similarity * gate
+
+
+def task_lin_vel_xy_track(env: ManagerBasedRLEnv, command_name: str, std: float) -> torch.Tensor:
+    """Track the commanded root-frame planar velocity while walking.
+
+    The command is [vx, vy] in the robot root body frame; the same frame as the
+    ``base_lin_vel`` observation, so the policy can close the velocity loop.
+    """
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    vel_b = command.robot.data.root_lin_vel_b
+    error = torch.sum((vel_b[:, :2] - command.task_command[:, :2]) ** 2, dim=-1)
+    return torch.exp(-error / std**2) * _task_mask(command)
+
+
+def task_ang_vel_z_track(env: ManagerBasedRLEnv, command_name: str, std: float) -> torch.Tensor:
+    """Track the commanded root-frame yaw rate while walking."""
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    ang_b = command.robot.data.root_ang_vel_b
+    error = (ang_b[:, 2] - command.task_command[:, 2]) ** 2
+    return torch.exp(-error / std**2) * _task_mask(command)
+
+
+def task_upright_reward(env: ManagerBasedRLEnv, command_name: str) -> torch.Tensor:
+    """Keep the torso upright while walking (signed, like recovery)."""
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    uprightness = command.recovery_torso_uprightness.clamp(-1.0, 1.0)
+    return uprightness * _task_mask(command)
+
+
+def task_upper_body_pose_reward(
+    env: ManagerBasedRLEnv,
+    command_name: str,
+    asset_cfg: SceneEntityCfg,
+    std: float,
+) -> torch.Tensor:
+    """Lock the upper body to the default guard pose while walking.
+
+    The command reference already resolves to the crossed-arms stand pose in the
+    task phase, so this term only pulls the selected upper-body joints (waist and
+    arms) toward it. The lower body is left free to realize the velocity command.
+    """
+    if std <= 0.0:
+        raise ValueError("task upper-body pose std must be positive")
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    joint_error = command.robot_joint_pos[:, asset_cfg.joint_ids] - command.joint_pos[:, asset_cfg.joint_ids]
+    joint_error = torch.atan2(torch.sin(joint_error), torch.cos(joint_error))
+    mean_square_error = joint_error.square().mean(dim=-1)
+    return torch.exp(-mean_square_error / std**2) * _task_mask(command)

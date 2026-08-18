@@ -34,6 +34,12 @@ class TrackingRLEnv(ManagerBasedRLEnv):
         "recovery_full_body_reference",
         "recovery_torso_reference",
     )
+    _TASK_REWARD_TERMS = (
+        "task_lin_vel_xy_track",
+        "task_ang_vel_z_track",
+        "task_upright",
+        "task_upper_body_pose",
+    )
     _SHARED_REWARD_TERMS = (
         "action_rate_l2",
         "joint_limit",
@@ -62,6 +68,9 @@ class TrackingRLEnv(ManagerBasedRLEnv):
             ),
             "Episode_Reward_Group/recovery": self._reward_group_episode_mean(
                 ids, self._RECOVERY_REWARD_TERMS
+            ),
+            "Episode_Reward_Group/task": self._reward_group_episode_mean(
+                ids, self._TASK_REWARD_TERMS
             ),
             "Episode_Reward_Group/shared_regularization": self._reward_group_episode_mean(
                 ids, self._SHARED_REWARD_TERMS
@@ -101,6 +110,7 @@ class TrackingRLEnv(ManagerBasedRLEnv):
         recovery_logs = {
             "Metrics/motion/delay_env_ratio": command.delay_env_mask.float().mean(),
             "Metrics/motion/recovery_active_ratio": active.float().mean(),
+            "Metrics/motion/task_active_ratio": command.task_active.float().mean(),
             "Metrics/motion/recovery_entry_count": command.total_recovery_entries.float(),
             "Metrics/motion/recovery_success_count": command.total_recovery_successes.float(),
             "Metrics/motion/recovery_failure_count": command.total_recovery_failures.float(),

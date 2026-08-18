@@ -83,16 +83,16 @@ def motion_anchor_ori_b(env: ManagerBasedEnv, command_name: str) -> torch.Tensor
     return mat[..., :2].reshape(mat.shape[0], -1)
 
 
-def recovery_state_privileged(
+def phase_state_privileged(
     env: ManagerBasedEnv,
     command_name: str,
 ) -> torch.Tensor:
-    """Training-only recovery state for the shared critic (four scalars).
+    """Training-only phase state for the shared critic (five scalars).
 
     The actor deliberately does not receive these values.  It distinguishes a
     fall from deployable proprioception and projected gravity, while the critic
     may use exact phase, window progress, torso-link height, and stable-feet
-    state to reduce value aliasing between the two reward regimes.
+    state to reduce value aliasing between the three reward regimes.
     """
     command: MotionCommand = env.command_manager.get_term(command_name)
     torso_height = command.robot_anchor_pos_w[:, 2] - env.scene.env_origins[:, 2]
@@ -102,6 +102,18 @@ def recovery_state_privileged(
             command.recovery_progress,
             torso_height,
             command.recovery_feet_stable.float(),
+            command.task_active.float(),
         ),
         dim=-1,
     )
+
+
+def task_command(env: ManagerBasedEnv, command_name: str) -> torch.Tensor:
+    """Active velocity command [vx, vy, yaw-rate] in the root body frame.
+
+    Zero outside the task phase, so tracking/recovery observations carry no
+    locomotion command and the policy infers its phase from the command pattern
+    plus proprioception.
+    """
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    return command.task_command

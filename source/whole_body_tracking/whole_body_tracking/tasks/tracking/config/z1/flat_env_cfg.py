@@ -113,6 +113,13 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         self.commands.motion.recovery_reset_max_height = 0.62
         self.commands.motion.recovery_reset_max_uprightness = 1.0
         self.commands.motion.recovery_duration_s = 6.0
+        # 40% recovery / 30% task / 30% mimic: task_fraction is the share of the
+        # non-delayed (60%) slots, so 0.5 * 60% = 30% globally.
+        self.commands.motion.task_fraction = 0.5
+        self.commands.motion.task_after_recovery_prob = 0.5
+        self.commands.motion.task_lin_vel_xy_range = (-0.5, 0.5)
+        self.commands.motion.task_ang_vel_yaw_range = (-0.5, 0.5)
+        self.commands.motion.task_resampling_time_range = (2.0, 6.0)
         self.commands.motion.coverage_sampling_fraction = 0.625
         self.commands.motion.hard_failure_replay_fraction = 0.125
         self.commands.motion.tracking_error_replay_fraction = 0.25
@@ -154,6 +161,44 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
             func=mdp.recovery_torso_reference_reward,
             weight=0.10,
             params={"command_name": "motion", "std": 0.40, **late_recovery_gate},
+        )
+
+        # Task walking group: track the commanded root-frame velocity, keep the
+        # torso upright, and lock the upper body to the crossed-arms guard pose.
+        # Weights mirror the dense scale of the tracking (<=5) and recovery
+        # (<=4.95) groups.
+        self.rewards.task_lin_vel_xy_track = RewTerm(
+            func=mdp.task_lin_vel_xy_track, weight=1.5, params={"command_name": "motion", "std": 0.25}
+        )
+        self.rewards.task_ang_vel_z_track = RewTerm(
+            func=mdp.task_ang_vel_z_track, weight=1.5, params={"command_name": "motion", "std": 0.25}
+        )
+        self.rewards.task_upright = RewTerm(
+            func=mdp.task_upright_reward, weight=0.5, params={"command_name": "motion"}
+        )
+        self.rewards.task_upper_body_pose = RewTerm(
+            func=mdp.task_upper_body_pose_reward,
+            weight=0.5,
+            params={
+                "command_name": "motion",
+                "asset_cfg": SceneEntityCfg(
+                    "robot",
+                    joint_names=[
+                        "waist_yaw_joint",
+                        "left_shoulder_pitch_joint",
+                        "left_shoulder_roll_joint",
+                        "left_shoulder_yaw_joint",
+                        "left_elbow_joint",
+                        "left_wrist_yaw_joint",
+                        "right_shoulder_pitch_joint",
+                        "right_shoulder_roll_joint",
+                        "right_shoulder_yaw_joint",
+                        "right_elbow_joint",
+                        "right_wrist_yaw_joint",
+                    ],
+                ),
+                "std": 0.5,
+            },
         )
 
         # Entry: torso <0.50 m OR tilt >70 deg. Exit: torso >=0.75 m,
