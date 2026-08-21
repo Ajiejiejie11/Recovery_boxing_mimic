@@ -136,6 +136,17 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
             weight=3.2,
             params={"command_name": "motion", "min_height": 0.50, "target_height": 0.75},
         )
+        # Small, bounded one-shot bonus on the successful standing transition.
+        # It prefers an earlier valid recovery without competing with the dense
+        # posture/height rewards or encouraging torque-limit violations.
+        self.rewards.recovery_early_success = RewTerm(
+            func=mdp.recovery_early_success_reward,
+            weight=0.35,
+            params={
+                "command_name": "motion",
+                "recovery_duration_s": self.commands.motion.recovery_duration_s,
+            },
+        )
         late_recovery_gate = {
             "min_height": 0.55,
             "full_height": 0.70,
@@ -149,7 +160,7 @@ class Z1FlatEnvCfg(TrackingEnvCfg):
         )
         self.rewards.recovery_full_body_reference = RewTerm(
             func=mdp.recovery_full_body_reference_reward,
-            weight=0.45,
+            weight=0.35,
             params={
                 "command_name": "motion",
                 "asset_cfg": SceneEntityCfg("robot", joint_names=[".*"]),

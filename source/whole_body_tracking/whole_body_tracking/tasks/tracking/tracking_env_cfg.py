@@ -363,6 +363,7 @@ class RewardsCfg:
     # close to tracking and gate terminal shaping until the robot is near stand.
     recovery_upright: RewTerm | None = None
     recovery_height: RewTerm | None = None
+    recovery_early_success: RewTerm | None = None
     recovery_feet_stable: RewTerm | None = None
     recovery_full_body_reference: RewTerm | None = None
     recovery_torso_reference: RewTerm | None = None

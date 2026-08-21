@@ -239,6 +239,29 @@ def recovery_height_reward(
     return height_progress * _recovery_mask(command)
 
 
+def recovery_early_success_reward(
+    env: ManagerBasedRLEnv,
+    command_name: str,
+    recovery_duration_s: float,
+) -> torch.Tensor:
+    """Give a small one-shot bonus for passing the standing check early.
+
+    ``update_recovery_state`` marks ``recovery_success_pending`` before reward
+    evaluation and ``_update_command`` consumes it immediately afterwards.
+    Consequently this term is non-zero for exactly the success transition, not
+    on every subsequent standing step.  The bounded linear schedule is largest
+    at the beginning of the recovery window and reaches zero at its deadline.
+    """
+    if recovery_duration_s <= 0.0:
+        raise ValueError("recovery duration must be positive")
+    command: MotionCommand = env.command_manager.get_term(command_name)
+    max_steps = max(1, round(recovery_duration_s / env.step_dt))
+    remaining_fraction = (
+        (max_steps - command.recovery_steps).float() / max_steps
+    ).clamp(0.0, 1.0)
+    return remaining_fraction * command.recovery_success_pending.float()
+
+
 def _recovery_feet_stable(
     env: ManagerBasedRLEnv,
     asset_cfg: SceneEntityCfg,
