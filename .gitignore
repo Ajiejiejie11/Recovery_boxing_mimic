@@ -10,3 +10,5 @@ dist/
 
 # Training artifacts
 outputs/
+logs/
+*.tfevents*
