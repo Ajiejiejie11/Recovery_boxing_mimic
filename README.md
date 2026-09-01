@@ -13,7 +13,9 @@
 
 ## Overview
 
-This project inherits the **BeyondMimic** motion-tracking stack: highly dynamic tracking, local **`.npz`** motions and
+Main purpose: train a single Actor network that jointly performs motion mimicry (tracking) and dynamic recovery (getting up from falls), enabling continuous transitions from fallen states back into tracking behaviors (e.g., boxing references) without external resets.
+
+This project extends the **BeyondMimic** motion-tracking stack: highly dynamic tracking, local **`.npz`** motions and
 **WandB registry** sources, CSV preprocessing through training, playback, and **MuJoCo sim-to-sim**
 (`scripts/sim2sim_mujoco.py`). Upstream references: [BeyondMimic site](https://beyondmimic.github.io/), paper and video
 in the badges above.
